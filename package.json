@@ -1,0 +1,44 @@
+{
+    "name": "grunt-check-dependencies",
+    "version": "0.0.1",
+    "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.",
+    "homepage": "https://github.com/mzgol/grunt-check-dependencies",
+    "author": {
+        "name": "Michał Gołębiowski",
+        "email": "m.goleb@gmail.com"
+    },
+    "keywords": [
+        "gruntplugin"
+    ],
+    "main": "Gruntfile.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mzgol/grunt-check-dependencies.git"
+    },
+    "bugs": "https://github.com/mzgol/grunt-check-dependencies/issues",
+    "licenses": [
+        {
+            "type": "MIT"
+        }
+    ],
+    "dependencies": {
+        "findup-sync": "0.1.2",
+        "lodash": "2.2.1",
+        "semver": "2.2.1"
+    },
+    "devDependencies": {
+        "grunt-contrib-jshint": "0.7.1",
+        "grunt-contrib-nodeunit": "0.2.2",
+        "grunt-contrib-clean": "0.5.0",
+        "load-grunt-tasks": "0.2.0"
+    },
+    "peerDependencies": {
+        "grunt": "~0.4.1"
+    },
+    "scripts": {
+        "test": "grunt test"
+    },
+    "engines": {
+        "node": ">=0.10.21"
+    }
+}
