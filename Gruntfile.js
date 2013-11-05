@@ -12,21 +12,48 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         jshint: {
-            all: [
-                'Gruntfile.js',
-                'tasks/*.js',
-//                '<%= nodeunit.tests %>',
-            ],
             options: {
-                jshintrc: '.jshintrc',
+                jshintrc: true,
+            },
+            all: {
+                src: [
+                    'Gruntfile.js',
+                    'tasks/*.js',
+                    'test/spec/**/*.js',
+                ],
+            },
+        },
+
+        // Configuration to be run (and tested).
+        checkDependencies: {
+            thisPackage: {
+                options: {
+                    npmInstall: true,
+                },
+            },
+            ok: {
+                options: {
+                    packageDir: 'test/ok/',
+                    scopeList: ['peerDependencies', 'dependencies', 'devDependencies'],
+                },
+            },
+            notOk: {
+                options: {
+                    packageDir: 'test/not-ok/',
+                    scopeList: ['peerDependencies', 'dependencies', 'devDependencies'],
+                },
             },
         },
 
         // Unit tests.
-        // TODO
-//        nodeunit: {
-//            tests: ['test/*_test.js'],
-//        },
+        mochaTest: {
+            all: {
+                options: {
+                    reporter: 'spec',
+                },
+                src: ['test/spec.js']
+            }
+        },
     });
 
     // Load all grunt tasks matching the `grunt-*` pattern.
@@ -35,12 +62,11 @@ module.exports = function (grunt) {
     // Actually load this plugin's task(s).
     grunt.loadTasks('tasks');
 
-    grunt.registerTask('test', ['nodeunit']);
+    grunt.registerTask('test', ['mochaTest']);
 
     // By default, lint and run all tests.
     grunt.registerTask('default', [
         'jshint',
-        'checkDependencies',
-//        'test', // TODO
+        'test',
     ]);
 };

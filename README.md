@@ -1,6 +1,6 @@
 # grunt-check-dependencies
 
-> Add, remove and rebuild AngularJS dependency injection annotations.
+> Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
 
 ## Getting Started
 This plugin requires Grunt.
@@ -17,14 +17,20 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-check-dependencies');
 ```
 
-## The "ngAnnotate" task
+## The "checkDependencies" task
 
 ### Overview
-In your project's Gruntfile, add a section named `ngAnnotate` to the data object passed into `grunt.initConfig()`.
+The `checkDependencies` task checks if the package has all necessary dependencies installed in right versions.
+If that's not the case, the task fails and advises to run `npm install`.
+
+If in case of a missing package you want to invoke the `npm install` command automatically, set the `npmInstall`
+option to `true`.
+
+In your project's Gruntfile, add a section named `checkDependencies` to the data object passed into `grunt.initConfig()`.
 
 ```js
 grunt.initConfig({
-    ngAnnotate: {
+    checkDependencies: {
         options: {
             // Task-specific options go here.
         },
@@ -37,36 +43,26 @@ grunt.initConfig({
 
 #### Options
 
-The `ngAnnotate` task accepts a couple of options:
+The `checkDependencies` task accepts a couple of options:
 
 ```js
 {
-    // Tells if ngAnnotate should add annotations (true by default).
-    add: true|false,
+    // Path to a directory containing the package to test. By default the current app is tested.
+    packageDir: string,
 
-    // Tells if ngAnnotate should remove annotations (false by default).
-    remove: true|false,
+    // Tells the task which sections of the package.json file should be checked.
+    // Default is `['peerDependencies', 'dependencies', 'devDependencies']`.
+    scopeList: array,
 
-    // If provided, only strings matched by the regexp are interpreted as module names.
-    // See README of ng-annotate for further details: https://npmjs.org/package/ng-annotate
-    regexp: regexp,
-
-    // If files are provided without a destination, each file is processed
-    // separately and each of them is saved under original name with appended suffix provided here.
-    outputFileSuffix: string,
-
-    // If files are provided without a destination and this option is set, each file is processed
-    // separately and each of them is saved under original name processed by this function.
-    transformDest: function (sourcePath) {},
+    // If true, on error, instead of failing the task, `npm install` will be invoked for the user.
+    // `false` by default.
+    npmInstall: boolean,
 }
 ```
 
-Note that both `add` and `remove` options can be set to true; in such a case `ngAnnotate` first removes
-annotations and then re-adds them (it can be used to check if annotations were provided correctly).
-
 ### Usage Examples
 
-TODO
+You don't need any settings for the most basic (and probably most common) use of the task.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
@@ -75,4 +71,4 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2013 Laboratorium EE. Licensed under the MIT license.
+Copyright (c) 2013 Michał Gołębiowski. Licensed under the MIT license.
