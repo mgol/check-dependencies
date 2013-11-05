@@ -62,7 +62,27 @@ The `checkDependencies` task accepts a couple of options:
 
 ### Usage Examples
 
-You don't need any settings for the most basic (and probably most common) use of the task.
+The most basic (and probably most common) use of the task requires just providing a target, i.e.:
+```js
+{
+    checkDependencies: {
+        this: {},
+    },
+}
+```
+
+If you want to automatically install missing packages, here's what you want:
+```js
+{
+    checkDependencies: {
+        this: {
+            options: {
+                npmInstall: true,
+            },
+        },
+    },
+}
+```
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
