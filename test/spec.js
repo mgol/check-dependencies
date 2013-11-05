@@ -8,9 +8,8 @@ describe('Task: checkDependencies', function () {
     var errors = [],
         hooker = grunt.util.hooker;
 
-
-    beforeEach(function () {
-        hooker.hook(grunt.log, 'error', {
+    function hijackGruntLog(method) {
+        hooker.hook(grunt.log, method, {
             // This gets executed before the original process.stdout.write.
             pre: function (result) {
                 // Concatenate uncolored result onto actual.
@@ -19,12 +18,18 @@ describe('Task: checkDependencies', function () {
                 return hooker.preempt();
             }
         });
+    }
+
+    beforeEach(function () {
+        hijackGruntLog('error');
+        hijackGruntLog('writeln');
     });
 
     afterEach(function () {
         errors = [];
         // Restore grunt.log.error to its original value.
         hooker.unhook(grunt.log, 'error');
+        hooker.unhook(grunt.log, 'writeln');
     });
 
     it('should not print anything for valid package setup', function () {
