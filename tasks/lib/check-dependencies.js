@@ -12,7 +12,7 @@ var findup = require('findup-sync'),
     _ = require('lodash'),
     path = require('path'),
     semver = require('semver'),
-    execSync = require('exec-sync');
+    execSync = require('execSync');
 
 module.exports = function (grunt) {
     return function checkDependencies(options) {
