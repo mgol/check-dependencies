@@ -12,10 +12,10 @@ var findup = require('findup-sync'),
     _ = require('lodash'),
     path = require('path'),
     semver = require('semver'),
-    execSync = require('execSync');
+    spawn = require('child_process').spawn;
 
 module.exports = function (grunt) {
-    return function checkDependencies(options) {
+    return function checkDependencies(options, done) {
         var mappings,
             validRun = true,
             packageDir = options.packageDir || findup('package.json').replace(/package\.json$/, ''),
@@ -42,8 +42,7 @@ module.exports = function (grunt) {
                 return;
             }
 
-            var version = grunt.file.readJSON(
-                path.join(packageDir, 'node_modules', name, 'package.json')).version;
+            var version = grunt.file.readJSON(path.join(packageDir, 'node_modules', name, 'package.json')).version;
             if (!semver.satisfies(version, versionString)) {
                 validRun = false;
                 grunt.log.error(name + ': installed: ' + version.red + ', expected: ' + versionString.green);
@@ -54,20 +53,27 @@ module.exports = function (grunt) {
             }
         });
 
-        if (!validRun) {
+        if (validRun) {
+            done(true);
+        } else {
             if (!npmInstall) {
                 grunt.log.writeln('Invoke ' + 'npm install'.green + ' to install missing packages');
+                done(false);
             } else {
-                try {
-                    grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
-                    // execSync errors on non-empty stderr; silent such output.
-                    execSync('npm install --loglevel error');
-                    validRun = true;
-                } catch (e) {
-                    grunt.log.error('npm install'.green + ' ended with an ' + 'error'.red, e);
-                }
+                grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
+                // execSync errors on non-empty stderr; silent such output.
+                spawn('npm', ['install'], {
+                    cwd: '.',
+                    stdio: 'inherit',
+                }).on('close', function (code) {
+                        if (code !== 0) {
+                            grunt.log.error('npm install failed with code: ' + (code + '').red);
+                            done(false);
+                        } else {
+                            done(true);
+                        }
+                    });
             }
         }
-        return validRun;
     };
 };

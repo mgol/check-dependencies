@@ -15,7 +15,7 @@ module.exports = function (grunt) {
         'Checks if currently installed npm dependencies are installed in the exact same versions ' +
             'that are specified in package.json',
         function () {
-            return checkDependencies(this.options());
+            return checkDependencies(this.options(), this.async());
         }
     );
 };

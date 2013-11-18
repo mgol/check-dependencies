@@ -33,19 +33,23 @@ describe('Task: checkDependencies', function () {
         hooker.unhook(grunt.log, 'writeln');
     });
 
-    it('should not print anything for valid package setup', function () {
-        var result = checkDependencies(grunt.config(['checkDependencies', 'ok', 'options']));
-        expect(result).to.be(true);
-        expect(output.error).to.eql([]);
+    it('should not print anything for valid package setup', function (done) {
+        checkDependencies(grunt.config(['checkDependencies', 'ok', 'options']), function (success) {
+            expect(success).to.be(true);
+            expect(output.error).to.eql([]);
+            done();
+        });
     });
 
-    it('should error on invalid package setup', function () {
-        var result = checkDependencies(grunt.config(['checkDependencies', 'notOk', 'options']));
-        expect(result).to.be(false);
-        expect(output.error).to.eql([
-            'a: installed: 1.2.4, expected: 1.2.3',
-            'b: installed: 0.9.9, expected: >=1.0.0',
-            'c: not installed!',
-        ]);
+    it('should error on invalid package setup', function (done) {
+        checkDependencies(grunt.config(['checkDependencies', 'notOk', 'options']), function (success) {
+            expect(success).to.be(false);
+            expect(output.error).to.eql([
+                'a: installed: 1.2.4, expected: 1.2.3',
+                'b: installed: 0.9.9, expected: >=1.0.0',
+                'c: not installed!',
+            ]);
+            done();
+        });
     });
 });

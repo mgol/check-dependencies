@@ -1,6 +1,6 @@
 {
     "name": "grunt-check-dependencies",
-    "version": "0.2.1-pre",
+    "version": "0.3.0-pre",
     "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.",
     "homepage": "https://github.com/mzgol/grunt-check-dependencies",
     "author": {
@@ -26,14 +26,13 @@
         }
     ],
     "dependencies": {
-        "execSync": "1.0.1-pre",
         "findup-sync": "0.1.2",
-        "lodash": "2.2.1",
+        "lodash": "2.3.0",
         "semver": "2.2.1"
     },
     "devDependencies": {
         "expect.js": "0.2.0",
-        "grunt-contrib-jshint": "0.7.1",
+        "grunt-contrib-jshint": "0.7.2",
         "grunt-contrib-clean": "0.5.0",
         "grunt-mocha-test": "0.7.0",
         "load-grunt-tasks": "0.2.0"
