@@ -1,6 +1,6 @@
 {
     "name": "grunt-check-dependencies",
-    "version": "0.2.0",
+    "version": "0.2.1-pre",
     "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.",
     "homepage": "https://github.com/mzgol/grunt-check-dependencies",
     "author": {
@@ -42,7 +42,7 @@
         "grunt": "~0.4.1"
     },
     "scripts": {
-        "test": "grunt test"
+        "test": "grunt"
     },
     "engines": {
         "node": ">=0.10.21"

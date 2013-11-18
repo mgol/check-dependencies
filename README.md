@@ -1,4 +1,4 @@
-# grunt-check-dependencies
+# grunt-check-dependencies [![Build Status](https://travis-ci.org/mzgol/grunt-check-dependencies.png)](https://travis-ci.org/mzgol/grunt-check-dependencies)
 
 > Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
 
