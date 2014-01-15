@@ -63,7 +63,7 @@ module.exports = function (grunt) {
                 grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
                 // execSync errors on non-empty stderr; silent such output.
                 spawn('npm', ['install'], {
-                    cwd: '.',
+                    cwd: packageDir || '.',
                     stdio: 'inherit',
                 }).on('close', function (code) {
                         if (code !== 0) {
