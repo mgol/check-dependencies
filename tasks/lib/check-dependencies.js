@@ -17,6 +17,7 @@ var findup = require('findup-sync'),
 module.exports = function (grunt) {
     return function checkDependencies(options, done) {
         var mappings,
+            win32 = process.platform === 'win32',
             validRun = true,
             packageDir = options.packageDir || findup('package.json').replace(/package\.json$/, ''),
             scopeList = options.scopeList || ['peerDependencies', 'dependencies', 'devDependencies'],
@@ -62,7 +63,7 @@ module.exports = function (grunt) {
             } else {
                 grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
                 // execSync errors on non-empty stderr; silent such output.
-                spawn('npm', ['install'], {
+                spawn(win32 ? 'cmd' : 'npm', [win32 ? '/c npm install' : 'install'], {
                     cwd: packageDir || '.',
                     stdio: 'inherit',
                 }).on('close', function (code) {
