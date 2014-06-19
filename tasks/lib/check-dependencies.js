@@ -62,11 +62,13 @@ module.exports = function (grunt) {
                 done(false);
             } else {
                 grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
-                // execSync errors on non-empty stderr; silent such output.
-                spawn(win32 ? 'cmd' : 'npm', [win32 ? '/c npm install' : 'install'], {
-                    cwd: packageDir || '.',
-                    stdio: 'inherit',
-                }).on('close', function (code) {
+                spawn(win32 ? 'cmd' : 'npm',
+                    [win32 ? '/c npm install' : 'install'],
+                    {
+                        cwd: packageDir || '.',
+                        stdio: 'inherit',
+                    })
+                    .on('close', function (code) {
                         if (code !== 0) {
                             grunt.log.error('npm install failed with code: ' + (code + '').red);
                             done(false);
