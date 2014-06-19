@@ -28,14 +28,15 @@
     "dependencies": {
         "findup-sync": "~0.1.3",
         "lodash": "~2.4.1",
-        "semver": "~2.2.1"
+        "semver": "~2.3.1"
     },
     "devDependencies": {
         "expect.js": "0.3.1",
-        "grunt-contrib-jshint": "0.7.2",
+        "grunt-cli": "0.1.13",
         "grunt-contrib-clean": "0.5.0",
-        "grunt-mocha-test": "0.9.4",
-        "load-grunt-tasks": "0.4.0"
+        "grunt-contrib-jshint": "0.10.0",
+        "grunt-mocha-test": "0.11.0",
+        "load-grunt-tasks": "0.5.0"
     },
     "peerDependencies": {
         "grunt": "~0.4.1"
