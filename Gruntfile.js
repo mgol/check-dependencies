@@ -9,20 +9,30 @@
 'use strict';
 
 module.exports = function (grunt) {
-    // Project configuration.
     grunt.initConfig({
-        jshint: {
-            options: {
-                jshintrc: true,
-            },
+        eslint: {
             all: {
                 src: [
                     'Gruntfile.js',
-                    'tasks/*.js',
-                    'test/spec/**/*.js',
+                    'tasks',
+                    'test',
                 ],
             },
         },
+
+        jscs: {
+            all: {
+                src: [
+                    'Gruntfile.js',
+                    'tasks/**/*.js',
+                    'test/**/*.js',
+                ],
+                options: {
+                    config: '.jscsrc',
+                },
+            },
+        },
+
 
         // Configuration to be run (and tested).
         checkDependencies: {
@@ -51,8 +61,8 @@ module.exports = function (grunt) {
                 options: {
                     reporter: 'spec',
                 },
-                src: ['test/spec.js']
-            }
+                src: ['test/spec.js'],
+            },
         },
     });
 
@@ -62,11 +72,16 @@ module.exports = function (grunt) {
     // Actually load this plugin's task(s).
     grunt.loadTasks('tasks');
 
+    grunt.registerTask('lint', [
+        'eslint',
+        'jscs',
+    ]);
+
     grunt.registerTask('test', ['mochaTest']);
 
     // By default, lint and run all tests.
     grunt.registerTask('default', [
-        'jshint',
+        'lint',
         'test',
     ]);
 };

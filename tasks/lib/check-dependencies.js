@@ -56,27 +56,25 @@ module.exports = function (grunt) {
 
         if (validRun) {
             done(true);
+        } else if (!npmInstall) {
+            grunt.log.writeln('Invoke ' + 'npm install'.green + ' to install missing packages');
+            done(false);
         } else {
-            if (!npmInstall) {
-                grunt.log.writeln('Invoke ' + 'npm install'.green + ' to install missing packages');
-                done(false);
-            } else {
-                grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
-                spawn(win32 ? 'cmd' : 'npm',
-                    [win32 ? '/c npm install' : 'install'],
-                    {
-                        cwd: packageDir || '.',
-                        stdio: 'inherit',
-                    })
-                    .on('close', function (code) {
-                        if (code !== 0) {
-                            grunt.log.error('npm install failed with code: ' + (code + '').red);
-                            done(false);
-                        } else {
-                            done(true);
-                        }
-                    });
-            }
+            grunt.log.writeln('Invoking ' + 'npm install'.green + '...');
+            spawn(win32 ? 'cmd' : 'npm',
+                [win32 ? '/c npm install' : 'install'],
+                {
+                    cwd: packageDir || '.',
+                    stdio: 'inherit',
+                })
+                .on('close', function (code) {
+                    if (code !== 0) {
+                        grunt.log.error('npm install failed with code: ' + (code + '').red);
+                        done(false);
+                    } else {
+                        done(true);
+                    }
+                });
         }
     };
 };

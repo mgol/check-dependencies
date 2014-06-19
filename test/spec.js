@@ -16,7 +16,7 @@ describe('Task: checkDependencies', function () {
                 output[method].push(grunt.log.uncolor(result));
                 // Prevent the original process.stdout.write from executing.
                 return hooker.preempt();
-            }
+            },
         });
     }
 
