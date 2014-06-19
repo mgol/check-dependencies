@@ -2,6 +2,10 @@
 
 > Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
 
+[![Build Status](https://travis-ci.org/mzgol/grunt-check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/grunt-check-dependencies)
+<a href="https://ci.appveyor.com/project/mzgol/grunt-check-dependencies"><img src="https://ci.appveyor.com/api/projects/status/058pwmb1qvxphjfa/branch/master" alt="Build Status: Windows" height="18" /></a>
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 ## Getting Started
 This plugin requires Grunt.
 
