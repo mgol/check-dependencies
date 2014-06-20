@@ -1,4 +1,4 @@
-# check-dependencies [![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
+# check-dependencies
 
 > Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
 
