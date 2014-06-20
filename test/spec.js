@@ -1,7 +1,7 @@
 'use strict';
 
 var chalk = require('chalk'),
-    expect = require('expect.js'),
+    expect = require('chai').expect,
     checkDependencies = require('../check-dependencies');
 
 describe('checkDependencies', function () {
@@ -28,13 +28,13 @@ describe('checkDependencies', function () {
         console.error = console.error._original;
     });
 
-    it('should not print anything for valid package setup', function (done) {
+    it('should not print errors for valid package setup', function (done) {
         checkDependencies({
             packageDir: './test/ok/',
             scopeList: ['dependencies', 'devDependencies'],
             install: false,
         }, function (error) {
-            expect(error).to.be(undefined);
+            expect(error).to.equal(undefined);
             expect(output.error).to.eql([]);
             done();
         });
@@ -46,7 +46,7 @@ describe('checkDependencies', function () {
             scopeList: ['dependencies', 'devDependencies'],
             install: false,
         }, function (error) {
-            expect(error).not.to.be(undefined);
+            expect(error).not.to.equal(undefined);
             expect(output.error).to.eql([
                 'a: installed: 1.2.4, expected: 1.2.3',
                 'b: installed: 0.9.9, expected: >=1.0.0',
@@ -54,5 +54,45 @@ describe('checkDependencies', function () {
             ]);
             done();
         });
+    });
+
+    it('should accept scopeList parameter', function (done) {
+        checkDependencies({
+            packageDir: './test/not-ok/',
+            scopeList: ['devDependencies'],
+            install: false,
+        }, function (error) {
+            expect(error).to.equal(undefined);
+            expect(output.error).to.eql([]);
+            done();
+        });
+    });
+
+    it('should find package.json if packageDir not provided', function (done) {
+        checkDependencies({
+            install: false,
+        }, function (error) {
+            expect(error).to.equal(undefined);
+            expect(output.error).to.eql([]);
+            done();
+        });
+    });
+
+    it('should throw if callback not provided', function () {
+        expect(function () {
+            checkDependencies({
+                packageDir: './test/not-ok/',
+                scopeList: ['dependencies', 'devDependencies'],
+                install: false,
+            });
+        }).to.throw();
+    });
+
+    it('should allow to provide callback as the first argument', function (done) {
+        checkDependencies(function (error) {
+            expect(error).to.equal(undefined);
+            expect(output.error).to.eql([]);
+            done();
+        })
     });
 });

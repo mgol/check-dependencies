@@ -26,7 +26,7 @@ Once the package has been installed, it may be used via:
 ```js
 require('check-dependencies')(config, callback);
 ```
-where `callback` is invoked upon completion `config` is a configuration object with the following fields:
+where `callback` is invoked upon completion and `config` is a configuration object with the following fields:
 
 ### packageDir
 
@@ -34,13 +34,6 @@ Path to the directory containing `package.json`.
 
 Type: `string`
 Default: the closest directory containing `package.json` when going up the tree, starting from the current one
-
-### error
-
-Throws an error if packages do not match.
-
-Type: `boolean`
-Default: `false` in most cases, `true` if and only if the `install` option was explicitly set to `false`
 
 ### install
 
@@ -67,18 +60,18 @@ Default: `false`
 
 The most basic usage:
 ```js
-require('check-dependencies')();
+require('check-dependencies')(callback);
 ```
-This will check packages' versions and install mismatched ones.
+This will check packages' versions, install mismatched ones and invoke `callback`.
 
 The following:
 ```js
 require('check-dependencies')({
     install: false,
     error: true,
-});
+}, callback);
 ```
-will throw an error if packages' versions are mismatched.
+will report an error to `callback` if packages' versions are mismatched.
 
 The following two examples:
 ```js

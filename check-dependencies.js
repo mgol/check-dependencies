@@ -16,6 +16,15 @@ var fs = require('fs'),
     spawn = require('child_process').spawn;
 
 module.exports = function checkDependencies(config, callback) {
+    if (typeof callback !== 'function') {
+        if (typeof config === 'function') {
+            callback = config;
+            config = {};
+        } else {
+            throw new Error('Callback has to be provided!');
+        }
+    }
+
     var mappings, packageJson,
         win32 = process.platform === 'win32',
         validRun = true,
