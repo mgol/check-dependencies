@@ -35,7 +35,6 @@ module.exports = function (grunt) {
             },
         },
 
-
         // Configuration to be run (and tested).
         checkDependencies: {
             thisPackage: {
