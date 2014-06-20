@@ -1,98 +1,94 @@
-# grunt-check-dependencies [![Build Status](https://travis-ci.org/mzgol/grunt-check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/grunt-check-dependencies)
+# check-dependencies [![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
 
 > Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
 
-[![Build Status](https://travis-ci.org/mzgol/grunt-check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/grunt-check-dependencies)
-[![Build status](https://ci.appveyor.com/api/projects/status/058pwmb1qvxphjfa/branch/master)](https://ci.appveyor.com/project/mzgol/grunt-check-dependencies)
-[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
+[![Build status](https://ci.appveyor.com/api/projects/status/a4cok143mjmi0hk3/branch/master)](https://ci.appveyor.com/project/mzgol/check-dependencies)
 
-## Getting Started
-This plugin requires Grunt.
+## Installation
 
-If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
+To install the package and add it to your `package.json`, invoke:
 
 ```shell
-npm install grunt-check-dependencies --save-dev
+npm install check-dependencies --save-dev
 ```
 
-Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+## Rationale
+
+When dependencies are changed in `package.json`, whether it's a version bump or a new package, one can forget to invoke `npm install` and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
+ 
+Another option would be to always invoke `npm install` at the top of the main file but `npm install` can be slow and `check-dependencies` is fast.
+
+## Usage
+
+Once the package has been installed, it may be used via:
 
 ```js
-grunt.loadNpmTasks('grunt-check-dependencies');
+require('check-dependencies')(config, callback);
 ```
+where `callback` is invoked upon completion `config` is a configuration object with the following fields:
 
-## The "checkDependencies" task
+### packageDir
 
-### Overview
-The `checkDependencies` task checks if the package has all necessary dependencies installed in right versions.
-If that's not the case, the task fails and advises to run `npm install`.
+Path to the directory containing `package.json`.
 
-If in case of a missing package you want to invoke the `npm install` command automatically, set the `npmInstall`
-option to `true`.
+Type: `string`
+Default: the closest directory containing `package.json` when going up the tree, starting from the current one
 
-In your project's Gruntfile, add a section named `checkDependencies` to the data object passed into `grunt.initConfig()`.
+### error
 
+Throws an error if packages do not match.
+
+Type: `boolean`
+Default: `false` in most cases, `true` if and only if the `install` option was explicitly set to `false`
+
+### install
+
+Installs packages if they don't match.
+
+Type: `boolean`
+Default: `true`
+
+### scopeList
+
+The list of keys in package.json where to look for package names & versions.
+
+Type: `array`
+Default: `['dependencies', 'devDependencies']`
+
+### verbose
+
+Prints more messages.
+
+Type: `boolean`
+Default: `false`
+
+## Usage Examples
+
+The most basic usage:
 ```js
-grunt.initConfig({
-    checkDependencies: {
-        options: {
-            // Task-specific options go here.
-        },
-        your_target: {
-            // Target-specific file lists and/or options go here.
-        },
-    },
-})
+require('check-dependencies')();
 ```
+This will check packages' versions and install mismatched ones.
 
-#### Options
-
-The `checkDependencies` task accepts a couple of options:
-
+The following:
 ```js
-{
-    // Path to a directory containing the package to test. By default the current app is tested.
-    packageDir: string,
-
-    // Tells the task which sections of the package.json file should be checked.
-    // Default is `['peerDependencies', 'dependencies', 'devDependencies']`.
-    scopeList: array,
-
-    // If true, on error, instead of failing the task, `npm install` will be invoked for the user.
-    // `false` by default.
-    npmInstall: boolean,
-}
+require('check-dependencies')({
+    install: false,
+    error: true,
+});
 ```
+will throw an error if packages' versions are mismatched.
 
-### Usage Examples
-
-The most basic (and probably most common) use of the task requires just providing a target, i.e.:
+The following two examples:
 ```js
-{
-    checkDependencies: {
-        this: {},
-    },
-}
+require('check-dependencies')(callback);
+require('check-dependencies')({}, callback);
 ```
-
-If you want to automatically install missing packages, here's what you want:
-```js
-{
-    checkDependencies: {
-        this: {
-            options: {
-                npmInstall: true,
-            },
-        },
-    },
-}
-```
+behave in the same way - `callback` is invoked upon completion; if there was an error, it's passed as a parameter to `callback`.
 
 ## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-_(Nothing yet)_
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using `npm test`.
 
 ## License
-Copyright (c) 2013 Michał Gołębiowski. Licensed under the MIT license.
+Copyright (c) 2014 Michał Gołębiowski. Licensed under the MIT license.

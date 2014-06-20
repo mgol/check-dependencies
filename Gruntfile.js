@@ -1,6 +1,6 @@
 /**
- * grunt-check-dependencies
- * https://github.com/mzgol/grunt-check-dependencies
+ * check-dependencies
+ * https://github.com/mzgol/check-dependencies
  *
  * Author Michał Gołębiowski <m.goleb@gmail.com>
  * Licensed under the MIT license.
@@ -14,11 +14,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         eslint: {
             all: {
-                src: [
-                    'Gruntfile.js',
-                    'tasks',
-                    'test',
-                ],
+                src: '*.js',
             },
         },
 
@@ -35,28 +31,6 @@ module.exports = function (grunt) {
             },
         },
 
-        // Configuration to be run (and tested).
-        checkDependencies: {
-            thisPackage: {
-                options: {
-                    npmInstall: true,
-                },
-            },
-            ok: {
-                options: {
-                    packageDir: 'test/ok/',
-                    scopeList: ['peerDependencies', 'dependencies', 'devDependencies'],
-                },
-            },
-            notOk: {
-                options: {
-                    packageDir: 'test/not-ok/',
-                    scopeList: ['peerDependencies', 'dependencies', 'devDependencies'],
-                },
-            },
-        },
-
-        // Unit tests.
         mochaTest: {
             all: {
                 options: {
@@ -70,9 +44,6 @@ module.exports = function (grunt) {
     // Load all grunt tasks matching the `grunt-*` pattern.
     require('load-grunt-tasks')(grunt);
 
-    // Actually load this plugin's task(s).
-    grunt.loadTasks('tasks');
-
     grunt.registerTask('lint', [
         'eslint',
         'jscs',
@@ -80,7 +51,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', ['mochaTest']);
 
-    // By default, lint and run all tests.
     grunt.registerTask('default', [
         'lint',
         'test',
