@@ -1,6 +1,6 @@
 {
     "name": "check-dependencies",
-    "version": "0.4.0-pre",
+    "version": "0.4.0",
     "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json",
     "homepage": "https://github.com/mzgol/check-dependencies",
     "author": {
