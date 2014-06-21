@@ -119,7 +119,7 @@ describe('checkDependencies', function () {
                     }, function (error) {
                         expect(error).not.to.exist;
                         expect(output.error).to.eql([
-                            'check-dependencies: installed: 0.4.1, expected: <=0.2.5',
+                            'check-dependencies: installed: 0.4.1, expected: <=0.4.0',
                         ]);
                         version = JSON.parse(fs.readFileSync(__dirname +
                             '/not-ok-install-copy/node_modules/' +
