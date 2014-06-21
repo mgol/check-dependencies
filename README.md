@@ -5,6 +5,8 @@
 [![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
 [![Build status](https://ci.appveyor.com/api/projects/status/a4cok143mjmi0hk3/branch/master)](https://ci.appveyor.com/project/mzgol/check-dependencies)
 
+(Note: the package previously published under this name is now called [dependency-status](https://www.npmjs.org/package/dependency-status))
+
 ## Installation
 
 To install the package and add it to your `package.json`, invoke:
