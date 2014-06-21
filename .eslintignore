@@ -1,3 +1,2 @@
 node_modules/**
-test/fixtures/**/*.js
-test/expected/**/*.js
+test/*/**/*.js

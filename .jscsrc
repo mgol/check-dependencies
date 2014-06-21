@@ -56,8 +56,7 @@
 
     "excludeFiles": [
         "node_modules/**",
-        "test/fixtures/**/*.js",
-        "test/expected/**/*.js"
+        "test/*/**/*.js"
     ],
 
     "additionalRules": ["node_modules/jscs-trailing-comma/rules/*.js"],

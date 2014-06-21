@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "check-dependencies": "<=0.2.5"
+    }
+}
