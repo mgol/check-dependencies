@@ -78,9 +78,9 @@ describe('checkDependencies', function () {
     });
 
     it('should install missing packages when `install` is set to true', function (done) {
-        var versionRange = require('./not-ok-install/package.json').dependencies['check-dependencies'],
+        var versionRange = require('./not-ok-install/package.json').dependencies.minimatch,
             version = JSON.parse(fs.readFileSync(__dirname +
-                '/not-ok-install/node_modules/check-dependencies/package.json')).version;
+                '/not-ok-install/node_modules/minimatch/package.json')).version;
 
         assert.equal(semver.satisfies(version, versionRange),
             false, 'Expected version ' + version + ' not to match ' + versionRange);
@@ -97,11 +97,10 @@ describe('checkDependencies', function () {
                     }, function (output) {
                         expect(output.status).to.equal(0);
                         expect(output.error).to.eql([
-                            'check-dependencies: installed: 0.4.1, expected: <=0.4.0',
+                            'minimatch: installed: 0.2.2, expected: <=0.2.1',
                         ]);
                         version = JSON.parse(fs.readFileSync(__dirname +
-                            '/not-ok-install-copy/node_modules/' +
-                            'check-dependencies/package.json')).version;
+                            '/not-ok-install-copy/node_modules/minimatch/package.json')).version;
                         assert.equal(semver.satisfies(version, versionRange),
                             true, 'Expected version ' + version +
                                 ' to match ' + versionRange);

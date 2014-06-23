@@ -1,5 +1,5 @@
 {
     "dependencies": {
-        "check-dependencies": "<=0.4.0"
+        "minimatch": "<=0.2.1"
     }
 }
