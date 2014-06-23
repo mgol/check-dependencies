@@ -3,9 +3,7 @@
 var chalk = require('chalk'),
     fs = require('fs-extra'),
     semver = require('semver'),
-    chai = require('chai'),
-    assert = chai.assert,
-    expect = chai.expect,
+    assert = require('assert'),
     checkDependencies = require('../lib/check-dependencies');
 
 describe('checkDependencies', function () {
@@ -25,8 +23,8 @@ describe('checkDependencies', function () {
             packageDir: './test/ok/',
             scopeList: ['dependencies', 'devDependencies'],
         }, function (output) {
-            expect(output.status).to.equal(0);
-            expect(output.error).to.eql([]);
+            assert.strictEqual(output.status, 0);
+            assert.deepEqual(output.error, []);
             done();
         });
     });
@@ -36,8 +34,8 @@ describe('checkDependencies', function () {
             packageDir: './test/not-ok/',
             scopeList: ['dependencies', 'devDependencies'],
         }, function (output) {
-            expect(output.status).to.equal(1);
-            expect(output.error).to.eql(errorsForNotOk);
+            assert.strictEqual(output.status, 1);
+            assert.deepEqual(output.error, errorsForNotOk);
             done();
         });
     });
@@ -47,36 +45,36 @@ describe('checkDependencies', function () {
             packageDir: './test/not-ok/',
             scopeList: ['devDependencies'],
         }, function (output) {
-            expect(output.status).to.equal(0);
-            expect(output.error).to.eql([]);
+            assert.strictEqual(output.status, 0);
+            assert.deepEqual(output.error, []);
             done();
         });
     });
 
     it('should find package.json if `packageDir` not provided', function (done) {
         checkDependencies({}, function (output) {
-            expect(output.status).to.equal(0);
-            expect(output.error).to.eql([]);
+            assert.strictEqual(output.status, 0);
+            assert.deepEqual(output.error, []);
             done();
         });
     });
 
     it('should throw if callback not provided', function () {
-        expect(function () {
+        assert.throws(function () {
             checkDependencies({
                 packageDir: './test/not-ok/',
                 scopeList: ['dependencies', 'devDependencies'],
                 install: false,
             });
-        }).to.throw();
+        });
     });
 
     it('should allow to provide callback as the first argument', function (done) {
         checkDependencies(function (output) {
-            expect(output.status).to.equal(0);
-            expect(output.error).to.eql([]);
+            assert.strictEqual(output.status, 0);
+            assert.deepEqual(output.error, []);
             done();
-        })
+        });
     });
 
     it('should support `log` and `error` options', function (done) {
@@ -92,10 +90,10 @@ describe('checkDependencies', function () {
             },
         }, function (output) {
             // output.error shouldn't be silenced
-            expect(output.error).to.eql(errorsForNotOk);
+            assert.deepEqual(output.error, errorsForNotOk);
 
-            expect(logArray).to.eql(output.log);
-            expect(errorArray).to.eql(output.error);
+            assert.deepEqual(logArray, output.log);
+            assert.deepEqual(errorArray, output.error);
             done();
         });
     });
@@ -110,9 +108,9 @@ describe('checkDependencies', function () {
             error: function (msg) {
                 errorArray.push(msg);
             },
-        }, function (output) {
-            expect(logArray).to.eql([]);
-            expect(errorArray).to.eql([]);
+        }, function () {
+            assert.deepEqual(logArray, []);
+            assert.deepEqual(errorArray, []);
             done();
         });
     });
@@ -124,19 +122,20 @@ describe('checkDependencies', function () {
 
         assert.equal(semver.satisfies(version, versionRange),
             false, 'Expected version ' + version + ' not to match ' + versionRange);
+
         this.timeout(30000);
 
         fs.remove(__dirname + '/not-ok-install-copy', function (error) {
-            expect(error).to.not.exist;
+            assert.equal(error, null);
             fs.copy(__dirname + '/not-ok-install', __dirname + '/not-ok-install-copy',
                 function (error) {
-                    expect(error).to.not.exist;
+                    assert.equal(error, null);
                     checkDependencies({
                         packageDir: './test/not-ok-install-copy/',
                         install: true,
                     }, function (output) {
-                        expect(output.status).to.equal(0);
-                        expect(output.error).to.eql([
+                        assert.strictEqual(output.status, 0);
+                        assert.deepEqual(output.error, [
                             'minimatch: installed: 0.2.2, expected: <=0.2.1',
                         ]);
                         version = JSON.parse(fs.readFileSync(__dirname +

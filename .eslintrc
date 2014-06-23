@@ -24,6 +24,7 @@
 
         // Node.js
         "no-mixed-requires": 0,
+        "no-path-concat": 0,
 
         // Stylistic issues
         "brace-style": 2,

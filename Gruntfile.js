@@ -14,7 +14,11 @@ module.exports = function (grunt) {
     grunt.initConfig({
         eslint: {
             all: {
-                src: '*.js',
+                src: [
+                    '*.js',
+                    'tasks',
+                    'test',
+                ],
             },
         },
 
