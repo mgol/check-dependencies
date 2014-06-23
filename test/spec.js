@@ -116,14 +116,14 @@ describe('checkDependencies', function () {
     });
 
     it('should install missing packages when `install` is set to true', function (done) {
+        this.timeout(30000);
+
         var versionRange = require('./not-ok-install/package.json').dependencies.minimatch,
             version = JSON.parse(fs.readFileSync(__dirname +
                 '/not-ok-install/node_modules/minimatch/package.json')).version;
 
         assert.equal(semver.satisfies(version, versionRange),
             false, 'Expected version ' + version + ' not to match ' + versionRange);
-
-        this.timeout(30000);
 
         fs.remove(__dirname + '/not-ok-install-copy', function (error) {
             assert.equal(error, null);
