@@ -6,7 +6,7 @@ var chalk = require('chalk'),
     chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect,
-    checkDependencies = require('../check-dependencies');
+    checkDependencies = require('../lib/check-dependencies');
 
 describe('checkDependencies', function () {
     var output = {error: [], log: []};

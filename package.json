@@ -14,7 +14,7 @@
         "modules",
         "dependencies"
     ],
-    "main": "check-dependencies.js",
+    "main": "lib/check-dependencies.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/mzgol/check-dependencies.git"
