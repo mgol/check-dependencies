@@ -71,6 +71,20 @@ Prints messages to the console.
 Type: `boolean`
 Default: `false`
 
+### log
+
+A function logging debug messages.
+
+Type: `function`
+Default: `console.log.bind(console)`
+
+### error
+
+A function logging error messages.
+
+Type: `function`
+Default: `console.error.bind(console)`
+
 ## Usage Examples
 
 The most basic usage:

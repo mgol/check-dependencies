@@ -9,6 +9,13 @@ var chalk = require('chalk'),
     checkDependencies = require('../lib/check-dependencies');
 
 describe('checkDependencies', function () {
+    var errorsForNotOk = [
+        'a: installed: 1.2.4, expected: 1.2.3',
+        'b: installed: 0.9.9, expected: >=1.0.0',
+        'c: not installed!',
+        'Invoke npm install to install missing packages',
+    ];
+
     beforeEach(function () {
         chalk.enabled = false;
     });
@@ -30,12 +37,7 @@ describe('checkDependencies', function () {
             scopeList: ['dependencies', 'devDependencies'],
         }, function (output) {
             expect(output.status).to.equal(1);
-            expect(output.error).to.eql([
-                'a: installed: 1.2.4, expected: 1.2.3',
-                'b: installed: 0.9.9, expected: >=1.0.0',
-                'c: not installed!',
-                'Invoke npm install to install missing packages',
-            ]);
+            expect(output.error).to.eql(errorsForNotOk);
             done();
         });
     });
@@ -75,6 +77,44 @@ describe('checkDependencies', function () {
             expect(output.error).to.eql([]);
             done();
         })
+    });
+
+    it('should support `log` and `error` options', function (done) {
+        var logArray = [], errorArray = [];
+        checkDependencies({
+            packageDir: './test/not-ok/',
+            verbose: true,
+            log: function (msg) {
+                logArray.push(msg);
+            },
+            error: function (msg) {
+                errorArray.push(msg);
+            },
+        }, function (output) {
+            // output.error shouldn't be silenced
+            expect(output.error).to.eql(errorsForNotOk);
+
+            expect(logArray).to.eql(output.log);
+            expect(errorArray).to.eql(output.error);
+            done();
+        });
+    });
+
+    it('should not print logs when `verbose` is not set to true', function (done) {
+        var logArray = [], errorArray = [];
+        checkDependencies({
+            packageDir: './test/not-ok/',
+            log: function (msg) {
+                logArray.push(msg);
+            },
+            error: function (msg) {
+                errorArray.push(msg);
+            },
+        }, function (output) {
+            expect(logArray).to.eql([]);
+            expect(errorArray).to.eql([]);
+            done();
+        });
     });
 
     it('should install missing packages when `install` is set to true', function (done) {
