@@ -1,6 +1,6 @@
 {
     "name": "check-dependencies",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json",
     "homepage": "https://github.com/mzgol/check-dependencies",
     "author": {
@@ -26,13 +26,13 @@
         }
     ],
     "dependencies": {
-        "findup-sync": "~0.1.3",
-        "lodash": "~2.4.1",
-        "semver": "~2.3.1"
+        "chalk": "0.4.0",
+        "findup-sync": "0.1.3",
+        "lodash": "2.4.1",
+        "semver": "2.3.1"
     },
     "devDependencies": {
         "chai": "1.9.1",
-        "chalk": "0.4.0",
         "fs-extra": "0.9.1",
         "grunt": "0.4.5",
         "grunt-cli": "0.1.13",
