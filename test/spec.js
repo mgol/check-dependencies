@@ -140,9 +140,8 @@ describe('checkDependencies', function () {
                         ]);
                         version = JSON.parse(fs.readFileSync(__dirname +
                             '/not-ok-install-copy/node_modules/minimatch/package.json')).version;
-                        assert.equal(semver.satisfies(version, versionRange),
-                            true, 'Expected version ' + version +
-                                ' to match ' + versionRange);
+                        assert(semver.satisfies(version, versionRange),
+                            'Expected version ' + version + ' to match ' + versionRange);
                         done();
                     });
                 });
