@@ -9,36 +9,16 @@ var chalk = require('chalk'),
     checkDependencies = require('../lib/check-dependencies');
 
 describe('checkDependencies', function () {
-    var output = {error: [], log: []};
-
-    function hijackConsole(methodName) {
-        var original = console[methodName];
-        console[methodName] = function (result) {
-            output[methodName].push(chalk.stripColor(result));
-        };
-        console[methodName]._original = original;
-    }
-
     beforeEach(function () {
-        hijackConsole('log');
-        hijackConsole('error');
-    });
-
-    afterEach(function () {
-        output.error = [];
-        output.writeln = [];
-
-        console.log = console.log._original;
-        console.error = console.error._original;
+        chalk.enabled = false;
     });
 
     it('should not print errors for valid package setup', function (done) {
         checkDependencies({
             packageDir: './test/ok/',
             scopeList: ['dependencies', 'devDependencies'],
-            install: false,
-        }, function (error) {
-            expect(error).to.not.exist;
+        }, function (output) {
+            expect(output.status).to.equal(0);
             expect(output.error).to.eql([]);
             done();
         });
@@ -48,35 +28,32 @@ describe('checkDependencies', function () {
         checkDependencies({
             packageDir: './test/not-ok/',
             scopeList: ['dependencies', 'devDependencies'],
-            install: false,
-        }, function (error) {
-            expect(error).to.exist;
+        }, function (output) {
+            expect(output.status).to.equal(1);
             expect(output.error).to.eql([
                 'a: installed: 1.2.4, expected: 1.2.3',
                 'b: installed: 0.9.9, expected: >=1.0.0',
                 'c: not installed!',
+                'Invoke npm install to install missing packages',
             ]);
             done();
         });
     });
 
-    it('should accept scopeList parameter', function (done) {
+    it('should accept `scopeList` parameter', function (done) {
         checkDependencies({
             packageDir: './test/not-ok/',
             scopeList: ['devDependencies'],
-            install: false,
-        }, function (error) {
-            expect(error).to.not.exist;
+        }, function (output) {
+            expect(output.status).to.equal(0);
             expect(output.error).to.eql([]);
             done();
         });
     });
 
-    it('should find package.json if packageDir not provided', function (done) {
-        checkDependencies({
-            install: false,
-        }, function (error) {
-            expect(error).to.not.exist;
+    it('should find package.json if `packageDir` not provided', function (done) {
+        checkDependencies({}, function (output) {
+            expect(output.status).to.equal(0);
             expect(output.error).to.eql([]);
             done();
         });
@@ -93,14 +70,14 @@ describe('checkDependencies', function () {
     });
 
     it('should allow to provide callback as the first argument', function (done) {
-        checkDependencies(function (error) {
-            expect(error).to.not.exist;
+        checkDependencies(function (output) {
+            expect(output.status).to.equal(0);
             expect(output.error).to.eql([]);
             done();
         })
     });
 
-    it('should install missing packages when install parameter is not set to false', function (done) {
+    it('should install missing packages when `install` is set to true', function (done) {
         var versionRange = require('./not-ok-install/package.json').dependencies['check-dependencies'],
             version = JSON.parse(fs.readFileSync(__dirname +
                 '/not-ok-install/node_modules/check-dependencies/package.json')).version;
@@ -116,8 +93,9 @@ describe('checkDependencies', function () {
                     expect(error).to.not.exist;
                     checkDependencies({
                         packageDir: './test/not-ok-install-copy/',
-                    }, function (error) {
-                        expect(error).not.to.exist;
+                        install: true,
+                    }, function (output) {
+                        expect(output.status).to.equal(0);
                         expect(output.error).to.eql([
                             'check-dependencies: installed: 0.4.1, expected: <=0.4.0',
                         ]);

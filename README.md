@@ -28,7 +28,20 @@ Once the package has been installed, it may be used via:
 ```js
 require('check-dependencies')(config, callback);
 ```
-where `callback` is invoked upon completion and `config` is a configuration object with the following fields:
+where `callback` is invoked upon completion and `config` is a configuration object.
+
+`callback` is invoked with the object containing fields:
+```js
+{
+    status: number, // 0 if successful, 1 otherwise
+    output: array,  // array of logged messages
+    error: array,   // array of logged errors
+}
+```
+ `log` and `error` - arrays aggregating informational and error
+messages. The operation was successful if
+
+The `config` object can have the following fields:
 
 ### packageDir
 
@@ -42,7 +55,7 @@ Default: the closest directory containing `package.json` when going up the tree,
 Installs packages if they don't match.
 
 Type: `boolean`
-Default: `true`
+Default: `false`
 
 ### scopeList
 
@@ -53,7 +66,7 @@ Default: `['dependencies', 'devDependencies']`
 
 ### verbose
 
-Prints more messages.
+Prints messages to the console.
 
 Type: `boolean`
 Default: `false`
