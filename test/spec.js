@@ -24,6 +24,7 @@ describe('checkDependencies', function () {
             scopeList: ['dependencies', 'devDependencies'],
         }, function (output) {
             assert.strictEqual(output.status, 0);
+            assert.strictEqual(output.depsWereOk, true);
             assert.deepEqual(output.error, []);
             done();
         });
@@ -35,6 +36,7 @@ describe('checkDependencies', function () {
             scopeList: ['dependencies', 'devDependencies'],
         }, function (output) {
             assert.strictEqual(output.status, 1);
+            assert.strictEqual(output.depsWereOk, false);
             assert.deepEqual(output.error, errorsForNotOk);
             done();
         });
@@ -46,6 +48,7 @@ describe('checkDependencies', function () {
             scopeList: ['devDependencies'],
         }, function (output) {
             assert.strictEqual(output.status, 0);
+            assert.strictEqual(output.depsWereOk, true);
             assert.deepEqual(output.error, []);
             done();
         });
@@ -54,6 +57,7 @@ describe('checkDependencies', function () {
     it('should find package.json if `packageDir` not provided', function (done) {
         checkDependencies({}, function (output) {
             assert.strictEqual(output.status, 0);
+            assert.strictEqual(output.depsWereOk, true);
             assert.deepEqual(output.error, []);
             done();
         });
@@ -72,6 +76,7 @@ describe('checkDependencies', function () {
     it('should allow to provide callback as the first argument', function (done) {
         checkDependencies(function (output) {
             assert.strictEqual(output.status, 0);
+            assert.strictEqual(output.depsWereOk, true);
             assert.deepEqual(output.error, []);
             done();
         });
@@ -134,7 +139,10 @@ describe('checkDependencies', function () {
                         packageDir: './test/not-ok-install-copy/',
                         install: true,
                     }, function (output) {
+                        // The functions is supposed to not fail because it's instructed to do
+                        // `npm install`.
                         assert.strictEqual(output.status, 0);
+                        assert.strictEqual(output.depsWereOk, false);
                         assert.deepEqual(output.error, [
                             'minimatch: installed: 0.2.2, expected: <=0.2.1',
                         ]);
