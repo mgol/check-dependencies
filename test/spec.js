@@ -11,16 +11,16 @@ describe('checkDependencies', function () {
         chalk.enabled = false;
     });
 
-    function testSuite(type) {
+    function testSuite(packageManager) {
         var checkDeps, depsJsonName, depsDirName, errorsForNotOk;
 
-        if (type === 'bower') {
+        if (packageManager === 'bower') {
             depsJsonName = 'bower.json';
             depsDirName = 'bower_components';
             checkDeps = function checkDependenciesBower() {
                 var config = arguments[0];
                 if (typeof config === 'object') {
-                    config.type = 'bower';
+                    config.packageManager = 'bower';
                 }
                 return checkDependencies.apply(null, arguments);
             };
@@ -34,12 +34,12 @@ describe('checkDependencies', function () {
             'a: installed: 1.2.4, expected: 1.2.3',
             'b: installed: 0.9.9, expected: >=1.0.0',
             'c: not installed!',
-            'Invoke ' + type + ' install to install missing packages',
+                'Invoke ' + packageManager + ' install to install missing packages',
         ];
 
         it('should not print errors for valid package setup', function (done) {
             checkDeps({
-                packageDir: './test/' + type + '-fixtures/ok/',
+                packageDir: './test/' + packageManager + '-fixtures/ok/',
                 scopeList: ['dependencies', 'devDependencies'],
             }, function (output) {
                 assert.strictEqual(output.status, 0);
@@ -51,7 +51,7 @@ describe('checkDependencies', function () {
 
         it('should error on invalid package setup', function (done) {
             checkDeps({
-                packageDir: './test/' + type + '-fixtures/not-ok/',
+                packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 scopeList: ['dependencies', 'devDependencies'],
             }, function (output) {
                 assert.strictEqual(output.status, 1);
@@ -63,7 +63,7 @@ describe('checkDependencies', function () {
 
         it('should accept `scopeList` parameter', function (done) {
             checkDeps({
-                packageDir: './test/' + type + '-fixtures/not-ok/',
+                packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 scopeList: ['devDependencies'],
             }, function (output) {
                 assert.strictEqual(output.status, 0);
@@ -85,7 +85,7 @@ describe('checkDependencies', function () {
         it('should throw if callback not provided', function () {
             assert.throws(function () {
                 checkDeps({
-                    packageDir: './test/' + type + '-fixtures/not-ok/',
+                    packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                     scopeList: ['dependencies', 'devDependencies'],
                     install: false,
                 });
@@ -104,7 +104,7 @@ describe('checkDependencies', function () {
         it('should support `log` and `error` options', function (done) {
             var logArray = [], errorArray = [];
             checkDeps({
-                packageDir: './test/' + type + '-fixtures/not-ok/',
+                packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 verbose: true,
                 log: function (msg) {
                     logArray.push(msg);
@@ -125,7 +125,7 @@ describe('checkDependencies', function () {
         it('should not print logs when `verbose` is not set to true', function (done) {
             var logArray = [], errorArray = [];
             checkDeps({
-                packageDir: './test/' + type + '-fixtures/not-ok/',
+                packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 log: function (msg) {
                     logArray.push(msg);
                 },
@@ -139,14 +139,30 @@ describe('checkDependencies', function () {
             });
         });
 
+        if (packageManager === 'bower') {
+            it('should take `depsDirName` into account', function (done) {
+                checkDeps({
+                    packageDir: './test/bower-fixtures/ok-deps-dir-name/',
+                    depsDirName: 'custom-dir',
+                }, function (output) {
+                    assert.strictEqual(output.status, 0);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.deepEqual(output.error, []);
+                    done();
+                });
+            });
+        }
+
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
-            var versionRange = require('./' + type + '-fixtures/not-ok-install/' + depsJsonName).dependencies.jquery,
-                fixtureDir = __dirname + '/' + type + '-fixtures/not-ok-install',
+            var versionRange = require('./' + packageManager + '-fixtures/not-ok-install/' + depsJsonName)
+                    .dependencies.jquery,
+                fixtureDir = __dirname + '/' + packageManager + '-fixtures/not-ok-install',
                 fixtureCopyDir = fixtureDir + '-copy',
                 version = JSON.parse(fs.readFileSync(__dirname +
-                    '/' + type + '-fixtures/not-ok-install/' + depsDirName + '/jquery/' + depsJsonName)).version;
+                    '/' + packageManager + '-fixtures/not-ok-install/' + depsDirName +
+                    '/jquery/' + depsJsonName)).version;
 
             assert.equal(semver.satisfies(version, versionRange),
                 false, 'Expected version ' + version + ' not to match ' + versionRange);
@@ -156,7 +172,7 @@ describe('checkDependencies', function () {
                 fs.copy(fixtureDir, fixtureCopyDir, function (error) {
                     assert.equal(error, null);
                     checkDeps({
-                        packageDir: './test/' + type + '-fixtures/not-ok-install-copy/',
+                        packageDir: './test/' + packageManager + '-fixtures/not-ok-install-copy/',
                         install: true,
                     }, function (output) {
                         // The functions is supposed to not fail because it's instructed to do

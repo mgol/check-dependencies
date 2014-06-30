@@ -58,12 +58,19 @@ Installs packages if they don't match.
 Type: `boolean`
 Default: `false`
 
-### type
+### packageManager
 
-Type of the package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
+Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
 
 Type: `string`
 Default: `'npm'`
+
+### depsDirName
+
+Name of the directory where dependencies are kept. Setting this option makes sense only for `bower`.
+
+Type: `string`
+Default: `node_modules` when `packageManager === 'npm'`, `bower_components` when `packageManager === 'bower'`.
 
 ### scopeList
 
