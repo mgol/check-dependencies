@@ -60,7 +60,7 @@ Default: `false`
 
 ### type
 
-Type of the package manager to check against. Possible values: `'npm'`, `'bower'`.
+Type of the package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
 
 Type: `string`
 Default: `'npm'`
