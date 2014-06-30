@@ -123,9 +123,9 @@ describe('checkDependencies', function () {
     it('should install missing packages when `install` is set to true', function (done) {
         this.timeout(30000);
 
-        var versionRange = require('./not-ok-install/package.json').dependencies.minimatch,
+        var versionRange = require('./not-ok-install/package.json').dependencies.jquery,
             version = JSON.parse(fs.readFileSync(__dirname +
-                '/not-ok-install/node_modules/minimatch/package.json')).version;
+                '/not-ok-install/node_modules/jquery/package.json')).version;
 
         assert.equal(semver.satisfies(version, versionRange),
             false, 'Expected version ' + version + ' not to match ' + versionRange);
@@ -144,10 +144,10 @@ describe('checkDependencies', function () {
                         assert.strictEqual(output.status, 0);
                         assert.strictEqual(output.depsWereOk, false);
                         assert.deepEqual(output.error, [
-                            'minimatch: installed: 0.2.2, expected: <=0.2.1',
+                            'jquery: installed: 1.11.1, expected: <=1.11.0',
                         ]);
                         version = JSON.parse(fs.readFileSync(__dirname +
-                            '/not-ok-install-copy/node_modules/minimatch/package.json')).version;
+                            '/not-ok-install-copy/node_modules/jquery/package.json')).version;
                         assert(semver.satisfies(version, versionRange),
                             'Expected version ' + version + ' to match ' + versionRange);
                         done();
