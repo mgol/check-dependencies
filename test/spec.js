@@ -143,37 +143,36 @@ describe('checkDependencies', function () {
             this.timeout(30000);
 
             var versionRange = require('./' + type + '-fixtures/not-ok-install/' + depsJsonName).dependencies.jquery,
+                fixtureDir = __dirname + '/' + type + '-fixtures/not-ok-install',
+                fixtureCopyDir = fixtureDir + '-copy',
                 version = JSON.parse(fs.readFileSync(__dirname +
                     '/' + type + '-fixtures/not-ok-install/' + depsDirName + '/jquery/' + depsJsonName)).version;
 
             assert.equal(semver.satisfies(version, versionRange),
                 false, 'Expected version ' + version + ' not to match ' + versionRange);
 
-            fs.remove(__dirname + '/' + type + '-fixtures/not-ok-install-copy', function (error) {
+            fs.remove(fixtureCopyDir, function (error) {
                 assert.equal(error, null);
-                fs.copy(__dirname + '/' + type + '-fixtures/not-ok-install',
-                        __dirname + '/' + type + '-fixtures/not-ok-install-copy',
-                    function (error) {
-                        assert.equal(error, null);
-                        checkDeps({
-                            packageDir: './test/' + type + '-fixtures/not-ok-install-copy/',
-                            install: true,
-                        }, function (output) {
-                            // The functions is supposed to not fail because it's instructed to do
-                            // `npm install`/`bower install`.
-                            assert.strictEqual(output.status, 0);
-                            assert.strictEqual(output.depsWereOk, false);
-                            assert.deepEqual(output.error, [
-                                'jquery: installed: 1.11.1, expected: <=1.11.0',
-                            ]);
-                            version = JSON.parse(fs.readFileSync(__dirname +
-                                '/' + type + '-fixtures/not-ok-install-copy/' + depsDirName +
-                                '/jquery/' + depsJsonName)).version;
-                            assert(semver.satisfies(version, versionRange),
-                                'Expected version ' + version + ' to match ' + versionRange);
-                            done();
-                        });
+                fs.copy(fixtureDir, fixtureCopyDir, function (error) {
+                    assert.equal(error, null);
+                    checkDeps({
+                        packageDir: './test/' + type + '-fixtures/not-ok-install-copy/',
+                        install: true,
+                    }, function (output) {
+                        // The functions is supposed to not fail because it's instructed to do
+                        // `npm install`/`bower install`.
+                        assert.strictEqual(output.status, 0);
+                        assert.strictEqual(output.depsWereOk, false);
+                        assert.deepEqual(output.error, [
+                            'jquery: installed: 1.11.1, expected: <=1.11.0',
+                        ]);
+                        version = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
+                            '/jquery/' + depsJsonName)).version;
+                        assert(semver.satisfies(version, versionRange),
+                            'Expected version ' + version + ' to match ' + versionRange);
+                        done();
                     });
+                });
             });
         });
     }
