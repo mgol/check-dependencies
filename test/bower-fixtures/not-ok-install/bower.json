@@ -1,0 +1,6 @@
+{
+    "name": "not-ok-install",
+    "dependencies": {
+        "jquery": "<=1.11.0"
+    }
+}

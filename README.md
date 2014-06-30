@@ -1,6 +1,6 @@
 # check-dependencies
 
-> Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json.
+> Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json
 
 [![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
 [![Build status](https://ci.appveyor.com/api/projects/status/a4cok143mjmi0hk3/branch/master)](https://ci.appveyor.com/project/mzgol/check-dependencies)
@@ -17,9 +17,9 @@ npm install check-dependencies --save-dev
 
 ## Rationale
 
-When dependencies are changed in `package.json`, whether it's a version bump or a new package, one can forget to invoke `npm install` and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
+When dependencies are changed in `package.json` (or `bower.json`), whether it's a version bump or a new package, one can forget to invoke `npm install` (or `bower install`) and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
  
-Another option would be to always invoke `npm install` at the top of the main file but `npm install` can be slow and `check-dependencies` is fast.
+Another option would be to always invoke `npm install` (or `bower install`) at the top of the main file but it can be slow and `check-dependencies` is fast.
 
 ## Usage
 
@@ -57,6 +57,13 @@ Installs packages if they don't match.
 
 Type: `boolean`
 Default: `false`
+
+### type
+
+Type of the package manager to check against. Possible values: `'npm'`, `'bower'`.
+
+Type: `string`
+Default: `'npm'`
 
 ### scopeList
 
