@@ -44,11 +44,20 @@ messages. The operation was successful if
 
 The `config` object can have the following fields:
 
+### packageManager
+
+Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
+
+Type: `string`
+
+Default: `'npm'`
+
 ### packageDir
 
 Path to the directory containing `package.json`.
 
 Type: `string`
+
 Default: the closest directory containing `package.json` when going up the tree, starting from the current one
 
 ### install
@@ -56,20 +65,15 @@ Default: the closest directory containing `package.json` when going up the tree,
 Installs packages if they don't match.
 
 Type: `boolean`
+
 Default: `false`
-
-### packageManager
-
-Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
-
-Type: `string`
-Default: `'npm'`
 
 ### scopeList
 
 The list of keys in package.json where to look for package names & versions.
 
 Type: `array`
+
 Default: `['dependencies', 'devDependencies']`
 
 ### verbose
@@ -77,6 +81,7 @@ Default: `['dependencies', 'devDependencies']`
 Prints messages to the console.
 
 Type: `boolean`
+
 Default: `false`
 
 ### log
@@ -84,6 +89,7 @@ Default: `false`
 A function logging debug messages.
 
 Type: `function`
+
 Default: `console.log.bind(console)`
 
 ### error
@@ -91,6 +97,7 @@ Default: `console.log.bind(console)`
 A function logging error messages.
 
 Type: `function`
+
 Default: `console.error.bind(console)`
 
 ## Usage Examples
@@ -105,7 +112,7 @@ The following:
 ```js
 require('check-dependencies')({
     install: false,
-    error: true,
+    verbose: true,
 }, callback);
 ```
 will report an error to `callback` if packages' versions are mismatched.
