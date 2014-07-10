@@ -27,9 +27,8 @@ module.exports = function (grunt) {
                 src: [
                     'Gruntfile.js',
                     'tasks/**/*.js',
-                    // Pattern changed until https://github.com/mdevils/node-jscs/issues/488 is fixed
                     'test/*.js',
-//                    'test/**/*.js',
+                    'test/**/*.js',
                 ],
                 options: {
                     config: '.jscsrc',
