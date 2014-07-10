@@ -1,10 +1,11 @@
+/.travis.yml
+/appveyor.yml
+/bower.json
+/Gruntfile.js
+
 /bower_components
 /test
 
 .eslintignore
 .eslintrc
 .jscsrc
-.travis.yml
-appveyor.yml
-bower.json
-Gruntfile.js
