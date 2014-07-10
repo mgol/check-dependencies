@@ -19,11 +19,14 @@ describe('checkDependencies', function () {
             depsJsonName = '.bower.json';
             depsDirName = 'bower_components';
             checkDeps = function checkDependenciesBower() {
-                var config = arguments[0];
-                if (typeof config === 'object') {
-                    config.packageManager = 'bower';
+                var args = [].slice.call(arguments),
+                    config = arguments[0];
+                if (typeof config === 'function') {
+                    config = {};
+                    args.unshift(config);
                 }
-                return checkDependencies.apply(null, arguments);
+                config.packageManager = 'bower';
+                return checkDependencies.apply(null, args);
             };
         } else {
             packageJsonName = 'package.json';
@@ -106,14 +109,16 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should allow to provide callback as the first argument', function (done) {
-            checkDeps(function (output) {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
-                assert.deepEqual(output.error, []);
-                done();
+        if (packageManager === 'npm') {
+            it('should allow to provide callback as the first argument', function (done) {
+                checkDeps(function (output) {
+                    assert.strictEqual(output.status, 0);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.deepEqual(output.error, []);
+                    done();
+                });
             });
-        });
+        }
 
         it('should support `log` and `error` options', function (done) {
             var logArray = [], errorArray = [];
@@ -154,10 +159,9 @@ describe('checkDependencies', function () {
         });
 
         if (packageManager === 'bower') {
-            it('should take `depsDirName` into account', function (done) {
+            it('should respect `directory` setting in `.bowerrc`', function (done) {
                 checkDeps({
-                    packageDir: './test/bower-fixtures/ok-deps-dir-name/',
-                    depsDirName: 'custom-dir',
+                    packageDir: './test/bower-fixtures/bowerrc/',
                 }, function (output) {
                     assert.strictEqual(output.status, 0);
                     assert.strictEqual(output.depsWereOk, true);

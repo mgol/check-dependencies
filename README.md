@@ -65,13 +65,6 @@ Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: fo
 Type: `string`
 Default: `'npm'`
 
-### depsDirName
-
-Name of the directory where dependencies are kept. Setting this option makes sense only for `bower`.
-
-Type: `string`
-Default: `node_modules` when `packageManager === 'npm'`, `bower_components` when `packageManager === 'bower'`.
-
 ### scopeList
 
 The list of keys in package.json where to look for package names & versions.
