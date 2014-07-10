@@ -12,10 +12,11 @@ describe('checkDependencies', function () {
     });
 
     function testSuite(packageManager) {
-        var checkDeps, depsJsonName, depsDirName, errorsForNotOk;
+        var checkDeps, depsJsonName, packageJsonName, depsDirName, errorsForNotOk;
 
         if (packageManager === 'bower') {
-            depsJsonName = 'bower.json';
+            packageJsonName = 'bower.json';
+            depsJsonName = '.bower.json';
             depsDirName = 'bower_components';
             checkDeps = function checkDependenciesBower() {
                 var config = arguments[0];
@@ -25,6 +26,7 @@ describe('checkDependencies', function () {
                 return checkDependencies.apply(null, arguments);
             };
         } else {
+            packageJsonName = 'package.json';
             depsJsonName = 'package.json';
             depsDirName = 'node_modules';
             checkDeps = checkDependencies;
@@ -73,7 +75,7 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should find ' + depsJsonName + ' if `packageDir` not provided', function (done) {
+        it('should find ' + packageJsonName + ' if `packageDir` not provided', function (done) {
             checkDeps({}, function (output) {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
@@ -156,16 +158,16 @@ describe('checkDependencies', function () {
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
-            var versionRange = require('./' + packageManager + '-fixtures/not-ok-install/' + depsJsonName)
+            var versionRange = require('./' + packageManager + '-fixtures/not-ok-install/' + packageJsonName)
                     .dependencies.jquery,
                 fixtureDir = __dirname + '/' + packageManager + '-fixtures/not-ok-install',
                 fixtureCopyDir = fixtureDir + '-copy',
-                version = JSON.parse(fs.readFileSync(__dirname +
+                depVersion = JSON.parse(fs.readFileSync(__dirname +
                     '/' + packageManager + '-fixtures/not-ok-install/' + depsDirName +
                     '/jquery/' + depsJsonName)).version;
 
-            assert.equal(semver.satisfies(version, versionRange),
-                false, 'Expected version ' + version + ' not to match ' + versionRange);
+            assert.equal(semver.satisfies(depVersion, versionRange),
+                false, 'Expected version ' + depVersion + ' not to match ' + versionRange);
 
             fs.remove(fixtureCopyDir, function (error) {
                 assert.equal(error, null);
@@ -182,10 +184,10 @@ describe('checkDependencies', function () {
                         assert.deepEqual(output.error, [
                             'jquery: installed: 1.11.1, expected: <=1.11.0',
                         ]);
-                        version = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
+                        depVersion = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
                             '/jquery/' + depsJsonName)).version;
-                        assert(semver.satisfies(version, versionRange),
-                            'Expected version ' + version + ' to match ' + versionRange);
+                        assert(semver.satisfies(depVersion, versionRange),
+                            'Expected version ' + depVersion + ' to match ' + versionRange);
                         done();
                     });
                 });
