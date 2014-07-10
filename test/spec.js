@@ -84,6 +84,18 @@ describe('checkDependencies', function () {
             });
         });
 
+        it('should error if ' + packageJsonName + ' wasn\'t found in `packageDir`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/missing-json/',
+            }, function (output) {
+                assert.strictEqual(output.status, 1);
+                assert.deepEqual(output.error, [
+                    'Missing ' + packageJsonName + '!',
+                ]);
+                done();
+            });
+        });
+
         it('should throw if callback not provided', function () {
             assert.throws(function () {
                 checkDeps({
