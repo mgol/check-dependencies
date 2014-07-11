@@ -86,7 +86,7 @@ Default: `false`
 
 ### log
 
-A function logging debug messages.
+A function logging debug messages (applies only if `verbose: true`).
 
 Type: `function`
 
@@ -94,7 +94,7 @@ Default: `console.log.bind(console)`
 
 ### error
 
-A function logging error messages.
+A function logging error messages (applies only if `verbose: true`).
 
 Type: `function`
 
