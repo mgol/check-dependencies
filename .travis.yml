@@ -3,5 +3,5 @@ node_js:
   - '0.10'
   - '0.11'
 before_install:
-  # Bower can ask questions unless we set it.
+  # Prevent Bower from asking questions.
   - export CI=true
