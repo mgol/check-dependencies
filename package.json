@@ -1,56 +1,56 @@
 {
-    "name": "check-dependencies",
-    "version": "0.7.2-pre",
-    "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
-    "homepage": "https://github.com/mzgol/check-dependencies",
-    "author": {
-        "name": "Michał Gołębiowski",
-        "email": "m.goleb@gmail.com"
-    },
-    "keywords": [
-        "dependency",
-        "packages",
-        "modules",
-        "dependencies"
-    ],
-    "main": "lib/check-dependencies.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mzgol/check-dependencies.git"
-    },
-    "bugs": "https://github.com/mzgol/check-dependencies/issues",
-    "licenses": [
-        {
-            "type": "MIT"
-        }
-    ],
-    "files": [
-        "lib"
-    ],
-    "dependencies": {
-        "bower-config": "^0.5.2",
-        "chalk": "^0.5.1",
-        "findup-sync": "^0.1.3",
-        "lodash": "^2.4.1",
-        "semver": "^2.3.1"
-    },
-    "devDependencies": {
-        "bower": "1.3.7",
-        "fs-extra": "0.10.0",
-        "grunt": "0.4.5",
-        "grunt-cli": "0.1.13",
-        "grunt-contrib-clean": "0.5.0",
-        "grunt-eslint": "0.6.0",
-        "grunt-jscs": "0.6.1",
-        "grunt-mocha-test": "0.11.0",
-        "jscs-trailing-comma": "0.3.0",
-        "load-grunt-tasks": "0.6.0",
-        "time-grunt": "0.4.0"
-    },
-    "scripts": {
-        "test": "grunt"
-    },
-    "engines": {
-        "node": ">=0.10.21"
+  "name": "check-dependencies",
+  "version": "0.7.2-pre",
+  "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
+  "homepage": "https://github.com/mzgol/check-dependencies",
+  "author": {
+    "name": "Michał Gołębiowski",
+    "email": "m.goleb@gmail.com"
+  },
+  "keywords": [
+    "dependency",
+    "packages",
+    "modules",
+    "dependencies"
+  ],
+  "main": "lib/check-dependencies.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mzgol/check-dependencies.git"
+  },
+  "bugs": "https://github.com/mzgol/check-dependencies/issues",
+  "licenses": [
+    {
+      "type": "MIT"
     }
+  ],
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "bower-config": "^0.5.2",
+    "chalk": "^0.5.1",
+    "findup-sync": "^0.1.3",
+    "lodash": "^2.4.1",
+    "semver": "^2.3.1"
+  },
+  "devDependencies": {
+    "bower": "1.3.7",
+    "fs-extra": "0.10.0",
+    "grunt": "0.4.5",
+    "grunt-cli": "0.1.13",
+    "grunt-contrib-clean": "0.5.0",
+    "grunt-eslint": "0.6.0",
+    "grunt-jscs": "0.6.1",
+    "grunt-mocha-test": "0.11.0",
+    "jscs-trailing-comma": "0.3.0",
+    "load-grunt-tasks": "0.6.0",
+    "time-grunt": "0.4.0"
+  },
+  "scripts": {
+    "test": "grunt"
+  },
+  "engines": {
+    "node": ">=0.10.21"
+  }
 }
