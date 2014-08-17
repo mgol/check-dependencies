@@ -39,7 +39,8 @@ describe('checkDependencies', function () {
             'a: installed: 1.2.4, expected: 1.2.3',
             'b: installed: 0.9.9, expected: >=1.0.0',
             'c: not installed!',
-                'Invoke ' + packageManager + ' install to install missing packages',
+            'd: not installed!',
+            'Invoke ' + packageManager + ' install to install missing packages',
         ];
 
         it('should not print errors for valid package setup', function (done) {
@@ -56,6 +57,7 @@ describe('checkDependencies', function () {
 
         it('should error on invalid package setup', function (done) {
             checkDeps({
+                checkGitUrls: true,
                 packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 scopeList: ['dependencies', 'devDependencies'],
             }, function (output) {
@@ -123,6 +125,7 @@ describe('checkDependencies', function () {
         it('should support `log` and `error` options', function (done) {
             var logArray = [], errorArray = [];
             checkDeps({
+                checkGitUrls: true,
                 packageDir: './test/' + packageManager + '-fixtures/not-ok/',
                 verbose: true,
                 log: function (msg) {
@@ -171,6 +174,41 @@ describe('checkDependencies', function () {
             });
         }
 
+        it('should check Git URL based dependencies only if `checkGitUrls` is true', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/git-urls/',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.deepEqual(output.error, [
+                    'b: not installed!',
+                    'Invoke ' + packageManager + ' install to install missing packages',
+                ]);
+            });
+            checkDeps({
+                checkGitUrls: true,
+                packageDir: './test/' + packageManager + '-fixtures/git-urls/',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.deepEqual(output.error, [
+                    'a: installed: 0.5.8, expected: 0.5.9',
+                    'b: not installed!',
+                    'Invoke ' + packageManager + ' install to install missing packages',
+                ]);
+                done();
+            });
+        });
+
+        it('should check the version for Git URLs with valid semver tags only', function (done) {
+            checkDeps({
+                checkGitUrls: true,
+                packageDir: './test/' + packageManager + '-fixtures/invalid-semver-tag/',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.depsWereOk, true);
+                done();
+            });
+        });
+
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
@@ -190,6 +228,7 @@ describe('checkDependencies', function () {
                 fs.copy(fixtureDir, fixtureCopyDir, function (error) {
                     assert.equal(error, null);
                     checkDeps({
+                        checkGitUrls: true,
                         packageDir: './test/' + packageManager + '-fixtures/not-ok-install-copy/',
                         install: true,
                     }, function (output) {
@@ -199,6 +238,7 @@ describe('checkDependencies', function () {
                         assert.strictEqual(output.depsWereOk, false);
                         assert.deepEqual(output.error, [
                             'jquery: installed: 1.11.1, expected: <=1.11.0',
+                            'json3: installed: 0.8.0, expected: 3.3.2',
                         ]);
                         depVersion = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
                             '/jquery/' + depsJsonName)).version;
