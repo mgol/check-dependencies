@@ -106,16 +106,16 @@ The most basic usage:
 ```js
 require('check-dependencies')(callback);
 ```
-This will check packages' versions, install mismatched ones and invoke `callback`.
+This will check packages' versions and report an error to `callback` if packages' versions are mismatched.
 
 The following:
 ```js
 require('check-dependencies')({
-    install: false,
+    install: true,
     verbose: true,
 }, callback);
 ```
-will report an error to `callback` if packages' versions are mismatched.
+will install mismatched ones and call `callback`.
 
 The following two examples:
 ```js
