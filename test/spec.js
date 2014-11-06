@@ -201,10 +201,26 @@ describe('checkDependencies', function () {
         it('should check the version for Git URLs with valid semver tags only', function (done) {
             checkDeps({
                 checkGitUrls: true,
-                packageDir: './test/' + packageManager + '-fixtures/invalid-semver-tag/',
+                packageDir: './test/' + packageManager + '-fixtures/non-semver-tag/',
                 scopeList: ['dependencies', 'devDependencies'],
             }, function (output) {
                 assert.strictEqual(output.depsWereOk, true);
+                done();
+            });
+        });
+
+        it('should check a Git dependency is installed even if it\'s hash ' +
+            'is not a valid semver tag', function (done) {
+            checkDeps({
+                checkGitUrls: true,
+                packageDir: './test/' + packageManager + '-fixtures/non-semver-tag-pkg-missing/',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.depsWereOk, false);
+                assert.deepEqual(output.error, [
+                    'a: not installed!',
+                    'Invoke ' + packageManager + ' install to install missing packages',
+                ]);
                 done();
             });
         });
