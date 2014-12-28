@@ -12,6 +12,15 @@ module.exports = function (grunt) {
     require('time-grunt')(grunt);
 
     grunt.initConfig({
+        clean: {
+            all: {
+                src: [
+                    '*.log',
+                    'test/*/*-copy',
+                ],
+            },
+        },
+
         eslint: {
             all: {
                 src: [
