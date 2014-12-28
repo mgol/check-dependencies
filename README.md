@@ -39,10 +39,8 @@ where `callback` is invoked upon completion and `config` is a configuration obje
     error: array,        // array of logged errors
 }
 ```
- `log` and `error` - arrays aggregating informational and error
-messages. The operation was successful if
 
-The `config` object can have the following fields:
+The `config` object may have the following fields:
 
 ### packageManager
 
