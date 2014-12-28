@@ -1,4 +1,3 @@
 /node_modules/
 *.log
-!test/**/node_modules/
 /test/*/*-copy
