@@ -12,7 +12,7 @@ describe('checkDependencies', function () {
     });
 
     function testSuite(packageManager) {
-        var checkDeps, depsJsonName, packageJsonName, depsDirName, errorsForNotOk;
+        var checkDeps, depsJsonName, packageJsonName, depsDirName, errorsForNotOk, pruneAndInstallMessage;
 
         if (packageManager === 'bower') {
             packageJsonName = 'bower.json';
@@ -42,6 +42,11 @@ describe('checkDependencies', function () {
             'd: not installed!',
             'Invoke ' + packageManager + ' install to install missing packages',
         ];
+
+        pruneAndInstallMessage = 'Invoke ' + packageManager + ' prune and ' +
+            packageManager + ' install to install missing packages and remove ' +
+            'excessive ones';
+
 
         it('should not print errors for valid package setup', function (done) {
             checkDeps({
@@ -96,6 +101,55 @@ describe('checkDependencies', function () {
                 assert.strictEqual(output.status, 1);
                 assert.deepEqual(output.error, [
                     'Missing ' + packageJsonName + '!',
+                ]);
+                done();
+            });
+        });
+
+        it('should ignore excessive deps if `onlySpecified` not provided', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/only-specified-not-ok',
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
+        it('should ignore excessive deps if `onlySpecified` is `false`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/only-specified-not-ok',
+                onlySpecified: false,
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
+        it('should not error if no excessive deps and `onlySpecified` is `true`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/ok',
+                onlySpecified: true,
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
+        it('should error if there are excessive deps and `onlySpecified` is `true`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/only-specified-not-ok',
+                onlySpecified: true,
+            }, function (output) {
+                assert.strictEqual(output.status, 1);
+                assert.deepEqual(output.error, [
+                    'Package c installed, though it shouldn\'t be',
+                    pruneAndInstallMessage,
                 ]);
                 done();
             });
@@ -228,12 +282,13 @@ describe('checkDependencies', function () {
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
-            var versionRange = require('./' + packageManager + '-fixtures/not-ok-install/' + packageJsonName)
+            var fixtureName = 'not-ok-install',
+                versionRange = require('./' + packageManager + '-fixtures/' + fixtureName + '/' + packageJsonName)
                     .dependencies.jquery,
-                fixtureDir = __dirname + '/' + packageManager + '-fixtures/not-ok-install',
+                fixtureDir = __dirname + '/' + packageManager + '-fixtures/' + fixtureName,
                 fixtureCopyDir = fixtureDir + '-copy',
                 depVersion = JSON.parse(fs.readFileSync(__dirname +
-                    '/' + packageManager + '-fixtures/not-ok-install/' + depsDirName +
+                    '/' + packageManager + '-fixtures/' + fixtureName + '/' + depsDirName +
                     '/jquery/' + depsJsonName)).version;
 
             assert.equal(semver.satisfies(depVersion, versionRange),
@@ -244,8 +299,8 @@ describe('checkDependencies', function () {
                 fs.copy(fixtureDir, fixtureCopyDir, function (error) {
                     assert.equal(error, null);
                     checkDeps({
+                        packageDir: './test/' + packageManager + '-fixtures/' + fixtureName + '-copy/',
                         checkGitUrls: true,
-                        packageDir: './test/' + packageManager + '-fixtures/not-ok-install-copy/',
                         install: true,
                     }, function (output) {
                         // The functions is supposed to not fail because it's instructed to do
@@ -260,6 +315,50 @@ describe('checkDependencies', function () {
                             '/jquery/' + depsJsonName)).version;
                         assert(semver.satisfies(depVersion, versionRange),
                             'Expected version ' + depVersion + ' to match ' + versionRange);
+                        done();
+                    });
+                });
+            });
+        });
+
+        it('should prune excessive packages when `install` is set to true', function (done) {
+            this.timeout(30000);
+
+            var fixtureName = 'only-specified-not-ok-install',
+                fixtureDir = __dirname + '/' + packageManager + '-fixtures/' + fixtureName,
+                fixtureCopyDir = fixtureDir + '-copy',
+                packageDir = './test/' + packageManager + '-fixtures/' + fixtureName + '-copy/';
+
+
+            fs.remove(fixtureCopyDir, function (error) {
+                assert.equal(error, null);
+                fs.copy(fixtureDir, fixtureCopyDir, function (error) {
+                    assert.equal(error, null);
+
+                    var depList = fs.readdirSync(packageDir + '/' + depsDirName);
+                    assert.deepEqual(depList,
+                        ['jquery', 'json3'],
+                        'Expected package json3 to be present; got: ' + JSON.stringify(depList));
+
+                    checkDeps({
+                        packageDir: packageDir,
+                        onlySpecified: true,
+                        checkGitUrls: true,
+                        install: true,
+                    }, function (output) {
+                        // The functions is supposed to not fail because it's instructed to do
+                        // `npm install`/`bower install`.
+                        assert.strictEqual(output.status, 0);
+                        assert.strictEqual(output.depsWereOk, false);
+                        assert.deepEqual(output.error, [
+                            'Package json3 installed, though it shouldn\'t be',
+                        ]);
+
+                        var depList = fs.readdirSync(packageDir + '/' + depsDirName);
+                        assert.deepEqual(depList,
+                            ['jquery'],
+                            'Expected package json3 to be removed; got: ' + JSON.stringify(depList));
+
                         done();
                     });
                 });

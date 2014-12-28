@@ -54,11 +54,19 @@ Default: `'npm'`
 
 ### packageDir
 
-Path to the directory containing `package.json`.
+Path to the directory containing `package.json` or `bower.json`.
 
 Type: `string`
 
-Default: the closest directory containing `package.json` when going up the tree, starting from the current one
+Default: the closest directory containing `package.json` or `bower.json` (depending on `packageManager` specified) when going up the tree, starting from the current one
+
+### onlySpecified
+
+Ensures all installed dependencies are specified in `package.json` or `bower.json`.
+
+Type: `boolean`
+
+Default: `false`
 
 ### install
 

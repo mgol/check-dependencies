@@ -1,4 +1,4 @@
 /node_modules/
 *.log
 !test/**/node_modules/
-/test/*/not-ok-install-copy
+/test/*/*-copy
