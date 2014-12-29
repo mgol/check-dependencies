@@ -279,6 +279,31 @@ describe('checkDependencies', function () {
             });
         });
 
+        it('should accept `latest` as a version', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/latest-ok/',
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
+        it('should report missing package even if version is `latest`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/latest-not-ok/',
+            }, function (output) {
+                assert.strictEqual(output.status, 1);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.deepEqual(output.error, [
+                    'a: not installed!',
+                    'Invoke ' + packageManager + ' install to install missing packages',
+                ]);
+                done();
+            });
+        });
+
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
