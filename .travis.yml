@@ -6,3 +6,7 @@ node_js:
 before_install:
   # Prevent Bower from asking questions.
   - export CI=true
+  # Log HTTP requests
+  - npm config set loglevel http
+install:
+  - time npm install
