@@ -40,6 +40,12 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 }
 ```
 
+There is a synchronous alternative -- the following code:
+```js
+var output = require('check-dependencies').sync(config);
+```
+will assign to `output` the same object that would otherwise be passed to the `callback` in the asynchronous scenario.
+
 The `config` object may have the following fields:
 
 ### packageManager

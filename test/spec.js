@@ -14,32 +14,46 @@ describe('checkDependencies', function () {
         chalk.enabled = false;
     });
 
-    function testSuite(packageManager) {
+    function testSuite(packageManager, syncOrAsync) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
             errorsForNotOk, pruneAndInstallMessage, fixturePrefix;
+
+        function getCheckDependencies() {
+            return function checkDependenciesWrapped() {
+                var config, callback,
+                    args = [].slice.call(arguments);
+
+                if (packageManager === 'bower') {
+                    config = arguments[0];
+                    if (typeof config === 'function') {
+                        config = {};
+                        args.unshift(config);
+                    }
+                    config.packageManager = 'bower';
+                }
+
+                if (syncOrAsync === 'async') {
+                    checkDependencies.apply(null, args);
+                }
+                if (syncOrAsync === 'sync') {
+                    callback = args.pop();
+                    callback(checkDependencies.sync.apply(null, args));
+                }
+            };
+        }
 
         if (packageManager === 'bower') {
             packageJsonName = 'bower.json';
             depsJsonName = '.bower.json';
             depsDirName = 'bower_components';
             fixturePrefix = './test/bower-fixtures/generated/';
-            checkDeps = function checkDependenciesBower() {
-                var args = [].slice.call(arguments),
-                    config = arguments[0];
-                if (typeof config === 'function') {
-                    config = {};
-                    args.unshift(config);
-                }
-                config.packageManager = 'bower';
-                return checkDependencies.apply(null, args);
-            };
         } else {
             packageJsonName = 'package.json';
             depsJsonName = 'package.json';
             depsDirName = 'node_modules';
             fixturePrefix = './test/npm-fixtures/';
-            checkDeps = checkDependencies;
         }
+        checkDeps = getCheckDependencies();
 
         errorsForNotOk = [
             'a: installed: 1.2.4, expected: 1.2.3',
@@ -483,11 +497,27 @@ describe('checkDependencies', function () {
     });
 
     describe('npm', function () {
-        testSuite('npm');
+        describe('async', function () {
+            testSuite('npm', 'async');
+        });
+        // TODO change to >=0.12.0 when it's out
+        if (semver.satisfies(process.version, '>=0.11.14')) {
+            describe('sync', function () {
+                testSuite('npm', 'sync');
+            });
+        }
     });
 
 
     describe('bower', function () {
-        testSuite('bower');
+        describe('async', function () {
+            testSuite('bower', 'async');
+        });
+        // TODO change to >=0.12.0 when it's out
+        if (semver.satisfies(process.version, '>=0.11.14')) {
+            describe('sync', function () {
+                testSuite('bower', 'sync');
+            });
+        }
     });
 });
