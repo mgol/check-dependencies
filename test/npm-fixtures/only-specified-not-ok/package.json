@@ -2,5 +2,8 @@
     "dependencies": {
         "a": "1.2.3",
         "b": ">=1.0.0"
+    },
+    "fakeDependencies": {
+        "c": "~1.2.0"
     }
 }

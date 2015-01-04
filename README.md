@@ -76,11 +76,19 @@ Default: `false`
 
 ### scopeList
 
-The list of keys in package.json where to look for package names & versions.
+The list of keys in `package.json` or `bower.json` where to look for package names & versions.
 
 Type: `array`
 
 Default: `['dependencies', 'devDependencies']`
+
+### optionalScopeList
+
+The list of keys in `package.json` or `bower.json` where to *additionally* look for package names **when determining if a package is unnecessary**. This option has an effect only in connection with `onlySpecified: true`.
+
+Type: `array`
+
+Default: `['optionalDependencies']`
 
 ### verbose
 

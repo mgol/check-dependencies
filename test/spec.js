@@ -141,6 +141,20 @@ describe('checkDependencies', function () {
             });
         });
 
+        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`', function (done) {
+            checkDeps({
+                packageDir: './test/' + packageManager + '-fixtures/only-specified-not-ok',
+                onlySpecified: true,
+                scopeList: ['dependencies'],
+                optionalScopeList: ['fakeDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
         it('should error if there are excessive deps and `onlySpecified` is `true`', function (done) {
             checkDeps({
                 packageDir: './test/' + packageManager + '-fixtures/only-specified-not-ok',
