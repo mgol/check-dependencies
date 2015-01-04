@@ -17,6 +17,7 @@ module.exports = function (grunt) {
                 src: [
                     '*.log',
                     'test/*/*-copy',
+                    'test/bower-fixtures/generated',
                 ],
             },
         },

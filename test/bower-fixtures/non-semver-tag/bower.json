@@ -1,5 +1,0 @@
-{
-    "dependencies": {
-        "a": "git+ssh://git@git.example.com:a/a.git#various-changes"
-    }
-}

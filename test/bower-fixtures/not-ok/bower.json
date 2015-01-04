@@ -1,8 +1,0 @@
-{
-    "dependencies": {
-        "a": "1.2.3",
-        "b": ">=1.0.0",
-        "c": "<2.0",
-        "d": "git+ssh://git@git.example.com:d/d.git#0.5.9"
-    }
-}

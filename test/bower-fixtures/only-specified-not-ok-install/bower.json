@@ -1,6 +1,0 @@
-{
-    "name": "only-specified-not-ok-install",
-    "dependencies": {
-        "jquery": "1.11.1"
-    }
-}
