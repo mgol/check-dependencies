@@ -35,7 +35,7 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 {
     status: number,      // 0 if successful, 1 otherwise
     depsWereOk: boolean, // true if dependencies were already satisfied
-    output: array,       // array of logged messages
+    log: array,          // array of logged messages
     error: array,        // array of logged errors
 }
 ```
