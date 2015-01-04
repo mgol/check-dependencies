@@ -418,6 +418,8 @@ describe('checkDependencies', function () {
 
 
     it('should prepare fixures for Bower successfully', function () {
+        this.timeout(30000);
+
         var npmFixturesDir = __dirname + '/npm-fixtures',
             generatedDir = __dirname + '/bower-fixtures/generated';
 
