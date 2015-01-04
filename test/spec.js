@@ -339,7 +339,10 @@ describe('checkDependencies', function () {
             assert.equal(semver.satisfies(depVersion, versionRange),
                 false, 'Expected version ' + depVersion + ' not to match ' + versionRange);
 
-            fs.removeAsync(fixtureCopyDir)
+            return Promise.all([])
+                .then(function () {
+                    return fs.removeAsync(fixtureCopyDir);
+                })
                 .then(function () {
                     return fs.copyAsync(fixtureDir, fixtureCopyDir);
                 })
@@ -363,9 +366,6 @@ describe('checkDependencies', function () {
                             'Expected version ' + depVersion + ' to match ' + versionRange);
                         done();
                     });
-                })
-                .catch(function (error) {
-                    assert.equal(error, null);
                 });
         });
 
@@ -378,7 +378,10 @@ describe('checkDependencies', function () {
                 packageDir = fixturePrefix + fixtureName + '-copy';
 
 
-            fs.removeAsync(fixtureCopyDir)
+            return Promise.all([])
+                .then(function () {
+                    return fs.removeAsync(fixtureCopyDir);
+                })
                 .then(function () {
                     return fs.copyAsync(fixtureDir, fixtureCopyDir);
                 })
@@ -409,9 +412,6 @@ describe('checkDependencies', function () {
 
                         done();
                     });
-                })
-                .catch(function (error) {
-                    assert.equal(error, null);
                 });
         });
     }
@@ -423,7 +423,10 @@ describe('checkDependencies', function () {
         var npmFixturesDir = __dirname + '/npm-fixtures',
             generatedDir = __dirname + '/bower-fixtures/generated';
 
-        return fs.removeAsync(generatedDir)
+        return Promise.all([])
+            .then(function () {
+                return fs.removeAsync(generatedDir);
+            })
             .then(function () {
                 return fs.copyAsync(npmFixturesDir, generatedDir);
             })
