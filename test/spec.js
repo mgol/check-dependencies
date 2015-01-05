@@ -14,7 +14,7 @@ describe('checkDependencies', function () {
         chalk.enabled = false;
     });
 
-    function testSuite(packageManager, syncOrAsync) {
+    function testSuite(packageManager, checkDependenciesMode) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
             errorsForNotOk, pruneAndInstallMessage, fixturePrefix;
 
@@ -32,10 +32,21 @@ describe('checkDependencies', function () {
                     config.packageManager = 'bower';
                 }
 
-                if (syncOrAsync === 'async') {
+                if (checkDependenciesMode === 'callbacks') {
                     checkDependencies.apply(null, args);
                 }
-                if (syncOrAsync === 'sync') {
+                if (checkDependenciesMode === 'promises') {
+                    callback = args.pop();
+                    checkDependencies.apply(null, args)
+                        .then(function (output) {
+                            callback(output);
+                        })
+                        .catch(function (error) {
+                            assert.equal(error, null,
+                                'The promise mode of checkDependencies should never reject');
+                        });
+                }
+                if (checkDependenciesMode === 'sync') {
                     callback = args.pop();
                     callback(checkDependencies.sync.apply(null, args));
                 }
@@ -189,15 +200,50 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should throw if callback not provided', function () {
-            assert.throws(function () {
-                checkDeps({
-                    packageDir: fixturePrefix + 'not-ok',
-                    scopeList: ['dependencies', 'devDependencies'],
-                    install: false,
-                });
+        if (checkDependenciesMode === 'callback') {
+            it('should throw if callback is not a function', function () {
+                var config = {
+                    packageDir: fixturePrefix + 'ok',
+                };
+
+                function expectToThrow(fnsWithReasons) {
+                    fnsWithReasons.forEach(function (fnWithReason) {
+                        assert.throws(fnWithReason[0], Error,
+                            'Expected the function to throw when passed a callback: ' + fnWithReason[1]);
+                    });
+                }
+
+                function getFunctionWithReason(fakeCallback) {
+                    return [
+                        function () {
+                            checkDeps(config, fakeCallback);
+                        },
+                        fakeCallback,
+                    ];
+                }
+
+                expectToThrow([
+                    getFunctionWithReason(undefined),
+                    getFunctionWithReason(null),
+                    getFunctionWithReason(42),
+                    getFunctionWithReason('foobar'),
+                    getFunctionWithReason({a: 2}),
+                ]);
             });
-        });
+        }
+
+        // In other than async cases we fake the callback in tests so this wouldn't work.
+        // But we test correctness of those modes in many other tests so that one
+        // is not needed.
+        if (checkDependenciesMode === 'callback') {
+            it('should not throw if only one parameter provided', function () {
+                assert.doesNotThrow(function () {
+                    checkDeps({
+                        packageDir: fixturePrefix + 'ok',
+                    });
+                }, 'Expected the function with one parameter not to throw');
+            });
+        }
 
         if (packageManager === 'npm') {
             it('should allow to provide callback as the first argument', function (done) {
@@ -208,6 +254,34 @@ describe('checkDependencies', function () {
                     done();
                 });
             });
+
+            if (checkDependenciesMode === 'callback') {
+                it('should throw if config not present and callback is not a function', function () {
+                    function expectToThrow(fnsWithReasons) {
+                        fnsWithReasons.forEach(function (fnWithReason) {
+                            assert.throws(fnWithReason[0], Error,
+                                'Expected the function to throw when passed a callback: ' +
+                                    fnWithReason[1]);
+                        });
+                    }
+
+                    function getFunctionWithReason(fakeCallback) {
+                        return [
+                            function () {
+                                checkDeps(fakeCallback);
+                            },
+                            fakeCallback,
+                        ];
+                    }
+
+                    expectToThrow([
+                        getFunctionWithReason(undefined),
+                        getFunctionWithReason(null),
+                        getFunctionWithReason(42),
+                        getFunctionWithReason('foobar'),
+                    ]);
+                });
+            }
         }
 
         it('should support `log` and `error` options', function (done) {
@@ -497,8 +571,11 @@ describe('checkDependencies', function () {
     });
 
     describe('npm', function () {
-        describe('async', function () {
-            testSuite('npm', 'async');
+        describe('callbacks', function () {
+            testSuite('npm', 'callbacks');
+        });
+        describe('promises', function () {
+            testSuite('npm', 'promises');
         });
         // TODO change to >=0.12.0 when it's out
         if (semver.satisfies(process.version, '>=0.11.14')) {
@@ -510,8 +587,11 @@ describe('checkDependencies', function () {
 
 
     describe('bower', function () {
-        describe('async', function () {
-            testSuite('bower', 'async');
+        describe('callbacks', function () {
+            testSuite('bower', 'callbacks');
+        });
+        describe('promises', function () {
+            testSuite('bower', 'promises');
         });
         // TODO change to >=0.12.0 when it's out
         if (semver.satisfies(process.version, '>=0.11.14')) {

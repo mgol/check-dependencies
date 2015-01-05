@@ -34,7 +34,6 @@
         "space-after-keywords": 2,
         "space-in-brackets": [2, "never"],
         "space-infix-ops": 2,
-        "one-var": 2,
         "quotes": [2, "single"],
 
         // Legacy

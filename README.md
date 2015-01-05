@@ -40,6 +40,15 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 }
 ```
 
+The function returns a promise so passing a callback is not necessary; instead you can do:
+```js
+require('check-dependencies')(config)
+    .then(function (output) {
+        /* handle output */
+    });
+```
+The promise should never fail.
+
 There is a synchronous alternative -- the following code:
 ```js
 var output = require('check-dependencies').sync(config);
