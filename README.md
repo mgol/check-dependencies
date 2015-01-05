@@ -99,7 +99,9 @@ Default: `['dependencies', 'devDependencies']`
 
 ### optionalScopeList
 
-The list of keys in `package.json` or `bower.json` where to *additionally* look for package names **when determining if a package is unnecessary**. This option has an effect only in connection with `onlySpecified: true`.
+The list of keys in `package.json` or `bower.json` where to look for *optional* package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
+
+This list is also consulted when using `onlySpecified: true`.
 
 Type: `array`
 

@@ -16,7 +16,7 @@ describe('checkDependencies', function () {
 
     function testSuite(packageManager, checkDependenciesMode) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
-            errorsForNotOk, pruneAndInstallMessage, fixturePrefix;
+            errorsForNotOk, installMessage, pruneAndInstallMessage, fixturePrefix;
 
         function getCheckDependencies() {
             return function checkDependenciesWrapped() {
@@ -66,17 +66,18 @@ describe('checkDependencies', function () {
         }
         checkDeps = getCheckDependencies();
 
+        installMessage = 'Invoke ' + packageManager + ' install to install missing packages';
+        pruneAndInstallMessage = 'Invoke ' + packageManager + ' prune and ' +
+            packageManager + ' install to install missing packages and remove ' +
+            'excessive ones';
+
         errorsForNotOk = [
             'a: installed: 1.2.4, expected: 1.2.3',
             'b: installed: 0.9.9, expected: >=1.0.0',
             'c: not installed!',
             'd: not installed!',
-            'Invoke ' + packageManager + ' install to install missing packages',
+            installMessage,
         ];
-
-        pruneAndInstallMessage = 'Invoke ' + packageManager + ' prune and ' +
-            packageManager + ' install to install missing packages and remove ' +
-            'excessive ones';
 
 
         it('should not print errors for valid package setup', function (done) {
@@ -343,7 +344,7 @@ describe('checkDependencies', function () {
             }, function (output) {
                 assert.deepEqual(output.error, [
                     'b: not installed!',
-                    'Invoke ' + packageManager + ' install to install missing packages',
+                    installMessage,
                 ]);
             });
             checkDeps({
@@ -354,7 +355,7 @@ describe('checkDependencies', function () {
                 assert.deepEqual(output.error, [
                     'a: installed: 0.5.8, expected: 0.5.9',
                     'b: not installed!',
-                    'Invoke ' + packageManager + ' install to install missing packages',
+                    installMessage,
                 ]);
                 done();
             });
@@ -381,7 +382,7 @@ describe('checkDependencies', function () {
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
                     'a: not installed!',
-                    'Invoke ' + packageManager + ' install to install missing packages',
+                    installMessage,
                 ]);
                 done();
             });
@@ -406,7 +407,32 @@ describe('checkDependencies', function () {
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
                     'a: not installed!',
-                    'Invoke ' + packageManager + ' install to install missing packages',
+                    installMessage,
+                ]);
+                done();
+            });
+        });
+
+        it('should not require to have optional dependencies installed', function (done) {
+            checkDeps({
+                packageDir: fixturePrefix + 'optional-not-present',
+            }, function (output) {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
+        it('should require optional dependencies to have a proper version if installed', function (done) {
+            checkDeps({
+                packageDir: fixturePrefix + 'optional-present-incorrect',
+            }, function (output) {
+                assert.strictEqual(output.status, 1);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.deepEqual(output.error, [
+                    'a: installed: 1.1.2, expected: ~1.2.0',
+                    installMessage,
                 ]);
                 done();
             });
