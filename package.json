@@ -28,7 +28,7 @@
     "lib"
   ],
   "dependencies": {
-    "bluebird": "^2.5.1",
+    "bluebird": "^2.5.3",
     "bower-config": "^0.5.2",
     "chalk": "^0.5.1",
     "findup-sync": "^0.2.1",
