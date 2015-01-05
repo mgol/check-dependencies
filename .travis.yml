@@ -6,6 +6,9 @@ node_js:
 before_install:
   # Prevent Bower from asking questions.
   - export CI=true
+  # Update npm for Node 0.11.14; npm 2.0.0 fails the tests
+  # TODO remove it when newer Node comes out
+  - if [ "`node --version`" == "v0.11.14" ]; then npm -g install npm; fi
   # Log HTTP requests
   - npm config set loglevel http
 install:
