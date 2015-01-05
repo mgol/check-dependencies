@@ -10,18 +10,18 @@ environment:
     - nodejs_version: "0.10"
     - nodejs_version: "0.11"
 
+# npm 2.0.0 included in Node 0.11.14 fails the tests
+# TODO remove it when newer Node comes out
+matrix:
+  allow_failures:
+    - nodejs_version: "0.11"
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the Node version with matching major & minor numbers
   - ps: Install-Product node $env:nodejs_version
   # Prevent Bower from asking questions.
   - set CI=true
-  # Update npm for Node 0.11.14; npm 2.0.0 fails the tests
-  # TODO remove it when newer Node comes out
-  - ps: |
-      If ($(node --version).StartsWith('v0.11.14')) {
-        npm -g install npm
-      }
   # Log HTTP requests
   - npm config set loglevel http
   # Typical npm stuff.
