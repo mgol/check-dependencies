@@ -19,11 +19,7 @@
     "url": "https://github.com/mzgol/check-dependencies.git"
   },
   "bugs": "https://github.com/mzgol/check-dependencies/issues",
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "license": "MIT",
   "files": [
     "lib"
   ],
