@@ -107,6 +107,22 @@ Type: `array`
 
 Default: `['optionalDependencies']`
 
+### checkCustomPackageNames
+
+By default, check-dependencies will skip version check for custom package names, but will still check to see if they are installed.  For example:
+
+```js
+    "dependencies": {
+      "specialSemver059": "semver#0.5.9"
+    }
+```
+
+If checkCustomPackageNames is enabled, check-dependencies will parse the version number (after the hash) for custom package names and check it agains the version of the installed package of the same name.
+
+Type: `boolean`
+
+Default: `false`
+
 ### verbose
 
 Prints messages to the console.

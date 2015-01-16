@@ -388,6 +388,57 @@ describe('checkDependencies', function () {
             });
         });
 
+        it('should check custom package name dependencies only if `checkCustomPackageNames` is true', function (done) {
+            checkDeps({
+                packageDir: fixturePrefix + 'custom-package',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.deepEqual(output.error, [
+                    'b: not installed!',
+                    installMessage,
+                ]);
+            });
+            checkDeps({
+                checkCustomPackageNames: true,
+                packageDir: fixturePrefix + 'custom-package',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.deepEqual(output.error, [
+                    'a: installed: 0.5.8, expected: 0.5.9',
+                    'b: not installed!',
+                    installMessage,
+                ]);
+                done();
+            });
+        });
+
+        it('should check the version for custom package names valid semver tags only', function (done) {
+            checkDeps({
+                checkCustomPackageNames: true,
+                packageDir: fixturePrefix + 'non-semver-tag',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.depsWereOk, true);
+                done();
+            });
+        });
+
+        it('should check a custom package name dependency is installed even if its hash ' +
+            'is not a valid semver tag', function (done) {
+            checkDeps({
+                checkCustomPackageNames: true,
+                packageDir: fixturePrefix + 'non-semver-tag-pkg-missing',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.depsWereOk, false);
+                assert.deepEqual(output.error, [
+                    'a: not installed!',
+                    installMessage,
+                ]);
+                done();
+            });
+        });
+
         it('should accept `latest` as a version', function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'latest-ok',
