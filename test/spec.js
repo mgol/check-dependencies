@@ -388,6 +388,59 @@ describe('checkDependencies', function () {
             });
         });
 
+        it('should check custom package name dependencies only if `checkCustomPackageNames` is true ' +
+           'and we are testing bower, not npm', function (done) {
+
+            if (packageManager !== 'npm') {
+
+                checkDeps({
+                    checkCustomPackageNames: true,
+                    packageDir: './test/bower-fixtures/custom-package-not-ok',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.deepEqual(output.error, [
+                        'a: installed: 0.5.8, expected: 0.5.9',
+                        'b: not installed!',
+                        installMessage,
+                    ]);
+                });
+
+                checkDeps({
+                    packageDir: './test/bower-fixtures/custom-package-not-ok',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.deepEqual(output.error, [
+                        'b: not installed!',
+                        installMessage,
+                    ]);
+                    done();
+                });
+
+            } else {
+                done();
+            }
+        });
+
+        it('should find no errors if checkCustomPackageNames=true and custom package names are ok', function (done) {
+
+            if (packageManager !== 'npm') {
+
+                checkDeps({
+                    checkCustomPackageNames: true,
+                    packageDir: './test/bower-fixtures/custom-package-ok',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.strictEqual(output.status, 0);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.deepEqual(output.error, []);
+                    done();
+                });
+
+            } else {
+                done();
+            }
+        });
+
         it('should accept `latest` as a version', function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'latest-ok',
