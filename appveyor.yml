@@ -7,8 +7,10 @@ init:
 # Test against these versions of Node.js.
 environment:
   matrix:
+    # Node.js
     - nodejs_version: "0.10"
     - nodejs_version: "0.11"
+    # io.js
     - nodejs_version: "1.0"
 
 # npm 2.1.6 included in Node 0.11.15 fails the tests
