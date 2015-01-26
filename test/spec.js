@@ -392,31 +392,31 @@ describe('checkDependencies', function () {
            'and we are testing bower, not npm', function (done) {
 
             if (packageManager !== 'npm') {
-              checkDeps({
-                  checkCustomPackageNames: true,
-                  packageDir: './test/bower-fixtures/custom-package',
-                  scopeList: ['dependencies', 'devDependencies'],
-              }, function (output) {
-                  assert.deepEqual(output.error, [
-                      'a: installed: 0.5.8, expected: 0.5.9',
-                      'b: not installed!',
-                      installMessage,
-                  ]);
-              });
+                checkDeps({
+                    checkCustomPackageNames: true,
+                    packageDir: './test/bower-fixtures/custom-package',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.deepEqual(output.error, [
+                        'a: installed: 0.5.8, expected: 0.5.9',
+                        'b: not installed!',
+                        installMessage,
+                    ]);
+                });
 
-              checkDeps({
-                  packageDir: './test/bower-fixtures/custom-package',
-                  scopeList: ['dependencies', 'devDependencies'],
-              }, function (output) {
-                  assert.deepEqual(output.error, [
-                      'b: not installed!',
-                      installMessage,
-                  ]);
-                  done();
-              });
+                checkDeps({
+                    packageDir: './test/bower-fixtures/custom-package',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.deepEqual(output.error, [
+                        'b: not installed!',
+                        installMessage,
+                    ]);
+                    done();
+                });
 
             } else {
-              done();
+                done();
             }
 
         });
