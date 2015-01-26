@@ -392,9 +392,10 @@ describe('checkDependencies', function () {
            'and we are testing bower, not npm', function (done) {
 
             if (packageManager !== 'npm') {
+
                 checkDeps({
                     checkCustomPackageNames: true,
-                    packageDir: './test/bower-fixtures/custom-package',
+                    packageDir: './test/bower-fixtures/custom-package-not-ok',
                     scopeList: ['dependencies', 'devDependencies'],
                 }, function (output) {
                     assert.deepEqual(output.error, [
@@ -405,7 +406,7 @@ describe('checkDependencies', function () {
                 });
 
                 checkDeps({
-                    packageDir: './test/bower-fixtures/custom-package',
+                    packageDir: './test/bower-fixtures/custom-package-not-ok',
                     scopeList: ['dependencies', 'devDependencies'],
                 }, function (output) {
                     assert.deepEqual(output.error, [
@@ -418,34 +419,26 @@ describe('checkDependencies', function () {
             } else {
                 done();
             }
-
         });
 
-        it('should check the version for custom package names valid semver tags only', function (done) {
-            checkDeps({
-                checkCustomPackageNames: true,
-                packageDir: fixturePrefix + 'non-semver-tag',
-                scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
-                assert.strictEqual(output.depsWereOk, true);
-                done();
-            });
-        });
+        it('should find no errors if checkCustomPackageNames=true and custom package names are ok', function (done) {
 
-        it('should check a custom package name dependency is installed even if its hash ' +
-            'is not a valid semver tag', function (done) {
-            checkDeps({
-                checkCustomPackageNames: true,
-                packageDir: fixturePrefix + 'non-semver-tag-pkg-missing',
-                scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
-                assert.strictEqual(output.depsWereOk, false);
-                assert.deepEqual(output.error, [
-                    'a: not installed!',
-                    installMessage,
-                ]);
+            if (packageManager !== 'npm') {
+
+                checkDeps({
+                    checkCustomPackageNames: true,
+                    packageDir: './test/bower-fixtures/custom-package-ok',
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, function (output) {
+                    assert.strictEqual(output.status, 0);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.deepEqual(output.error, []);
+                    done();
+                });
+
+            } else {
                 done();
-            });
+            }
         });
 
         it('should accept `latest` as a version', function (done) {

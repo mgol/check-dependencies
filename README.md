@@ -117,7 +117,7 @@ By default, check-dependencies will skip version check for custom package names,
     }
 ```
 
-If checkCustomPackageNames is enabled, check-dependencies will parse the version number (after the hash) for custom package names and check it agains the version of the installed package of the same name.
+If checkCustomPackageNames is enabled, check-dependencies will parse the version number (after the hash) for custom package names and check it against the version of the installed package of the same name.
 
 Type: `boolean`
 
