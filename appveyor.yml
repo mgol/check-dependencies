@@ -13,15 +13,6 @@ environment:
     # io.js
     - nodejs_version: "1"
 
-matrix:
-  allow_failures:
-    # npm 2.1.6 included in Node 0.11.15 fails the tests
-    # TODO remove it when newer Node comes out
-    - nodejs_version: "0.11"
-    # io.js 1.0.3 has a broken npm version included
-    # TODO remove it when io.js 1.0.4 comes to AppVeyor
-    - nodejs_version: "1"
-
 # Install scripts. (runs after repo cloning)
 install:
   # Get the Node version with matching major & minor numbers
