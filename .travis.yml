@@ -3,12 +3,10 @@ sudo: false
 node_js:
   - '0.10'
   - '0.11'
+  - 'iojs'
 before_install:
   # Prevent Bower from asking questions.
   - export CI=true
-  # Update npm for Node 0.11.15; npm 2.1.6 fails the tests
-  # TODO remove it when newer Node comes out
-  - if [ "`node --version`" == "v0.11.15" ]; then npm -g install npm; fi
   # Log HTTP requests
   - npm config set loglevel http
 install:
