@@ -634,9 +634,13 @@ describe('checkDependencies', function () {
                     return [];
                 })
                 .then(function (depDirNames) {
-                    return depDirNames.map(function (depDirName) {
-                        return fixtureDirPath + '/bower_components/' + depDirName;
-                    });
+                    return depDirNames
+                        .filter(function (depDirName) {
+                            return depDirName !== '.bin';
+                        })
+                        .map(function (depDirName) {
+                            return fixtureDirPath + '/bower_components/' + depDirName;
+                        });
                 })
                 .then(function (depDirPaths) {
                     var tasks = [];
