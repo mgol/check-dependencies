@@ -75,6 +75,14 @@ Type: `string`
 
 Default: the closest directory containing `package.json` or `bower.json` (depending on `packageManager` specified) when going up the tree, starting from the current one
 
+### depsDir
+
+Path to the directory containing `node_modules` or `bower_components`.
+
+Type: `string`
+
+Default: `undefined`. By default, check-dependencies will use the `packageDir` option.
+
 ### onlySpecified
 
 Ensures all installed dependencies are specified in `package.json` or `bower.json`.
