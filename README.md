@@ -125,6 +125,22 @@ Type: `boolean`
 
 Default: `false`
 
+### checkGitUrls
+
+By default, check-dependencies will skip version check for packages whose version contains the full repository path.  For example:
+
+```js
+    "dependencies": {
+      "semver": "https://github.com/npm/node-semver.git#0.5.9"
+    }
+```
+
+If checkGitUrls is enabled, check-dependencies will parse the version number (after the path to the git repository and the hash) and check it against the version of the installed package.
+
+Type: `boolean`
+
+Default: `false`
+
 ### verbose
 
 Prints messages to the console.
