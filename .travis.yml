@@ -9,5 +9,7 @@ before_install:
   - export CI=true
   # Log HTTP requests
   - npm config set loglevel http
+  # Update npm on Node 0.10; default is too old
+  - if [ "`node --version | cut -f1-2 -d.`" == "v0.10" ]; then npm -g install npm; fi
 install:
   - time npm install
