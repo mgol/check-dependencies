@@ -62,7 +62,7 @@ describe('checkDependencies', function () {
             packageJsonName = 'package.json';
             depsJsonName = 'package.json';
             depsDirName = 'node_modules';
-            fixturePrefix = './test/npm-fixtures/';
+            fixturePrefix = './test/npm-fixtures/generated/';
         }
         checkDeps = getCheckDependencies();
 
@@ -584,26 +584,37 @@ describe('checkDependencies', function () {
     }
 
 
-    it('should prepare fixures for Bower successfully', function () {
+    it('should prepare fixures for Bower and npm successfully', function () {
         this.timeout(30000);
 
-        var npmFixturesDir = __dirname + '/npm-fixtures',
-            generatedDir = __dirname + '/bower-fixtures/generated';
+        var npmFixturesDir = __dirname + '/common-fixtures';
+
+        function getGeneratedDir(packageManager) {
+            return __dirname + '/' + packageManager + '-fixtures/generated';
+        }
 
         return Promise.all([])
+            // npm
             .then(function () {
-                return fs.removeAsync(generatedDir);
+                return fs.removeAsync(getGeneratedDir('npm'));
             })
             .then(function () {
-                return fs.copyAsync(npmFixturesDir, generatedDir);
+                return fs.copyAsync(npmFixturesDir, getGeneratedDir('npm'));
+            })
+            // Bower
+            .then(function () {
+                return fs.removeAsync(getGeneratedDir('bower'));
             })
             .then(function () {
-                return fs.readdirAsync(generatedDir);
+                return fs.copyAsync(npmFixturesDir, getGeneratedDir('bower'));
+            })
+            .then(function () {
+                return fs.readdirAsync(getGeneratedDir('bower'));
             })
             .then(function (fixtureDirNames) {
                 var tasks = [];
                 fixtureDirNames.forEach(function (fixtureDirName) {
-                    tasks.push(convertToBowerFixture(generatedDir + '/' + fixtureDirName));
+                    tasks.push(convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
                 });
                 return Promise.all(tasks);
             });
