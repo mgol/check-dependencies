@@ -16,7 +16,8 @@ describe('checkDependencies', function () {
 
     function testSuite(packageManager, checkDependenciesMode) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
-            errorsForNotOk, installMessage, pruneAndInstallMessage, fixturePrefix;
+            errorsForNotOk, installMessage, pruneAndInstallMessage,
+            fixturePrefix, fixturePrefixSeparate;
 
         function getCheckDependencies() {
             return function checkDependenciesWrapped() {
@@ -64,6 +65,7 @@ describe('checkDependencies', function () {
             depsDirName = 'node_modules';
             fixturePrefix = './test/npm-fixtures/generated/';
         }
+        fixturePrefixSeparate = fixturePrefix.replace(/generated\/$/, '');
         checkDeps = getCheckDependencies();
 
         installMessage = 'Invoke ' + packageManager + ' install to install missing packages';
@@ -82,7 +84,7 @@ describe('checkDependencies', function () {
 
         it('should not print errors for valid package setup', function (done) {
             checkDeps({
-                packageDir: fixturePrefix + 'ok',
+                packageDir: fixturePrefixSeparate + 'ok',
                 scopeList: ['dependencies', 'devDependencies'],
             }, function (output) {
                 assert.strictEqual(output.status, 0);
@@ -163,7 +165,7 @@ describe('checkDependencies', function () {
 
         it('should not error if no excessive deps and `onlySpecified` is `true`', function (done) {
             checkDeps({
-                packageDir: fixturePrefix + 'ok',
+                packageDir: fixturePrefixSeparate + 'ok',
                 onlySpecified: true,
             }, function (output) {
                 assert.strictEqual(output.status, 0);
@@ -204,7 +206,7 @@ describe('checkDependencies', function () {
         if (checkDependenciesMode === 'callback') {
             it('should throw if callback is not a function', function () {
                 var config = {
-                    packageDir: fixturePrefix + 'ok',
+                    packageDir: fixturePrefixSeparate + 'ok',
                 };
 
                 function expectToThrow(fnsWithReasons) {
@@ -240,7 +242,7 @@ describe('checkDependencies', function () {
             it('should not throw if only one parameter provided', function () {
                 assert.doesNotThrow(function () {
                     checkDeps({
-                        packageDir: fixturePrefix + 'ok',
+                        packageDir: fixturePrefixSeparate + 'ok',
                     });
                 }, 'Expected the function with one parameter not to throw');
             });
@@ -389,7 +391,7 @@ describe('checkDependencies', function () {
         });
 
         it('should check custom package name dependencies only if `checkCustomPackageNames` is true ' +
-           'and we are testing bower, not npm', function (done) {
+            'and we are testing bower, not npm', function (done) {
 
             if (packageManager !== 'npm') {
 
@@ -495,12 +497,12 @@ describe('checkDependencies', function () {
             this.timeout(30000);
 
             var fixtureName = 'not-ok-install',
-                versionRange = require('../' + fixturePrefix + fixtureName + '/' + packageJsonName)
+                versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' + packageJsonName)
                     .dependencies.jquery,
-                fixtureDir = __dirname + '/../' + fixturePrefix + fixtureName,
+                fixtureDir = __dirname + '/../' + fixturePrefixSeparate + fixtureName,
                 fixtureCopyDir = fixtureDir + '-copy',
                 depVersion = JSON.parse(fs.readFileSync(__dirname +
-                    '/../' + fixturePrefix + fixtureName + '/' + depsDirName +
+                    '/../' + fixturePrefixSeparate + fixtureName + '/' + depsDirName +
                     '/jquery/' + depsJsonName)).version;
 
             assert.equal(semver.satisfies(depVersion, versionRange),
@@ -515,7 +517,7 @@ describe('checkDependencies', function () {
                 })
                 .then(function () {
                     checkDeps({
-                        packageDir: fixturePrefix + fixtureName + '-copy',
+                        packageDir: fixturePrefixSeparate + fixtureName + '-copy',
                         checkGitUrls: true,
                         install: true,
                     }, function (output) {
@@ -523,10 +525,16 @@ describe('checkDependencies', function () {
                         // `npm install`/`bower install`.
                         assert.strictEqual(output.status, 0);
                         assert.strictEqual(output.depsWereOk, false);
-                        assert.deepEqual(output.error, [
-                            'jquery: installed: 1.11.1, expected: <=1.11.0',
-                            'json3: installed: 0.8.0, expected: 3.3.2',
-                        ]);
+                        assert.deepEqual(output.error,
+                            []
+                                .concat([
+                                    'jquery: installed: 1.11.1, expected: <=1.11.0',
+                                    'json3: installed: 0.8.0, expected: 3.3.2',
+                                ])
+                                .concat(packageManager === 'npm' ? [
+                                    '@bcoe/awesomeify: not installed!',
+                                ] : [])
+                        );
                         depVersion = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
                             '/jquery/' + depsJsonName)).version;
                         assert(semver.satisfies(depVersion, versionRange),
