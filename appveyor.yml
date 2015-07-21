@@ -14,6 +14,10 @@ environment:
     # io.js
     - nodejs_version: "2"
 
+matrix:
+  allow_failures:
+    - nodejs_version: "2"
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the Node version with matching major & minor numbers
