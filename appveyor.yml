@@ -14,10 +14,6 @@ environment:
     # io.js
     - nodejs_version: "2"
 
-matrix:
-  allow_failures:
-    - nodejs_version: "2"
-
 # Install scripts. (runs after repo cloning)
 install:
   # Get the Node version with matching major & minor numbers
@@ -42,6 +38,8 @@ build: off
 # Finish immediately if one of the jobs fails.
 matrix:
   fast_finish: true
+  allow_failures:
+    - nodejs_version: "2"
 
 # Set up cache, clear it on package.json changes.
 cache:
