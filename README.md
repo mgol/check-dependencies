@@ -79,6 +79,8 @@ Default: the closest directory containing `package.json` or `bower.json` (depend
 
 Ensures all installed dependencies are specified in `package.json` or `bower.json`.
 
+NOTE: Don't use this option with npm 3.0.0 or newer as it deduplicates the file dependency tree by default so `check-dependencies` will think many modules are excessive whereas in fact they will not.
+
 Type: `boolean`
 
 Default: `false`
