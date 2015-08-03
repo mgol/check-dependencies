@@ -17,7 +17,7 @@ describe('checkDependencies', function () {
     function testSuite(packageManager, checkDependenciesMode) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
             errorsForNotOk, installMessage, pruneAndInstallMessage,
-            fixturePrefix, fixturePrefixSeparate;
+            fixturePrefix, fixturePrefixSeparate, logsForTwoOk, errorsForNotTwoOk;
 
         function getCheckDependencies() {
             return function checkDependenciesWrapped() {
@@ -80,6 +80,15 @@ describe('checkDependencies', function () {
             'd: not installed!',
             installMessage,
         ];
+        errorsForNotTwoOk = [
+          'b: installed: 0.9.0, expected: >=1.0.0',
+          'd: installed: 0.7.0, expected: 0.5.9',
+          installMessage,
+        ];
+        logsForTwoOk = [
+          'a: installed: 1.2.3, expected: 1.2.3',
+          'c: installed: 1.2.3, expected: <2.0',
+        ];
 
 
         it('should not print errors for valid package setup', function (done) {
@@ -103,6 +112,20 @@ describe('checkDependencies', function () {
                 assert.strictEqual(output.status, 1);
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, errorsForNotOk);
+                done();
+            });
+        });
+
+        it('should two errors and two logs on package setup', function (done) {
+            checkDeps({
+                checkGitUrls: true,
+                packageDir: fixturePrefix + 'not-two-ok',
+                scopeList: ['dependencies', 'devDependencies'],
+            }, function (output) {
+                assert.strictEqual(output.status, 1);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.deepEqual(output.error, errorsForNotTwoOk);
+                assert.deepEqual(output.log, logsForTwoOk);
                 done();
             });
         });
