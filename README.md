@@ -18,12 +18,26 @@ npm install check-dependencies --save-dev
 ## Rationale
 
 When dependencies are changed in `package.json` (or `bower.json`), whether it's a version bump or a new package, one can forget to invoke `npm install` (or `bower install`) and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
- 
+
 Another option would be to always invoke `npm install` (or `bower install`) at the top of the main file but it can be slow and `check-dependencies` is fast.
 
 ## Usage
 
 Once the package has been installed, it may be used via:
+
+### CLI
+
+```bash
+$ check-dependencies
+```
+
+The options listed below can be passed to the CLI as well.
+
+```bash
+$ check-dependencies --install --verbose
+```
+
+### API
 
 ```js
 require('check-dependencies')(config, callback);
@@ -59,7 +73,7 @@ NOTE: the `sync` method is only available in Node.js >= 0.12.
 
 The `config` object may have the following fields:
 
-### packageManager
+#### packageManager
 
 Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
 
@@ -67,7 +81,7 @@ Type: `string`
 
 Default: `'npm'`
 
-### packageDir
+#### packageDir
 
 Path to the directory containing `package.json` or `bower.json`.
 
@@ -75,7 +89,7 @@ Type: `string`
 
 Default: the closest directory containing `package.json` or `bower.json` (depending on `packageManager` specified) when going up the tree, starting from the current one
 
-### onlySpecified
+#### onlySpecified
 
 Ensures all installed dependencies are specified in `package.json` or `bower.json`.
 
@@ -85,7 +99,7 @@ Type: `boolean`
 
 Default: `false`
 
-### install
+#### install
 
 Installs packages if they don't match. With the `onlySpecified` option enabled prune excessive packages as well.
 
@@ -93,7 +107,7 @@ Type: `boolean`
 
 Default: `false`
 
-### scopeList
+#### scopeList
 
 The list of keys in `package.json` or `bower.json` where to look for package names & versions.
 
@@ -101,7 +115,7 @@ Type: `array`
 
 Default: `['dependencies', 'devDependencies']`
 
-### optionalScopeList
+#### optionalScopeList
 
 The list of keys in `package.json` or `bower.json` where to look for *optional* package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
 
@@ -111,7 +125,7 @@ Type: `array`
 
 Default: `['optionalDependencies']`
 
-### checkCustomPackageNames
+#### checkCustomPackageNames
 
 By default, check-dependencies will skip version check for custom package names, but will still check to see if they are installed.  For example:
 
@@ -127,7 +141,7 @@ Type: `boolean`
 
 Default: `false`
 
-### checkGitUrls
+#### checkGitUrls
 
 By default, check-dependencies will skip version check for packages whose version contains the full repository path.  For example:
 
@@ -143,7 +157,7 @@ Type: `boolean`
 
 Default: `false`
 
-### verbose
+#### verbose
 
 Prints messages to the console.
 
@@ -151,7 +165,7 @@ Type: `boolean`
 
 Default: `false`
 
-### log
+#### log
 
 A function logging debug messages (applies only if `verbose: true`).
 
@@ -159,7 +173,7 @@ Type: `function`
 
 Default: `console.log.bind(console)`
 
-### error
+#### error
 
 A function logging error messages (applies only if `verbose: true`).
 

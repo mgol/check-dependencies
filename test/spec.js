@@ -7,6 +7,9 @@ var chalk = require('chalk'),
     fs = Promise.promisifyAll(require('fs-extra')),
     semver = require('semver'),
     assert = require('assert'),
+    sinon = require('sinon'),
+    childProcess = require('child_process'),
+    path = require('path'),
     checkDependencies = require('../lib/check-dependencies');
 
 /* eslint-enable no-undef */
@@ -749,5 +752,122 @@ describe('checkDependencies', function () {
                 testSuite('bower', 'sync');
             });
         }
+    });
+
+    describe('cli', function () {
+        var cli;
+        var consoleLogStub;
+        var consoleErrorStub;
+        var processExitStub;
+
+        beforeEach(function () {
+            cli = require('../bin/cli.js');
+
+            consoleLogStub = sinon.stub(console, 'log');
+            consoleErrorStub = sinon.stub(console, 'error');
+            processExitStub = sinon.stub(process, 'exit');
+        });
+
+        afterEach(function () {
+            consoleLogStub.restore();
+            consoleErrorStub.restore();
+            processExitStub.restore();
+        });
+
+        it('should call console log for every error', function () {
+            var result = {
+                error: [
+                    'error1',
+                    'error2',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledTwice(consoleErrorStub);
+            sinon.assert.calledWith(consoleErrorStub, 'error1');
+            sinon.assert.calledWith(consoleErrorStub, 'error2');
+        });
+
+        it('should not call console log if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(consoleErrorStub);
+        });
+
+        it('should call process exit with one if errors exist', function () {
+            var result = {
+                error: [
+                    'error1',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledWith(processExitStub, 1);
+        });
+
+        it('should not call process exit with if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(processExitStub);
+        });
+
+        describe('spawned on fixtures', function () {
+            var cliPath = path.resolve(__dirname, '../bin/cli.js');
+            var fixturesRoot = path.resolve(__dirname, './common-fixtures');
+
+            it('should succeed on an ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-ok');
+
+                var child = childProcess.spawn(process.execPath,
+                    [cliPath],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 0);
+                    var stdout = child.stdout.read();
+                    var stderr = child.stderr.read();
+                    assert.strictEqual(stdout, null);
+                    assert.strictEqual(stderr, null);
+                    done();
+                });
+            });
+
+            it('should fail on a non ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-not-ok');
+
+                var child = childProcess.spawn(process.execPath,
+                    [cliPath],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 1);
+                    var stdout = child.stdout.read();
+                    var stderrString = child.stderr.read().toString();
+                    var message = [
+                        'a: not installed!\n',
+                        'Invoke npm install to install missing packages\n',
+                    ].join('');
+                    assert.strictEqual(stdout, null);
+                    assert.strictEqual(stderrString, message);
+                    done();
+                });
+            });
+        });
     });
 });
