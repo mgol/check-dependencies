@@ -73,7 +73,7 @@ NOTE: the `sync` method is only available in Node.js >= 0.12 and in io.js.
 
 The `config` object may have the following fields:
 
-###$ packageManager
+#### packageManager
 
 Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
 
@@ -81,7 +81,7 @@ Type: `string`
 
 Default: `'npm'`
 
-###$ packageDir
+#### packageDir
 
 Path to the directory containing `package.json` or `bower.json`.
 
