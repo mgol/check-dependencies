@@ -6,6 +6,7 @@ var chalk = require('chalk'),
     fs = Promise.promisifyAll(require('fs-extra')),
     semver = require('semver'),
     assert = require('assert'),
+    sinon = require('sinon'),
     checkDependencies = require('../lib/check-dependencies');
 /* eslint-enable no-undef */
 
@@ -724,5 +725,70 @@ describe('checkDependencies', function () {
                 testSuite('bower', 'sync');
             });
         }
+    });
+
+    describe('cli', function () {
+        var cli;
+        var consoleLogStub;
+        var processExitStub;
+
+        beforeEach(function () {
+            cli = require('../bin/cli.js');
+
+            consoleLogStub = sinon.stub(console, 'log');
+            processExitStub = sinon.stub(process, 'exit');
+        });
+
+        afterEach(function () {
+            consoleLogStub.restore();
+            processExitStub.restore();
+        });
+
+        it('should call console log for every error', function () {
+            var result = {
+                error: [
+                    'error1',
+                    'error2',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledTwice(consoleLogStub);
+            sinon.assert.calledWith(consoleLogStub, 'error1');
+            sinon.assert.calledWith(consoleLogStub, 'error2');
+        });
+
+        it('should not call console log if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(consoleLogStub);
+        });
+
+        it('should call process exit with one if errors exist', function () {
+            var result = {
+                error: [
+                    'error1',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledWith(processExitStub, 1);
+        });
+
+        it('should not call process exit with if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(processExitStub);
+        });
     });
 });
