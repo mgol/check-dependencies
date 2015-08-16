@@ -1,12 +1,14 @@
 'use strict';
 
 /* eslint-disable no-undef */
+
 var chalk = require('chalk'),
     Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     semver = require('semver'),
     assert = require('assert'),
     checkDependencies = require('../lib/check-dependencies');
+
 /* eslint-enable no-undef */
 
 describe('checkDependencies', function () {
@@ -151,7 +153,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should error if ' + packageJsonName + ' wasn\'t found in `packageDir`', function (done) {
+        it('should error if ' + packageJsonName + ' wasn\'t found in `packageDir`',
+                function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'missing-json',
             }, function (output) {
@@ -198,7 +201,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`', function (done) {
+        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`',
+                function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'only-specified-not-ok',
                 onlySpecified: true,
@@ -212,7 +216,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should error if there are excessive deps and `onlySpecified` is `true`', function (done) {
+        it('should error if there are excessive deps and `onlySpecified` is `true`',
+                function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'only-specified-not-ok',
                 onlySpecified: true,
@@ -235,7 +240,8 @@ describe('checkDependencies', function () {
                 function expectToThrow(fnsWithReasons) {
                     fnsWithReasons.forEach(function (fnWithReason) {
                         assert.throws(fnWithReason[0], Error,
-                            'Expected the function to throw when passed a callback: ' + fnWithReason[1]);
+                            'Expected the function to throw when passed ' +
+                                'a callback: ' + fnWithReason[1]);
                     });
                 }
 
@@ -282,7 +288,8 @@ describe('checkDependencies', function () {
             });
 
             if (checkDependenciesMode === 'callback') {
-                it('should throw if config not present and callback is not a function', function () {
+                it('should throw if config not present and callback is not a function',
+                        function () {
                     function expectToThrow(fnsWithReasons) {
                         fnsWithReasons.forEach(function (fnWithReason) {
                             assert.throws(fnWithReason[0], Error,
@@ -362,7 +369,8 @@ describe('checkDependencies', function () {
             });
         }
 
-        it('should check Git URL based dependencies only if `checkGitUrls` is true', function (done) {
+        it('should check Git URL based dependencies only if `checkGitUrls` is true',
+                function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'git-urls',
                 scopeList: ['dependencies', 'devDependencies'],
@@ -413,8 +421,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should check custom package name dependencies only if `checkCustomPackageNames` is true ' +
-            'and we are testing bower, not npm', function (done) {
+        it('should check custom package name dependencies only if `checkCustomPackageNames` ' +
+            'is true and we are testing bower, not npm', function (done) {
 
             if (packageManager !== 'npm') {
 
@@ -446,7 +454,8 @@ describe('checkDependencies', function () {
             }
         });
 
-        it('should find no errors if checkCustomPackageNames=true and custom package names are ok', function (done) {
+        it('should find no errors if checkCustomPackageNames=true and custom package names are ok',
+                function (done) {
 
             if (packageManager !== 'npm') {
 
@@ -502,7 +511,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should require optional dependencies to have a proper version if installed', function (done) {
+        it('should require optional dependencies to have a proper version if installed',
+                function (done) {
             checkDeps({
                 packageDir: fixturePrefix + 'optional-present-incorrect',
             }, function (output) {
@@ -517,11 +527,12 @@ describe('checkDependencies', function () {
         });
 
         it('should install missing packages when `install` is set to true', function (done) {
+            /* eslint-disable no-invalid-this */
             this.timeout(30000);
 
             var fixtureName = 'not-ok-install',
-                versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' + packageJsonName)
-                    .dependencies.jquery,
+                versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' +
+                    packageJsonName).dependencies.jquery,
                 fixtureDir = __dirname + '/../' + fixturePrefixSeparate + fixtureName,
                 fixtureCopyDir = fixtureDir + '-copy',
                 depVersion = JSON.parse(fs.readFileSync(__dirname +
@@ -606,7 +617,8 @@ describe('checkDependencies', function () {
                         var depList = fs.readdirSync(packageDir + '/' + depsDirName);
                         assert.deepEqual(depList,
                             ['jquery'],
-                            'Expected package json3 to be removed; got: ' + JSON.stringify(depList));
+                            'Expected package json3 to be removed; got: ' +
+                                JSON.stringify(depList));
 
                         done();
                     });
@@ -625,6 +637,7 @@ describe('checkDependencies', function () {
         }
 
         return Promise.all([])
+
             // npm
             .then(function () {
                 return fs.removeAsync(getGeneratedDir('npm'));
@@ -632,6 +645,7 @@ describe('checkDependencies', function () {
             .then(function () {
                 return fs.copyAsync(npmFixturesDir, getGeneratedDir('npm'));
             })
+
             // Bower
             .then(function () {
                 return fs.removeAsync(getGeneratedDir('bower'));
@@ -645,13 +659,15 @@ describe('checkDependencies', function () {
             .then(function (fixtureDirNames) {
                 var tasks = [];
                 fixtureDirNames.forEach(function (fixtureDirName) {
-                    tasks.push(convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
+                    tasks.push(
+                        convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
                 });
                 return Promise.all(tasks);
             });
 
         function convertToBowerFixture(fixtureDirPath) {
             return Promise.all([])
+
                 // Change package.json to bower.json in top level scope
                 .then(function () {
                     if (fs.existsSync(fixtureDirPath + '/package.json')) {
