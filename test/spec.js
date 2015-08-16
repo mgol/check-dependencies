@@ -702,8 +702,7 @@ describe('checkDependencies', function () {
         describe('promises', function () {
             testSuite('npm', 'promises');
         });
-        // TODO change to >=0.12.0 when it's out
-        if (semver.satisfies(process.version, '>=0.11.14')) {
+        if (semver.satisfies(process.version, '>=0.12.0')) {
             describe('sync', function () {
                 testSuite('npm', 'sync');
             });
@@ -718,8 +717,7 @@ describe('checkDependencies', function () {
         describe('promises', function () {
             testSuite('bower', 'promises');
         });
-        // TODO change to >=0.12.0 when it's out
-        if (semver.satisfies(process.version, '>=0.11.14')) {
+        if (semver.satisfies(process.version, '>=0.12.0')) {
             describe('sync', function () {
                 testSuite('bower', 'sync');
             });
