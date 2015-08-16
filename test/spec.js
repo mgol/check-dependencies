@@ -528,6 +528,7 @@ describe('checkDependencies', function () {
 
         it('should install missing packages when `install` is set to true', function (done) {
             /* eslint-disable no-invalid-this */
+
             this.timeout(30000);
 
             var fixtureName = 'not-ok-install',
@@ -576,9 +577,13 @@ describe('checkDependencies', function () {
                         done();
                     });
                 });
+
+                /* eslint-enable no-invalid-this */
         });
 
         it('should prune excessive packages when `install` is set to true', function (done) {
+            /* eslint-disable no-invalid-this */
+
             this.timeout(30000);
 
             var fixtureName = 'only-specified-not-ok-install',
@@ -623,11 +628,15 @@ describe('checkDependencies', function () {
                         done();
                     });
                 });
+
+                /* eslint-enable no-invalid-this */
         });
     }
 
 
     it('should prepare fixures for Bower and npm successfully', function () {
+        /* eslint-disable no-invalid-this */
+
         this.timeout(30000);
 
         var npmFixturesDir = __dirname + '/common-fixtures';
@@ -709,6 +718,8 @@ describe('checkDependencies', function () {
                     return Promise.all(tasks);
                 });
         }
+
+        /* eslint-enable no-invalid-this */
     });
 
     describe('npm', function () {
