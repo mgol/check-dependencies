@@ -3,7 +3,7 @@
 > Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json
 
 [![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
-[![Build status](https://ci.appveyor.com/api/projects/status/a4cok143mjmi0hk3/branch/master?svg=true)](https://ci.appveyor.com/project/mzgol/check-dependencies/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/mmlmha7ntge8j9hp/branch/master?svg=true)](https://ci.appveyor.com/project/mzgol/check-dependencies/branch/master)
 
 (Note: the package previously published under this name is now called [dependency-status](https://www.npmjs.org/package/dependency-status))
 
