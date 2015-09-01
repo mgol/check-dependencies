@@ -7,6 +7,9 @@ var chalk = require('chalk'),
     fs = Promise.promisifyAll(require('fs-extra')),
     semver = require('semver'),
     assert = require('assert'),
+    sinon = require('sinon'),
+    childProcess = require('child_process'),
+    path = require('path'),
     checkDependencies = require('../lib/check-dependencies');
 
 /* eslint-enable no-undef */
@@ -749,5 +752,107 @@ describe('checkDependencies', function () {
                 testSuite('bower', 'sync');
             });
         }
+    });
+
+    describe('cli', function () {
+        var cli;
+        var consoleLogStub;
+        var processExitStub;
+
+        beforeEach(function () {
+            cli = require('../bin/cli.js');
+
+            consoleLogStub = sinon.stub(console, 'log');
+            processExitStub = sinon.stub(process, 'exit');
+        });
+
+        afterEach(function () {
+            consoleLogStub.restore();
+            processExitStub.restore();
+        });
+
+        it('should call console log for every error', function () {
+            var result = {
+                error: [
+                    'error1',
+                    'error2',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledTwice(consoleLogStub);
+            sinon.assert.calledWith(consoleLogStub, 'error1');
+            sinon.assert.calledWith(consoleLogStub, 'error2');
+        });
+
+        it('should not call console log if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(consoleLogStub);
+        });
+
+        it('should call process exit with one if errors exist', function () {
+            var result = {
+                error: [
+                    'error1',
+                ],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.calledWith(processExitStub, 1);
+        });
+
+        it('should not call process exit with if no errors', function () {
+            var result = {
+                error: [],
+            };
+
+            cli.reporter(result);
+
+            sinon.assert.notCalled(processExitStub);
+        });
+
+        describe('spawned on fixtures', function () {
+            var cliPath = path.resolve(__dirname, '../bin/cli.js');
+            var fixturesRoot = path.resolve(__dirname, './common-fixtures');
+
+            it('should be good on an ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-ok');
+
+                var child = childProcess.spawn(process.execPath, [cliPath], {
+                    cwd: packageRoot,
+                });
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 0);
+                    var output = child.stdout.read();
+                    assert.strictEqual(output, null);
+                    done();
+                });
+            });
+
+            it('should be failure on a non ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-not-ok');
+
+                var child = childProcess.spawn(process.execPath, [cliPath], {
+                    cwd: packageRoot,
+                });
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 1);
+                    var output = child.stdout.read().toString();
+                    var message = 'a: not installed!\n' +
+                    'Invoke npm install to install missing packages\n';
+                    assert.strictEqual(output, message);
+                    done();
+                });
+            });
+        });
     });
 });

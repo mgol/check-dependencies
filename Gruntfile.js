@@ -26,6 +26,7 @@ module.exports = function (grunt) {
             all: {
                 src: [
                     '*.js',
+                    'bin',
                     'lib',
                     'test',
                 ],
@@ -36,6 +37,7 @@ module.exports = function (grunt) {
             all: {
                 src: [
                     'Gruntfile.js',
+                    'bin/**/*.js',
                     'lib/**/*.js',
                     'test/**/*.js',
                 ],
