@@ -7,6 +7,8 @@ var chalk = require('chalk'),
     semver = require('semver'),
     assert = require('assert'),
     sinon = require('sinon'),
+    childProcess = require('child_process'),
+    path = require('path'),
     checkDependencies = require('../lib/check-dependencies');
 /* eslint-enable no-undef */
 
@@ -789,6 +791,43 @@ describe('checkDependencies', function () {
             cli.reporter(result);
 
             sinon.assert.notCalled(processExitStub);
+        });
+
+        describe('spawned on fixtures', function () {
+            var cliPath = path.resolve(__dirname, '../bin/cli.js');
+            var fixturesRoot = path.resolve(__dirname, './common-fixtures');
+
+            it('should be good on an ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-ok');
+
+                var child = childProcess.spawn(process.execPath, [cliPath], {
+                    cwd: packageRoot,
+                });
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 0);
+                    var output = child.stdout.read();
+                    assert.strictEqual(output, null);
+                    done();
+                });
+            });
+
+            it('should be failure on a non ok package', function (done) {
+                var packageRoot = path.join(fixturesRoot, 'latest-not-ok');
+
+                var child = childProcess.spawn(process.execPath, [cliPath], {
+                    cwd: packageRoot,
+                });
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 1);
+                    var output = child.stdout.read().toString();
+                    var message = 'a: not installed!\n' +
+                    'Invoke npm install to install missing packages\n';
+                    assert.strictEqual(output, message);
+                    done();
+                });
+            });
         });
     });
 });
