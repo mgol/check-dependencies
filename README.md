@@ -55,7 +55,7 @@ var output = require('check-dependencies').sync(config);
 ```
 will assign to `output` the same object that would otherwise be passed to the `callback` in the asynchronous scenario.
 
-NOTE: the `sync` method is only available in Node.js >= 0.12 and in io.js.
+NOTE: the `sync` method is only available in Node.js >= 0.12.
 
 The `config` object may have the following fields:
 
