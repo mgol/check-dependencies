@@ -17,7 +17,7 @@ module.exports = function (grunt) {
                 src: [
                     '*.log',
                     'test/*/*-copy',
-                    'test/bower-fixtures/generated',
+                    'test/*-fixtures/generated',
                 ],
             },
         },
@@ -30,20 +30,6 @@ module.exports = function (grunt) {
                     'lib',
                     'test',
                 ],
-            },
-        },
-
-        jscs: {
-            all: {
-                src: [
-                    'Gruntfile.js',
-                    'bin/**/*.js',
-                    'lib/**/*.js',
-                    'test/**/*.js',
-                ],
-                options: {
-                    config: '.jscsrc',
-                },
             },
         },
 
@@ -62,7 +48,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('lint', [
         'eslint',
-        'jscs',
     ]);
 
     grunt.registerTask('test', ['mochaTest']);

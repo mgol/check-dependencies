@@ -2,15 +2,15 @@
 
 /* eslint-disable no-undef */
 
-var chalk = require('chalk'),
-    Promise = require('bluebird'),
-    fs = Promise.promisifyAll(require('fs-extra')),
-    semver = require('semver'),
-    assert = require('assert'),
-    sinon = require('sinon'),
-    path = require('path'),
-    spawn = require('child_process').spawn,
-    checkDependencies = require('../lib/check-dependencies');
+var chalk = require('chalk');
+var Promise = require('bluebird');
+var fs = Promise.promisifyAll(require('fs-extra'));
+var semver = require('semver');
+var assert = require('assert');
+var sinon = require('sinon');
+var path = require('path');
+var spawn = require('child_process').spawn;
+var checkDependencies = require('../lib/check-dependencies');
 
 /* eslint-enable no-undef */
 
@@ -19,15 +19,15 @@ describe('checkDependencies', function () {
         chalk.enabled = false;
     });
 
-    function testSuite(packageManager, checkDependenciesMode) {
+    var testSuite = function (packageManager, checkDependenciesMode) {
         var checkDeps, depsJsonName, packageJsonName, depsDirName,
             errorsForNotOk, installMessage, pruneAndInstallMessage,
             fixturePrefix, fixturePrefixSeparate, logsForOkInterlaced, errorsForNotOkInterlaced;
 
-        function getCheckDependencies() {
+        var getCheckDependencies = function () {
             return function checkDependenciesWrapped() {
-                var config, callback,
-                    args = [].slice.call(arguments);
+                var config, callback;
+                var args = [].slice.call(arguments);
 
                 if (packageManager === 'bower') {
                     config = arguments[0];
@@ -57,7 +57,7 @@ describe('checkDependencies', function () {
                     callback(checkDependencies.sync.apply(null, args));
                 }
             };
-        }
+        };
 
         if (packageManager === 'bower') {
             packageJsonName = 'bower.json';
@@ -240,22 +240,22 @@ describe('checkDependencies', function () {
                     packageDir: fixturePrefixSeparate + 'ok',
                 };
 
-                function expectToThrow(fnsWithReasons) {
+                var expectToThrow = function (fnsWithReasons) {
                     fnsWithReasons.forEach(function (fnWithReason) {
                         assert.throws(fnWithReason[0], Error,
                             'Expected the function to throw when passed ' +
                                 'a callback: ' + fnWithReason[1]);
                     });
-                }
+                };
 
-                function getFunctionWithReason(fakeCallback) {
+                var getFunctionWithReason = function (fakeCallback) {
                     return [
                         function () {
                             checkDeps(config, fakeCallback);
                         },
                         fakeCallback,
                     ];
-                }
+                };
 
                 expectToThrow([
                     getFunctionWithReason(undefined),
@@ -293,22 +293,22 @@ describe('checkDependencies', function () {
             if (checkDependenciesMode === 'callback') {
                 it('should throw if config not present and callback is not a function',
                         function () {
-                    function expectToThrow(fnsWithReasons) {
+                    var expectToThrow = function (fnsWithReasons) {
                         fnsWithReasons.forEach(function (fnWithReason) {
                             assert.throws(fnWithReason[0], Error,
                                 'Expected the function to throw when passed a callback: ' +
                                     fnWithReason[1]);
                         });
-                    }
+                    };
 
-                    function getFunctionWithReason(fakeCallback) {
+                    var getFunctionWithReason = function (fakeCallback) {
                         return [
                             function () {
                                 checkDeps(fakeCallback);
                             },
                             fakeCallback,
                         ];
-                    }
+                    };
 
                     expectToThrow([
                         getFunctionWithReason(undefined),
@@ -321,7 +321,9 @@ describe('checkDependencies', function () {
         }
 
         it('should support `log` and `error` options', function (done) {
-            var logArray = [], errorArray = [];
+            var logArray = [];
+            var errorArray = [];
+
             checkDeps({
                 checkGitUrls: true,
                 packageDir: fixturePrefix + 'not-ok',
@@ -343,7 +345,9 @@ describe('checkDependencies', function () {
         });
 
         it('should not print logs when `verbose` is not set to true', function (done) {
-            var logArray = [], errorArray = [];
+            var logArray = [];
+            var errorArray = [];
+
             checkDeps({
                 packageDir: fixturePrefix + 'not-ok',
                 log: function (msg) {
@@ -534,12 +538,12 @@ describe('checkDependencies', function () {
 
             this.timeout(30000);
 
-            var fixtureName = 'not-ok-install',
-                versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' +
-                    packageJsonName).dependencies.jquery,
-                fixtureDir = __dirname + '/../' + fixturePrefixSeparate + fixtureName,
-                fixtureCopyDir = fixtureDir + '-copy',
-                depVersion = JSON.parse(fs.readFileSync(__dirname +
+            var fixtureName = 'not-ok-install';
+            var versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' +
+                    packageJsonName).dependencies.jquery;
+            var fixtureDir = __dirname + '/../' + fixturePrefixSeparate + fixtureName;
+            var fixtureCopyDir = fixtureDir + '-copy';
+            var depVersion = JSON.parse(fs.readFileSync(__dirname +
                     '/../' + fixturePrefixSeparate + fixtureName + '/' + depsDirName +
                     '/jquery/' + depsJsonName)).version;
 
@@ -589,10 +593,10 @@ describe('checkDependencies', function () {
 
             this.timeout(30000);
 
-            var fixtureName = 'only-specified-not-ok-install',
-                fixtureDir = __dirname + '/../' + fixturePrefix + fixtureName,
-                fixtureCopyDir = fixtureDir + '-copy',
-                packageDir = fixturePrefix + fixtureName + '-copy';
+            var fixtureName = 'only-specified-not-ok-install';
+            var fixtureDir = __dirname + '/../' + fixturePrefix + fixtureName;
+            var fixtureCopyDir = fixtureDir + '-copy';
+            var packageDir = fixturePrefix + fixtureName + '-copy';
 
 
             return Promise.all([])
@@ -634,7 +638,7 @@ describe('checkDependencies', function () {
 
                 /* eslint-enable no-invalid-this */
         });
-    }
+    };
 
 
     it('should prepare fixures for Bower and npm successfully', function () {
@@ -644,40 +648,11 @@ describe('checkDependencies', function () {
 
         var npmFixturesDir = __dirname + '/common-fixtures';
 
-        function getGeneratedDir(packageManager) {
+        var getGeneratedDir = function (packageManager) {
             return __dirname + '/' + packageManager + '-fixtures/generated';
-        }
+        };
 
-        return Promise.all([])
-
-            // npm
-            .then(function () {
-                return fs.removeAsync(getGeneratedDir('npm'));
-            })
-            .then(function () {
-                return fs.copyAsync(npmFixturesDir, getGeneratedDir('npm'));
-            })
-
-            // Bower
-            .then(function () {
-                return fs.removeAsync(getGeneratedDir('bower'));
-            })
-            .then(function () {
-                return fs.copyAsync(npmFixturesDir, getGeneratedDir('bower'));
-            })
-            .then(function () {
-                return fs.readdirAsync(getGeneratedDir('bower'));
-            })
-            .then(function (fixtureDirNames) {
-                var tasks = [];
-                fixtureDirNames.forEach(function (fixtureDirName) {
-                    tasks.push(
-                        convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
-                });
-                return Promise.all(tasks);
-            });
-
-        function convertToBowerFixture(fixtureDirPath) {
+        var convertToBowerFixture = function (fixtureDirPath) {
             return Promise.all([])
 
                 // Change package.json to bower.json in top level scope
@@ -720,7 +695,36 @@ describe('checkDependencies', function () {
                     });
                     return Promise.all(tasks);
                 });
-        }
+        };
+
+        return Promise.all([])
+
+            // npm
+            .then(function () {
+                return fs.removeAsync(getGeneratedDir('npm'));
+            })
+            .then(function () {
+                return fs.copyAsync(npmFixturesDir, getGeneratedDir('npm'));
+            })
+
+            // Bower
+            .then(function () {
+                return fs.removeAsync(getGeneratedDir('bower'));
+            })
+            .then(function () {
+                return fs.copyAsync(npmFixturesDir, getGeneratedDir('bower'));
+            })
+            .then(function () {
+                return fs.readdirAsync(getGeneratedDir('bower'));
+            })
+            .then(function (fixtureDirNames) {
+                var tasks = [];
+                fixtureDirNames.forEach(function (fixtureDirName) {
+                    tasks.push(
+                        convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
+                });
+                return Promise.all(tasks);
+            });
 
         /* eslint-enable no-invalid-this */
     });
@@ -755,10 +759,7 @@ describe('checkDependencies', function () {
     });
 
     describe('CLI reporter', function () {
-        var cli;
-        var consoleLogStub;
-        var consoleErrorStub;
-        var processExitStub;
+        var cli, consoleLogStub, consoleErrorStub, processExitStub;
 
         beforeEach(function () {
             cli = require('../bin/cli.js');
