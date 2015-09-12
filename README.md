@@ -211,7 +211,7 @@ behave in the same way - `callback` is invoked upon completion; if there was an 
 ## Supported Node.js versions
 This project aims to support all Node.js LTS versions in the "active" phase (see [LTS README](https://github.com/nodejs/LTS/blob/master/README.md) for more details) as well as the latest stable Node.js. Today that means Node.js 0.12 & 4.x.
 
-Because of the popularity of this package and Node.js 0.10, this version is temporarily supported as well (for now).
+Because of the popularity of this package and Node.js 0.10, this version is temporarily supported as well.
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using `npm test`.
