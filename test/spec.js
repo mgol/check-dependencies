@@ -754,7 +754,7 @@ describe('checkDependencies', function () {
         }
     });
 
-    describe('cli', function () {
+    describe('CLI reporter', function () {
         var cli;
         var consoleLogStub;
         var consoleErrorStub;
@@ -822,14 +822,25 @@ describe('checkDependencies', function () {
         });
     });
 
-    describe('cli via a spawned process', function () {
+    describe('CLI (via a spawned process)', function () {
         var cliPath = path.resolve(__dirname, '../bin/cli.js');
-        var fixturesRoot = path.resolve(__dirname, './npm-fixtures');
+        var bowerFixturesRoot = path.resolve(__dirname, './bower-fixtures');
+        var npmFixturesRoot = path.resolve(__dirname, './npm-fixtures');
+
+        var npmNotOkStderrString = [
+            'a: installed: 1.2.4, expected: 1.2.3',
+            'b: installed: 0.9.9, expected: >=1.0.0',
+            'c: not installed!',
+            'd: not installed!',
+            'Invoke npm install to install missing packages',
+            '',
+        ].join('\n');
+        var bowerNotOkStderrString = npmNotOkStderrString.replace(/npm/g, 'bower');
 
         describe('ok package', function () {
             var runTest = function runTest(verbose) {
                 return function (done) {
-                    var packageRoot = path.join(fixturesRoot, 'ok');
+                    var packageRoot = path.join(npmFixturesRoot, 'ok');
 
                     var child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
@@ -866,7 +877,7 @@ describe('checkDependencies', function () {
         describe('non-ok package', function () {
             var runTest = function runTest(verbose) {
                 return function (done) {
-                    var packageRoot = path.join(fixturesRoot, 'generated/not-ok');
+                    var packageRoot = path.join(npmFixturesRoot, 'generated/not-ok');
 
                     var child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
@@ -887,14 +898,7 @@ describe('checkDependencies', function () {
                         } else {
                             assert.strictEqual(stdout, null);
                         }
-                        assert.strictEqual(stderr.toString(), [
-                            'a: installed: 1.2.4, expected: 1.2.3',
-                            'b: installed: 0.9.9, expected: >=1.0.0',
-                            'c: not installed!',
-                            'd: not installed!',
-                            'Invoke npm install to install missing packages',
-                            '',
-                        ].join('\n'));
+                        assert.strictEqual(stderr.toString(), npmNotOkStderrString);
                         done();
                     });
                 };
@@ -902,6 +906,78 @@ describe('checkDependencies', function () {
 
             it('should fail', runTest());
             it('should fail (verbose mode)', runTest(true));
+        });
+
+        describe('the --package-dir option', function () {
+            it('should succeed on an ok package', function (done) {
+                var packageDir = path.join(npmFixturesRoot, 'ok');
+
+                var child = spawn(process.execPath,
+                    [cliPath, '--package-dir', packageDir],
+                    {
+                        cwd: __dirname,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 0);
+                    assert.strictEqual(child.stderr.read(), null);
+                    done();
+                });
+            });
+
+            it('should fail on a non-ok package', function (done) {
+                var packageDir = path.join(npmFixturesRoot, 'generated/not-ok');
+
+                var child = spawn(process.execPath,
+                    [cliPath, '--package-dir', packageDir],
+                    {
+                        cwd: __dirname,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 1);
+                    assert.strictEqual(child.stderr.read().toString(), npmNotOkStderrString);
+                    done();
+                });
+            });
+        });
+
+        describe('the --package-manager option', function () {
+            it('should succeed on an ok package', function (done) {
+                var packageRoot = path.join(bowerFixturesRoot, 'ok');
+
+                var child = spawn(process.execPath,
+                    [cliPath, '--package-manager', 'bower'],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 0);
+                    assert.strictEqual(child.stderr.read(), null);
+                    done();
+                });
+            });
+
+            it('should fail on a non-ok package', function (done) {
+                var packageRoot = path.join(bowerFixturesRoot, 'generated/not-ok');
+
+                var child = spawn(process.execPath,
+                    [cliPath, '--package-manager', 'bower'],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', function (code) {
+                    assert.strictEqual(code, 1);
+                    assert.strictEqual(child.stderr.read().toString(), bowerNotOkStderrString);
+                    done();
+                });
+            });
         });
     });
 });

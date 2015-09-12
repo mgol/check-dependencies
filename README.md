@@ -31,10 +31,10 @@ Once the package has been installed, it may be used via:
 $ check-dependencies
 ```
 
-The options listed below can be passed to the CLI as well.
+Options of type `boolean` or `string` (see the [API](README.md#API) section) can be passed to the CLI:
 
 ```bash
-$ check-dependencies --install --verbose
+$ check-dependencies --install --verbose --package-manager bower
 ```
 
 ### API

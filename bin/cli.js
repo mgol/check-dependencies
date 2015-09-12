@@ -3,9 +3,17 @@
 'use strict';
 
 var minimist = require('minimist');
+var _ = require('lodash');
 var checkDependencies = require('../');
 
 var argv = minimist(process.argv.slice(2));
+
+// camelCase the options
+for (var key in argv) {
+    var value = argv[key];
+    delete argv[key];
+    argv[_.camelCase(key)] = value;
+}
 
 // We'll handle verbosity by the CLI here.
 var verbose = argv.verbose;
