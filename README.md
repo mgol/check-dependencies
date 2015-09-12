@@ -2,8 +2,11 @@
 
 > Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json
 
-[![Build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
-[![Build status](https://ci.appveyor.com/api/projects/status/mmlmha7ntge8j9hp/branch/master?svg=true)](https://ci.appveyor.com/project/mzgol/check-dependencies/branch/master)
+[![Travis build Status](https://travis-ci.org/mzgol/check-dependencies.svg?branch=master)](https://travis-ci.org/mzgol/check-dependencies)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/mmlmha7ntge8j9hp/branch/master?svg=true)](https://ci.appveyor.com/project/mzgol/check-dependencies/branch/master)
+[![Version](https://img.shields.io/npm/v/check-dependencies.svg?style=flat-square)](http://npm.im/check-dependencies)
+[![Downloads](https://img.shields.io/npm/dm/check-dependencies.svg?style=flat-square)](http://npm-stat.com/charts.html?package=check-dependencies)
+[![MIT License](https://img.shields.io/npm/l/check-dependencies.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 (Note: the package previously published under this name is now called [dependency-status](https://www.npmjs.org/package/dependency-status))
 
