@@ -8,8 +8,8 @@ var chalk = require('chalk'),
     semver = require('semver'),
     assert = require('assert'),
     sinon = require('sinon'),
-    childProcess = require('child_process'),
     path = require('path'),
+    spawn = require('child_process').spawn,
     checkDependencies = require('../lib/check-dependencies');
 
 /* eslint-enable no-undef */
@@ -820,54 +820,88 @@ describe('checkDependencies', function () {
 
             sinon.assert.notCalled(processExitStub);
         });
+    });
 
-        describe('spawned on fixtures', function () {
-            var cliPath = path.resolve(__dirname, '../bin/cli.js');
-            var fixturesRoot = path.resolve(__dirname, './common-fixtures');
+    describe('cli via a spawned process', function () {
+        var cliPath = path.resolve(__dirname, '../bin/cli.js');
+        var fixturesRoot = path.resolve(__dirname, './npm-fixtures');
 
-            it('should succeed on an ok package', function (done) {
-                var packageRoot = path.join(fixturesRoot, 'latest-ok');
+        describe('ok package', function () {
+            var runTest = function runTest(verbose) {
+                return function (done) {
+                    var packageRoot = path.join(fixturesRoot, 'ok');
 
-                var child = childProcess.spawn(process.execPath,
-                    [cliPath],
-                    {
-                        cwd: packageRoot,
-                    }
-                );
+                    var child = spawn(process.execPath,
+                        [cliPath].concat(verbose ? ['--verbose'] : []),
+                        {
+                            cwd: packageRoot,
+                        }
+                    );
 
-                child.on('exit', function (code) {
-                    assert.strictEqual(code, 0);
-                    var stdout = child.stdout.read();
-                    var stderr = child.stderr.read();
-                    assert.strictEqual(stdout, null);
-                    assert.strictEqual(stderr, null);
-                    done();
-                });
-            });
+                    child.on('exit', function (code) {
+                        assert.strictEqual(code, 0);
+                        var stdout = child.stdout.read();
+                        var stderr = child.stderr.read();
+                        if (verbose) {
+                            assert.strictEqual(stdout.toString(), [
+                                'a: installed: 1.2.3, expected: 1.2.3',
+                                'b: installed: 1.2.3, expected: >=1.0.0',
+                                'c: installed: 1.2.3, expected: <2.0',
+                                '@e-f/g-h: installed: 2.5.9, expected: ~2.5.7',
+                                '',
+                            ].join('\n'));
+                        } else {
+                            assert.strictEqual(stdout, null);
+                        }
+                        assert.strictEqual(stderr, null);
+                        done();
+                    });
+                };
+            };
 
-            it('should fail on a non ok package', function (done) {
-                var packageRoot = path.join(fixturesRoot, 'latest-not-ok');
+            it('should succeed', runTest());
+            it('should succeed (verbose mode)', runTest(true));
+        });
 
-                var child = childProcess.spawn(process.execPath,
-                    [cliPath],
-                    {
-                        cwd: packageRoot,
-                    }
-                );
+        describe('non-ok package', function () {
+            var runTest = function runTest(verbose) {
+                return function (done) {
+                    var packageRoot = path.join(fixturesRoot, 'generated/not-ok');
 
-                child.on('exit', function (code) {
-                    assert.strictEqual(code, 1);
-                    var stdout = child.stdout.read();
-                    var stderrString = child.stderr.read().toString();
-                    var message = [
-                        'a: not installed!\n',
-                        'Invoke npm install to install missing packages\n',
-                    ].join('');
-                    assert.strictEqual(stdout, null);
-                    assert.strictEqual(stderrString, message);
-                    done();
-                });
-            });
+                    var child = spawn(process.execPath,
+                        [cliPath].concat(verbose ? ['--verbose'] : []),
+                        {
+                            cwd: packageRoot,
+                        }
+                    );
+
+                    child.on('exit', function (code) {
+                        assert.strictEqual(code, 1);
+                        var stdout = child.stdout.read();
+                        var stderr = child.stderr.read();
+                        if (verbose) {
+                            assert.strictEqual(stdout.toString(), [
+                                'e: installed: 1.0.0, expected: 1.0.0',
+                                '',
+                            ].join('\n'));
+                        } else {
+                            assert.strictEqual(stdout, null);
+                        }
+                        assert.strictEqual(stderr.toString(), [
+                            'a: installed: 1.2.4, expected: 1.2.3',
+                            'b: installed: 0.9.9, expected: >=1.0.0',
+                            'c: not installed!',
+                            'd: not installed!',
+                            'Invoke npm install to install missing packages',
+                            '',
+                        ].join('\n'));
+                        done();
+                    });
+                };
+            };
+
+            it('should fail', runTest());
+            it('should fail (verbose mode)', runTest(true));
         });
     });
 });
