@@ -2,25 +2,25 @@
 
 'use strict';
 
-var minimist = require('minimist');
-var _ = require('lodash');
-var checkDependencies = require('../');
+const minimist = require('minimist');
+const _ = require('lodash');
+const checkDependencies = require('../lib/check-dependencies');
 
-var argv = minimist(process.argv.slice(2));
+const argv = minimist(process.argv.slice(2));
 
 // camelCase the options
-for (var key in argv) {
-    var value = argv[key];
+for (const key in argv) {
+    const value = argv[key];
     delete argv[key];
     argv[_.camelCase(key)] = value;
 }
 
 // We'll handle verbosity by the CLI here.
-var verbose = argv.verbose;
+const verbose = argv.verbose;
 delete argv.verbose;
 
-var Cli = {
-    reporter: function (result) {
+const Cli = {
+    reporter(result) {
         if (verbose) {
             result.log.forEach(function (msg) {
                 console.log(msg);

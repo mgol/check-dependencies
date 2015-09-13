@@ -1,33 +1,29 @@
 'use strict';
 
-/* eslint-disable no-undef */
+const chalk = require('chalk');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs-extra'));
+const semver = require('semver');
+const assert = require('assert');
+const sinon = require('sinon');
+const path = require('path');
+const spawn = require('child_process').spawn;
+const checkDependencies = require('../lib/check-dependencies');
 
-var chalk = require('chalk');
-var Promise = require('bluebird');
-var fs = Promise.promisifyAll(require('fs-extra'));
-var semver = require('semver');
-var assert = require('assert');
-var sinon = require('sinon');
-var path = require('path');
-var spawn = require('child_process').spawn;
-var checkDependencies = require('../lib/check-dependencies');
-
-/* eslint-enable no-undef */
-
-describe('checkDependencies', function () {
-    beforeEach(function () {
+describe('checkDependencies', () => {
+    beforeEach(() => {
         chalk.enabled = false;
     });
 
-    var testSuite = function (packageManager, checkDependenciesMode) {
-        var checkDeps, depsJsonName, packageJsonName, depsDirName,
+    const testSuite = (packageManager, checkDependenciesMode) => {
+        let checkDeps, depsJsonName, packageJsonName, depsDirName,
             errorsForNotOk, installMessage, pruneAndInstallMessage,
             fixturePrefix, fixturePrefixSeparate, logsForOkInterlaced, errorsForNotOkInterlaced;
 
-        var getCheckDependencies = function () {
+        const getCheckDependencies = () => {
             return function checkDependenciesWrapped() {
-                var config, callback;
-                var args = [].slice.call(arguments);
+                let config, callback;
+                const args = [].slice.call(arguments);
 
                 if (packageManager === 'bower') {
                     config = arguments[0];
@@ -44,10 +40,10 @@ describe('checkDependencies', function () {
                 if (checkDependenciesMode === 'promises') {
                     callback = args.pop();
                     checkDependencies.apply(null, args)
-                        .then(function (output) {
+                        .then(output => {
                             callback(output);
                         })
-                        .catch(function (error) {
+                        .catch(error => {
                             assert.equal(error, null,
                                 'The promise mode of checkDependencies should never reject');
                         });
@@ -63,20 +59,19 @@ describe('checkDependencies', function () {
             packageJsonName = 'bower.json';
             depsJsonName = '.bower.json';
             depsDirName = 'bower_components';
-            fixturePrefix = './test/bower-fixtures/generated/';
+            fixturePrefix = `${ __dirname }/bower-fixtures/generated/`;
         } else {
             packageJsonName = 'package.json';
             depsJsonName = 'package.json';
             depsDirName = 'node_modules';
-            fixturePrefix = './test/npm-fixtures/generated/';
+            fixturePrefix = `${ __dirname }/npm-fixtures/generated/`;
         }
         fixturePrefixSeparate = fixturePrefix.replace(/generated\/$/, '');
         checkDeps = getCheckDependencies();
 
-        installMessage = 'Invoke ' + packageManager + ' install to install missing packages';
-        pruneAndInstallMessage = 'Invoke ' + packageManager + ' prune and ' +
-            packageManager + ' install to install missing packages and remove ' +
-            'excessive ones';
+        installMessage = `Invoke ${ packageManager } install to install missing packages`;
+        pruneAndInstallMessage = `Invoke ${ packageManager } prune and ${
+            packageManager } install to install missing packages and remove excessive ones`;
 
         errorsForNotOk = [
             'a: installed: 1.2.4, expected: 1.2.3',
@@ -96,11 +91,11 @@ describe('checkDependencies', function () {
         ];
 
 
-        it('should not print errors for valid package setup', function (done) {
+        it('should not print errors for valid package setup', done => {
             checkDeps({
-                packageDir: fixturePrefixSeparate + 'ok',
+                packageDir: `${ fixturePrefixSeparate }ok`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -108,12 +103,12 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should error on invalid package setup', function (done) {
+        it('should error on invalid package setup', done => {
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'not-ok',
+                packageDir: `${ fixturePrefix }not-ok`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, errorsForNotOk);
@@ -121,12 +116,12 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should show log/error messages for all packages', function (done) {
+        it('should show log/error messages for all packages', done => {
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'not-ok-interlaced',
+                packageDir: `${ fixturePrefix }not-ok-interlaced`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, errorsForNotOkInterlaced);
@@ -135,11 +130,11 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should accept `scopeList` parameter', function (done) {
+        it('should accept `scopeList` parameter', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'not-ok',
+                packageDir: `${ fixturePrefix }not-ok`,
                 scopeList: ['devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -147,8 +142,8 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should find ' + packageJsonName + ' if `packageDir` not provided', function (done) {
-            checkDeps({}, function (output) {
+        it(`should find ${ packageJsonName } if \`packageDir\` not provided`, done => {
+            checkDeps({}, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -156,23 +151,23 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should error if ' + packageJsonName + ' wasn\'t found in `packageDir`',
-                function (done) {
+        it(`should error if ${ packageJsonName } wasn't found in \`packageDir\``,
+                done => {
             checkDeps({
-                packageDir: fixturePrefix + 'missing-json',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }missing-json`,
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.deepEqual(output.error, [
-                    'Missing ' + packageJsonName + '!',
+                    `Missing ${ packageJsonName }!`,
                 ]);
                 done();
             });
         });
 
-        it('should ignore excessive deps if `onlySpecified` not provided', function (done) {
+        it('should ignore excessive deps if `onlySpecified` not provided', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'only-specified-not-ok',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }only-specified-not-ok`,
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -180,11 +175,11 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should ignore excessive deps if `onlySpecified` is `false`', function (done) {
+        it('should ignore excessive deps if `onlySpecified` is `false`', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'only-specified-not-ok',
+                packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: false,
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -192,11 +187,11 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should not error if no excessive deps and `onlySpecified` is `true`', function (done) {
+        it('should not error if no excessive deps and `onlySpecified` is `true`', done => {
             checkDeps({
-                packageDir: fixturePrefixSeparate + 'ok',
+                packageDir: `${ fixturePrefixSeparate }ok`,
                 onlySpecified: true,
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -205,13 +200,13 @@ describe('checkDependencies', function () {
         });
 
         it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`',
-                function (done) {
+                done => {
             checkDeps({
-                packageDir: fixturePrefix + 'only-specified-not-ok',
+                packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: true,
                 scopeList: ['dependencies'],
                 optionalScopeList: ['fakeDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -220,11 +215,11 @@ describe('checkDependencies', function () {
         });
 
         it('should error if there are excessive deps and `onlySpecified` is `true`',
-                function (done) {
+                done => {
             checkDeps({
-                packageDir: fixturePrefix + 'only-specified-not-ok',
+                packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: true,
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.deepEqual(output.error, [
                     'Package c installed, though it shouldn\'t be',
@@ -235,24 +230,23 @@ describe('checkDependencies', function () {
         });
 
         if (checkDependenciesMode === 'callback') {
-            it('should throw if callback is not a function', function () {
-                var config = {
-                    packageDir: fixturePrefixSeparate + 'ok',
+            it('should throw if callback is not a function', () => {
+                const config = {
+                    packageDir: `${ fixturePrefixSeparate }ok`,
                 };
 
-                var expectToThrow = function (fnsWithReasons) {
-                    fnsWithReasons.forEach(function (fnWithReason) {
+                const expectToThrow = fnsWithReasons => {
+                    for (const fnWithReason of fnsWithReasons) {
                         assert.throws(fnWithReason[0], Error,
-                            'Expected the function to throw when passed ' +
-                                'a callback: ' + fnWithReason[1]);
-                    });
+                            `Expected the function to throw when passed a callback: ${
+                                fnWithReason[1] }`
+                        );
+                    }
                 };
 
-                var getFunctionWithReason = function (fakeCallback) {
+                const getFunctionWithReason = fakeCallback => {
                     return [
-                        function () {
-                            checkDeps(config, fakeCallback);
-                        },
+                        () => checkDeps(config, fakeCallback),
                         fakeCallback,
                     ];
                 };
@@ -271,18 +265,18 @@ describe('checkDependencies', function () {
         // But we test correctness of those modes in many other tests so that one
         // is not needed.
         if (checkDependenciesMode === 'callback') {
-            it('should not throw if only one parameter provided', function () {
-                assert.doesNotThrow(function () {
+            it('should not throw if only one parameter provided', () => {
+                assert.doesNotThrow(() => {
                     checkDeps({
-                        packageDir: fixturePrefixSeparate + 'ok',
+                        packageDir: `${ fixturePrefixSeparate }ok`,
                     });
                 }, 'Expected the function with one parameter not to throw');
             });
         }
 
         if (packageManager === 'npm') {
-            it('should allow to provide callback as the first argument', function (done) {
-                checkDeps(function (output) {
+            it('should allow to provide callback as the first argument', done => {
+                checkDeps(output => {
                     assert.strictEqual(output.status, 0);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
@@ -292,20 +286,19 @@ describe('checkDependencies', function () {
 
             if (checkDependenciesMode === 'callback') {
                 it('should throw if config not present and callback is not a function',
-                        function () {
-                    var expectToThrow = function (fnsWithReasons) {
-                        fnsWithReasons.forEach(function (fnWithReason) {
+                        () => {
+                    const expectToThrow = fnsWithReasons => {
+                        for (const fnWithReason of fnsWithReasons) {
                             assert.throws(fnWithReason[0], Error,
-                                'Expected the function to throw when passed a callback: ' +
-                                    fnWithReason[1]);
-                        });
+                                `Expected the function to throw when passed a callback: ${
+                                    fnWithReason[1] }`
+                            );
+                        }
                     };
 
-                    var getFunctionWithReason = function (fakeCallback) {
+                    const getFunctionWithReason = fakeCallback => {
                         return [
-                            function () {
-                                checkDeps(fakeCallback);
-                            },
+                            () => checkDeps(fakeCallback),
                             fakeCallback,
                         ];
                     };
@@ -320,21 +313,21 @@ describe('checkDependencies', function () {
             }
         }
 
-        it('should support `log` and `error` options', function (done) {
-            var logArray = [];
-            var errorArray = [];
+        it('should support `log` and `error` options', done => {
+            const logArray = [];
+            const errorArray = [];
 
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'not-ok',
+                packageDir: `${ fixturePrefix }not-ok`,
                 verbose: true,
-                log: function (msg) {
+                log(msg) {
                     logArray.push(msg);
                 },
-                error: function (msg) {
+                error(msg) {
                     errorArray.push(msg);
                 },
-            }, function (output) {
+            }, output => {
                 // output.error shouldn't be silenced
                 assert.deepEqual(output.error, errorsForNotOk);
 
@@ -344,19 +337,19 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should not print logs when `verbose` is not set to true', function (done) {
-            var logArray = [];
-            var errorArray = [];
+        it('should not print logs when `verbose` is not set to true', done => {
+            const logArray = [];
+            const errorArray = [];
 
             checkDeps({
-                packageDir: fixturePrefix + 'not-ok',
-                log: function (msg) {
+                packageDir: `${ fixturePrefix }not-ok`,
+                log(msg) {
                     logArray.push(msg);
                 },
-                error: function (msg) {
+                error(msg) {
                     errorArray.push(msg);
                 },
-            }, function () {
+            }, () => {
                 assert.deepEqual(logArray, []);
                 assert.deepEqual(errorArray, []);
                 done();
@@ -364,10 +357,10 @@ describe('checkDependencies', function () {
         });
 
         if (packageManager === 'bower') {
-            it('should respect `directory` setting in `.bowerrc`', function (done) {
+            it('should respect `directory` setting in `.bowerrc`', done => {
                 checkDeps({
-                    packageDir: './test/bower-fixtures/bowerrc/',
-                }, function (output) {
+                    packageDir: `${ __dirname }/bower-fixtures/bowerrc/`,
+                }, output => {
                     assert.strictEqual(output.status, 0);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
@@ -377,11 +370,11 @@ describe('checkDependencies', function () {
         }
 
         it('should check Git URL based dependencies only if `checkGitUrls` is true',
-                function (done) {
+                done => {
             checkDeps({
-                packageDir: fixturePrefix + 'git-urls',
+                packageDir: `${ fixturePrefix }git-urls`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.deepEqual(output.error, [
                     'b: not installed!',
                     installMessage,
@@ -389,9 +382,9 @@ describe('checkDependencies', function () {
             });
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'git-urls',
+                packageDir: `${ fixturePrefix }git-urls`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.deepEqual(output.error, [
                     'a: installed: 0.5.8, expected: 0.5.9',
                     'b: not installed!',
@@ -401,24 +394,24 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should check the version for Git URLs with valid semver tags only', function (done) {
+        it('should check the version for Git URLs with valid semver tags only', done => {
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'non-semver-tag',
+                packageDir: `${ fixturePrefix }non-semver-tag`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.depsWereOk, true);
                 done();
             });
         });
 
         it('should check a Git dependency is installed even if it\'s hash ' +
-            'is not a valid semver tag', function (done) {
+            'is not a valid semver tag', done => {
             checkDeps({
                 checkGitUrls: true,
-                packageDir: fixturePrefix + 'non-semver-tag-pkg-missing',
+                packageDir: `${ fixturePrefix }non-semver-tag-pkg-missing`,
                 scopeList: ['dependencies', 'devDependencies'],
-            }, function (output) {
+            }, output => {
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
                     'a: not installed!',
@@ -429,15 +422,15 @@ describe('checkDependencies', function () {
         });
 
         it('should check custom package name dependencies only if `checkCustomPackageNames` ' +
-            'is true and we are testing bower, not npm', function (done) {
+            'is true and we are testing bower, not npm', done => {
 
             if (packageManager !== 'npm') {
 
                 checkDeps({
                     checkCustomPackageNames: true,
-                    packageDir: './test/bower-fixtures/custom-package-not-ok',
+                    packageDir: `${ __dirname }/bower-fixtures/custom-package-not-ok`,
                     scopeList: ['dependencies', 'devDependencies'],
-                }, function (output) {
+                }, output => {
                     assert.deepEqual(output.error, [
                         'a: installed: 0.5.8, expected: 0.5.9',
                         'b: not installed!',
@@ -446,9 +439,9 @@ describe('checkDependencies', function () {
                 });
 
                 checkDeps({
-                    packageDir: './test/bower-fixtures/custom-package-not-ok',
+                    packageDir: `${ __dirname }/bower-fixtures/custom-package-not-ok`,
                     scopeList: ['dependencies', 'devDependencies'],
-                }, function (output) {
+                }, output => {
                     assert.deepEqual(output.error, [
                         'b: not installed!',
                         installMessage,
@@ -462,15 +455,15 @@ describe('checkDependencies', function () {
         });
 
         it('should find no errors if checkCustomPackageNames=true and custom package names are ok',
-                function (done) {
+                done => {
 
             if (packageManager !== 'npm') {
 
                 checkDeps({
                     checkCustomPackageNames: true,
-                    packageDir: './test/bower-fixtures/custom-package-ok',
+                    packageDir: `${ __dirname }/bower-fixtures/custom-package-ok`,
                     scopeList: ['dependencies', 'devDependencies'],
-                }, function (output) {
+                }, output => {
                     assert.strictEqual(output.status, 0);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
@@ -482,10 +475,10 @@ describe('checkDependencies', function () {
             }
         });
 
-        it('should accept `latest` as a version', function (done) {
+        it('should accept `latest` as a version', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'latest-ok',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }latest-ok`,
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -493,10 +486,10 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should report missing package even if version is `latest`', function (done) {
+        it('should report missing package even if version is `latest`', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'latest-not-ok',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }latest-not-ok`,
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
@@ -507,10 +500,10 @@ describe('checkDependencies', function () {
             });
         });
 
-        it('should not require to have optional dependencies installed', function (done) {
+        it('should not require to have optional dependencies installed', done => {
             checkDeps({
-                packageDir: fixturePrefix + 'optional-not-present',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }optional-not-present`,
+            }, output => {
                 assert.strictEqual(output.status, 0);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
@@ -519,10 +512,10 @@ describe('checkDependencies', function () {
         });
 
         it('should require optional dependencies to have a proper version if installed',
-                function (done) {
+                done => {
             checkDeps({
-                packageDir: fixturePrefix + 'optional-present-incorrect',
-            }, function (output) {
+                packageDir: `${ fixturePrefix }optional-present-incorrect`,
+            }, output => {
                 assert.strictEqual(output.status, 1);
                 assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
@@ -534,35 +527,33 @@ describe('checkDependencies', function () {
         });
 
         it('should install missing packages when `install` is set to true', function (done) {
-            /* eslint-disable no-invalid-this */
-
             this.timeout(30000);
 
-            var fixtureName = 'not-ok-install';
-            var versionRange = require('../' + fixturePrefixSeparate + fixtureName + '/' +
-                    packageJsonName).dependencies.jquery;
-            var fixtureDir = __dirname + '/../' + fixturePrefixSeparate + fixtureName;
-            var fixtureCopyDir = fixtureDir + '-copy';
-            var depVersion = JSON.parse(fs.readFileSync(__dirname +
-                    '/../' + fixturePrefixSeparate + fixtureName + '/' + depsDirName +
-                    '/jquery/' + depsJsonName)).version;
+            const fixtureName = 'not-ok-install';
+            const versionRange = require(
+                `${ fixturePrefixSeparate }${ fixtureName }/${ packageJsonName }`
+            ).dependencies.jquery;
+            const fixtureDir = `${ fixturePrefixSeparate }${ fixtureName }`;
+            const fixtureCopyDir = `${ fixtureDir }-copy`;
+            const depVersion = JSON.parse(fs.readFileSync(
+                `${ fixturePrefixSeparate }${ fixtureName }/${ depsDirName
+                    }/jquery/${ depsJsonName }`
+            )).version;
 
-            assert.equal(semver.satisfies(depVersion, versionRange),
-                false, 'Expected version ' + depVersion + ' not to match ' + versionRange);
+            assert.equal(
+                semver.satisfies(depVersion, versionRange), false,
+                `Expected version ${ depVersion } not to match ${ versionRange }`
+            );
 
             return Promise.all([])
-                .then(function () {
-                    return fs.removeAsync(fixtureCopyDir);
-                })
-                .then(function () {
-                    return fs.copyAsync(fixtureDir, fixtureCopyDir);
-                })
-                .then(function () {
+                .then(() => fs.removeAsync(fixtureCopyDir))
+                .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
+                .then(() => {
                     checkDeps({
-                        packageDir: fixturePrefixSeparate + fixtureName + '-copy',
+                        packageDir: `${ fixturePrefixSeparate }${ fixtureName }-copy`,
                         checkGitUrls: true,
                         install: true,
-                    }, function (output) {
+                    }, output => {
                         // The functions is supposed to not fail because it's instructed to do
                         // `npm install`/`bower install`.
                         assert.strictEqual(output.status, 0);
@@ -577,47 +568,41 @@ describe('checkDependencies', function () {
                                     '@bcoe/awesomeify: not installed!',
                                 ] : [])
                         );
-                        depVersion = JSON.parse(fs.readFileSync(fixtureCopyDir + '/' + depsDirName +
-                            '/jquery/' + depsJsonName)).version;
-                        assert(semver.satisfies(depVersion, versionRange),
-                            'Expected version ' + depVersion + ' to match ' + versionRange);
+                        const newDepVersion = JSON.parse(
+                            fs.readFileSync(`${ fixtureCopyDir }/${ depsDirName
+                                }/jquery/${ depsJsonName }`)
+                        ).version;
+                        assert(semver.satisfies(newDepVersion, versionRange),
+                            `Expected version ${ newDepVersion } to match ${ versionRange }`);
                         done();
                     });
                 });
-
-                /* eslint-enable no-invalid-this */
         });
 
         it('should prune excessive packages when `install` is set to true', function (done) {
-            /* eslint-disable no-invalid-this */
-
             this.timeout(30000);
 
-            var fixtureName = 'only-specified-not-ok-install';
-            var fixtureDir = __dirname + '/../' + fixturePrefix + fixtureName;
-            var fixtureCopyDir = fixtureDir + '-copy';
-            var packageDir = fixturePrefix + fixtureName + '-copy';
+            const fixtureName = 'only-specified-not-ok-install';
+            const fixtureDir = `${ fixturePrefix }${ fixtureName }`;
+            const fixtureCopyDir = `${ fixtureDir }-copy`;
+            const packageDir = `${ fixturePrefix }${ fixtureName }-copy`;
 
 
             return Promise.all([])
-                .then(function () {
-                    return fs.removeAsync(fixtureCopyDir);
-                })
-                .then(function () {
-                    return fs.copyAsync(fixtureDir, fixtureCopyDir);
-                })
-                .then(function () {
-                    var depList = fs.readdirSync(packageDir + '/' + depsDirName);
+                .then(() => fs.removeAsync(fixtureCopyDir))
+                .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
+                .then(() => {
+                    const depList = fs.readdirSync(`${ packageDir }/${ depsDirName }`);
                     assert.deepEqual(depList,
                         ['jquery', 'json3'],
-                        'Expected package json3 to be present; got: ' + JSON.stringify(depList));
+                        `Expected package json3 to be present; got: ${ JSON.stringify(depList) }`);
 
                     checkDeps({
-                        packageDir: packageDir,
+                        packageDir,
                         onlySpecified: true,
                         checkGitUrls: true,
                         install: true,
-                    }, function (output) {
+                    }, output => {
                         // The functions is supposed to not fail because it's instructed to do
                         // `npm install`/`bower install`.
                         assert.strictEqual(output.status, 0);
@@ -626,142 +611,111 @@ describe('checkDependencies', function () {
                             'Package json3 installed, though it shouldn\'t be',
                         ]);
 
-                        var depList = fs.readdirSync(packageDir + '/' + depsDirName);
+                        const depList = fs.readdirSync(`${ packageDir }/${ depsDirName }`);
                         assert.deepEqual(depList,
                             ['jquery'],
-                            'Expected package json3 to be removed; got: ' +
-                                JSON.stringify(depList));
+                            `Expected package json3 to be removed; got: ${
+                                JSON.stringify(depList) }`);
 
                         done();
                     });
                 });
-
-                /* eslint-enable no-invalid-this */
         });
     };
 
 
     it('should prepare fixures for Bower and npm successfully', function () {
-        /* eslint-disable no-invalid-this */
-
         this.timeout(30000);
 
-        var npmFixturesDir = __dirname + '/common-fixtures';
+        const npmFixturesDir = `${ __dirname }/common-fixtures`;
 
-        var getGeneratedDir = function (packageManager) {
-            return __dirname + '/' + packageManager + '-fixtures/generated';
-        };
+        const getGeneratedDir = packageManager =>
+            `${ __dirname }/${ packageManager }-fixtures/generated`;
 
-        var convertToBowerFixture = function (fixtureDirPath) {
+        const convertToBowerFixture = fixtureDirPath => {
             return Promise.all([])
 
                 // Change package.json to bower.json in top level scope
-                .then(function () {
-                    if (fs.existsSync(fixtureDirPath + '/package.json')) {
-                        return fs.moveAsync(fixtureDirPath + '/package.json',
-                            fixtureDirPath + '/bower.json');
-                    }
-                })
+                .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
+                        fs.moveAsync(`${ fixtureDirPath }/package.json`,
+                            `${ fixtureDirPath }/bower.json`) :
+                        undefined
+                )
 
                 // Change node_modules to bower_components in top level scope
-                .then(function () {
-                    if (fs.existsSync(fixtureDirPath + '/node_modules')) {
-                        return fs.moveAsync(fixtureDirPath + '/node_modules',
-                            fixtureDirPath + '/bower_components');
-                    }
-                })
+                .then(() => fs.existsSync(`${ fixtureDirPath }/node_modules`) ?
+                        fs.moveAsync(`${ fixtureDirPath }/node_modules`,
+                            `${ fixtureDirPath }/bower_components`) :
+                        undefined
+                )
 
                 // Change package.json to .bower.json in dependencies' folders
-                .then(function () {
-                    if (fs.existsSync(fixtureDirPath + '/bower_components')) {
-                        return fs.readdirAsync(fixtureDirPath + '/bower_components');
-                    }
-                    return [];
-                })
-                .then(function (depDirNames) {
-                    return depDirNames
-                        .filter(function (depDirName) {
-                            return depDirName !== '.bin';
-                        })
-                        .map(function (depDirName) {
-                            return fixtureDirPath + '/bower_components/' + depDirName;
-                        });
-                })
-                .then(function (depDirPaths) {
-                    var tasks = [];
-                    depDirPaths.forEach(function (depDirPath) {
-                        tasks.push(fs.moveAsync(depDirPath + '/package.json',
-                            depDirPath + '/.bower.json'));
-                    });
-                    return Promise.all(tasks);
-                });
+                .then(() => fs.existsSync(`${ fixtureDirPath }/bower_components`) ?
+                        fs.readdirAsync(`${ fixtureDirPath }/bower_components`) :
+                        []
+                )
+                .then(depDirNames => depDirNames
+                    .filter(depDirName => depDirName !== '.bin')
+                    .map(depDirName => `${ fixtureDirPath }/bower_components/${ depDirName }`)
+                )
+                .then(depDirPaths => Promise.all(depDirPaths
+                    .map(depDirPath => fs.moveAsync(
+                            `${ depDirPath }/package.json`,
+                            `${ depDirPath }/.bower.json`)
+                    ))
+                );
         };
 
         return Promise.all([])
 
             // npm
-            .then(function () {
-                return fs.removeAsync(getGeneratedDir('npm'));
-            })
-            .then(function () {
-                return fs.copyAsync(npmFixturesDir, getGeneratedDir('npm'));
-            })
+            .then(() => fs.removeAsync(getGeneratedDir('npm')))
+            .then(() => fs.copyAsync(npmFixturesDir, getGeneratedDir('npm')))
 
             // Bower
-            .then(function () {
-                return fs.removeAsync(getGeneratedDir('bower'));
-            })
-            .then(function () {
-                return fs.copyAsync(npmFixturesDir, getGeneratedDir('bower'));
-            })
-            .then(function () {
-                return fs.readdirAsync(getGeneratedDir('bower'));
-            })
-            .then(function (fixtureDirNames) {
-                var tasks = [];
-                fixtureDirNames.forEach(function (fixtureDirName) {
-                    tasks.push(
-                        convertToBowerFixture(getGeneratedDir('bower') + '/' + fixtureDirName));
-                });
-                return Promise.all(tasks);
-            });
-
-        /* eslint-enable no-invalid-this */
+            .then(() => fs.removeAsync(getGeneratedDir('bower')))
+            .then(() => fs.copyAsync(npmFixturesDir, getGeneratedDir('bower')))
+            .then(() => fs.readdirAsync(getGeneratedDir('bower')))
+            .then(fixtureDirNames => Promise.all(fixtureDirNames
+                .map(fixtureDirName =>
+                        convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`)
+                ))
+            );
     });
 
-    describe('npm', function () {
-        describe('callbacks', function () {
+    describe('npm', () => {
+        describe('callbacks', () => {
             testSuite('npm', 'callbacks');
         });
-        describe('promises', function () {
+        describe('promises', () => {
             testSuite('npm', 'promises');
         });
         if (semver.satisfies(process.version, '>=0.12.0')) {
-            describe('sync', function () {
+            describe('sync', () => {
                 testSuite('npm', 'sync');
             });
         }
     });
 
 
-    describe('bower', function () {
-        describe('callbacks', function () {
+    describe('bower', () => {
+        describe('callbacks', () => {
             testSuite('bower', 'callbacks');
         });
-        describe('promises', function () {
+        describe('promises', () => {
             testSuite('bower', 'promises');
         });
         if (semver.satisfies(process.version, '>=0.12.0')) {
-            describe('sync', function () {
+            describe('sync', () => {
                 testSuite('bower', 'sync');
             });
         }
     });
 
-    describe('CLI reporter', function () {
-        var cli, consoleLogStub, consoleErrorStub, processExitStub;
+    describe('CLI reporter', () => {
+        let cli, consoleLogStub, consoleErrorStub, processExitStub;
 
-        beforeEach(function () {
+        beforeEach(() => {
             cli = require('../bin/cli.js');
 
             consoleLogStub = sinon.stub(console, 'log');
@@ -769,14 +723,14 @@ describe('checkDependencies', function () {
             processExitStub = sinon.stub(process, 'exit');
         });
 
-        afterEach(function () {
+        afterEach(() => {
             consoleLogStub.restore();
             consoleErrorStub.restore();
             processExitStub.restore();
         });
 
-        it('should call console log for every error', function () {
-            var result = {
+        it('should call console log for every error', () => {
+            const result = {
                 error: [
                     'error1',
                     'error2',
@@ -790,8 +744,8 @@ describe('checkDependencies', function () {
             sinon.assert.calledWith(consoleErrorStub, 'error2');
         });
 
-        it('should not call console log if no errors', function () {
-            var result = {
+        it('should not call console log if no errors', () => {
+            const result = {
                 error: [],
             };
 
@@ -800,8 +754,8 @@ describe('checkDependencies', function () {
             sinon.assert.notCalled(consoleErrorStub);
         });
 
-        it('should call process exit with one if errors exist', function () {
-            var result = {
+        it('should call process exit with one if errors exist', () => {
+            const result = {
                 error: [
                     'error1',
                 ],
@@ -812,8 +766,8 @@ describe('checkDependencies', function () {
             sinon.assert.calledWith(processExitStub, 1);
         });
 
-        it('should not call process exit with if no errors', function () {
-            var result = {
+        it('should not call process exit with if no errors', () => {
+            const result = {
                 error: [],
             };
 
@@ -823,12 +777,12 @@ describe('checkDependencies', function () {
         });
     });
 
-    describe('CLI (via a spawned process)', function () {
-        var cliPath = path.resolve(__dirname, '../bin/cli.js');
-        var bowerFixturesRoot = path.resolve(__dirname, './bower-fixtures');
-        var npmFixturesRoot = path.resolve(__dirname, './npm-fixtures');
+    describe('CLI (via a spawned process)', () => {
+        const cliPath = path.resolve(__dirname, '../bin/cli.js');
+        const bowerFixturesRoot = path.resolve(__dirname, './bower-fixtures');
+        const npmFixturesRoot = path.resolve(__dirname, './npm-fixtures');
 
-        var npmNotOkStderrString = [
+        const npmNotOkStderrString = [
             'a: installed: 1.2.4, expected: 1.2.3',
             'b: installed: 0.9.9, expected: >=1.0.0',
             'c: not installed!',
@@ -836,24 +790,24 @@ describe('checkDependencies', function () {
             'Invoke npm install to install missing packages',
             '',
         ].join('\n');
-        var bowerNotOkStderrString = npmNotOkStderrString.replace(/npm/g, 'bower');
+        const bowerNotOkStderrString = npmNotOkStderrString.replace(/npm/g, 'bower');
 
-        describe('ok package', function () {
-            var runTest = function runTest(verbose) {
-                return function (done) {
-                    var packageRoot = path.join(npmFixturesRoot, 'ok');
+        describe('ok package', () => {
+            const runTest = verbose =>
+                done => {
+                    const packageRoot = path.join(npmFixturesRoot, 'ok');
 
-                    var child = spawn(process.execPath,
+                    const child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
                         {
                             cwd: packageRoot,
                         }
                     );
 
-                    child.on('exit', function (code) {
+                    child.on('exit', code => {
                         assert.strictEqual(code, 0);
-                        var stdout = child.stdout.read();
-                        var stderr = child.stderr.read();
+                        const stdout = child.stdout.read();
+                        const stderr = child.stderr.read();
                         if (verbose) {
                             assert.strictEqual(stdout.toString(), [
                                 'a: installed: 1.2.3, expected: 1.2.3',
@@ -869,28 +823,27 @@ describe('checkDependencies', function () {
                         done();
                     });
                 };
-            };
 
             it('should succeed', runTest());
             it('should succeed (verbose mode)', runTest(true));
         });
 
-        describe('non-ok package', function () {
-            var runTest = function runTest(verbose) {
-                return function (done) {
-                    var packageRoot = path.join(npmFixturesRoot, 'generated/not-ok');
+        describe('non-ok package', () => {
+            const runTest = verbose =>
+                done => {
+                    const packageRoot = path.join(npmFixturesRoot, 'generated/not-ok');
 
-                    var child = spawn(process.execPath,
+                    const child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
                         {
                             cwd: packageRoot,
                         }
                     );
 
-                    child.on('exit', function (code) {
+                    child.on('exit', code => {
                         assert.strictEqual(code, 1);
-                        var stdout = child.stdout.read();
-                        var stderr = child.stderr.read();
+                        const stdout = child.stdout.read();
+                        const stderr = child.stderr.read();
                         if (verbose) {
                             assert.strictEqual(stdout.toString(), [
                                 'e: installed: 1.0.0, expected: 1.0.0',
@@ -903,41 +856,40 @@ describe('checkDependencies', function () {
                         done();
                     });
                 };
-            };
 
             it('should fail', runTest());
             it('should fail (verbose mode)', runTest(true));
         });
 
-        describe('the --package-dir option', function () {
-            it('should succeed on an ok package', function (done) {
-                var packageDir = path.join(npmFixturesRoot, 'ok');
+        describe('the --package-dir option', () => {
+            it('should succeed on an ok package', done => {
+                const packageDir = path.join(npmFixturesRoot, 'ok');
 
-                var child = spawn(process.execPath,
+                const child = spawn(process.execPath,
                     [cliPath, '--package-dir', packageDir],
                     {
                         cwd: __dirname,
                     }
                 );
 
-                child.on('exit', function (code) {
+                child.on('exit', code => {
                     assert.strictEqual(code, 0);
                     assert.strictEqual(child.stderr.read(), null);
                     done();
                 });
             });
 
-            it('should fail on a non-ok package', function (done) {
-                var packageDir = path.join(npmFixturesRoot, 'generated/not-ok');
+            it('should fail on a non-ok package', done => {
+                const packageDir = path.join(npmFixturesRoot, 'generated/not-ok');
 
-                var child = spawn(process.execPath,
+                const child = spawn(process.execPath,
                     [cliPath, '--package-dir', packageDir],
                     {
                         cwd: __dirname,
                     }
                 );
 
-                child.on('exit', function (code) {
+                child.on('exit', code => {
                     assert.strictEqual(code, 1);
                     assert.strictEqual(child.stderr.read().toString(), npmNotOkStderrString);
                     done();
@@ -945,35 +897,35 @@ describe('checkDependencies', function () {
             });
         });
 
-        describe('the --package-manager option', function () {
-            it('should succeed on an ok package', function (done) {
-                var packageRoot = path.join(bowerFixturesRoot, 'ok');
+        describe('the --package-manager option', () => {
+            it('should succeed on an ok package', done => {
+                const packageRoot = path.join(bowerFixturesRoot, 'ok');
 
-                var child = spawn(process.execPath,
+                const child = spawn(process.execPath,
                     [cliPath, '--package-manager', 'bower'],
                     {
                         cwd: packageRoot,
                     }
                 );
 
-                child.on('exit', function (code) {
+                child.on('exit', code => {
                     assert.strictEqual(code, 0);
                     assert.strictEqual(child.stderr.read(), null);
                     done();
                 });
             });
 
-            it('should fail on a non-ok package', function (done) {
-                var packageRoot = path.join(bowerFixturesRoot, 'generated/not-ok');
+            it('should fail on a non-ok package', done => {
+                const packageRoot = path.join(bowerFixturesRoot, 'generated/not-ok');
 
-                var child = spawn(process.execPath,
+                const child = spawn(process.execPath,
                     [cliPath, '--package-manager', 'bower'],
                     {
                         cwd: packageRoot,
                     }
                 );
 
-                child.on('exit', function (code) {
+                child.on('exit', code => {
                     assert.strictEqual(code, 1);
                     assert.strictEqual(child.stderr.read().toString(), bowerNotOkStderrString);
                     done();

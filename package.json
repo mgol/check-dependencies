@@ -13,9 +13,8 @@
     "modules",
     "dependencies"
   ],
-  "main": "lib/check-dependencies.js",
   "bin": {
-    "check-dependencies": "./bin/cli.js"
+    "check-dependencies": "./bin.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +23,12 @@
   "bugs": "https://github.com/mzgol/check-dependencies/issues",
   "license": "MIT",
   "files": [
-    "lib"
+    "bin.js",
+    "index.js",
+    "bin",
+    "lib",
+    "dist/bin",
+    "dist/lib"
   ],
   "dependencies": {
     "bluebird": "^2.9.34",
@@ -37,14 +41,17 @@
   },
   "devDependencies": {
     "bower": "1.5.2",
+    "eslint-config-mzgol": "0.0.2",
     "fs-extra": "0.24.0",
     "grunt": "0.4.5",
+    "grunt-babel": "5.0.1",
     "grunt-cli": "0.1.13",
     "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-copy": "0.8.1",
     "grunt-eslint": "17.1.0",
     "grunt-mocha-test": "0.12.7",
     "load-grunt-tasks": "3.2.0",
-    "mocha": "2.3.0",
+    "mocha": "2.3.2",
     "sinon": "1.16.1",
     "time-grunt": "1.2.1"
   },
