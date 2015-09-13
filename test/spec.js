@@ -81,13 +81,13 @@ describe('checkDependencies', () => {
             installMessage,
         ];
         errorsForNotOkInterlaced = [
-          'b: installed: 0.9.0, expected: >=1.0.0',
-          'd: installed: 0.7.0, expected: 0.5.9',
-          installMessage,
+            'b: installed: 0.9.0, expected: >=1.0.0',
+            'd: installed: 0.7.0, expected: 0.5.9',
+            installMessage,
         ];
         logsForOkInterlaced = [
-          'a: installed: 1.2.3, expected: 1.2.3',
-          'c: installed: 1.2.3, expected: <2.0',
+            'a: installed: 1.2.3, expected: 1.2.3',
+            'c: installed: 1.2.3, expected: <2.0',
         ];
 
 
@@ -151,8 +151,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it(`should error if ${ packageJsonName } wasn't found in \`packageDir\``,
-                done => {
+        it(`should error if ${ packageJsonName } wasn't found in \`packageDir\``, done => {
             checkDeps({
                 packageDir: `${ fixturePrefix }missing-json`,
             }, output => {
@@ -199,8 +198,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`',
-                done => {
+        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`', done => {
             checkDeps({
                 packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: true,
@@ -214,8 +212,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it('should error if there are excessive deps and `onlySpecified` is `true`',
-                done => {
+        it('should error if there are excessive deps and `onlySpecified` is `true`', done => {
             checkDeps({
                 packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: true,
@@ -285,8 +282,7 @@ describe('checkDependencies', () => {
             });
 
             if (checkDependenciesMode === 'callback') {
-                it('should throw if config not present and callback is not a function',
-                        () => {
+                it('should throw if config not present and callback is not a function', () => {
                     const expectToThrow = fnsWithReasons => {
                         for (const fnWithReason of fnsWithReasons) {
                             assert.throws(fnWithReason[0], Error,
@@ -369,8 +365,7 @@ describe('checkDependencies', () => {
             });
         }
 
-        it('should check Git URL based dependencies only if `checkGitUrls` is true',
-                done => {
+        it('should check Git URL based dependencies only if `checkGitUrls` is true', done => {
             checkDeps({
                 packageDir: `${ fixturePrefix }git-urls`,
                 scopeList: ['dependencies', 'devDependencies'],
@@ -455,25 +450,23 @@ describe('checkDependencies', () => {
         });
 
         it('should find no errors if checkCustomPackageNames=true and custom package names are ok',
-                done => {
+            done => {
+                if (packageManager !== 'npm') {
+                    checkDeps({
+                        checkCustomPackageNames: true,
+                        packageDir: `${ __dirname }/bower-fixtures/custom-package-ok`,
+                        scopeList: ['dependencies', 'devDependencies'],
+                    }, output => {
+                        assert.strictEqual(output.status, 0);
+                        assert.strictEqual(output.depsWereOk, true);
+                        assert.deepEqual(output.error, []);
+                        done();
+                    });
 
-            if (packageManager !== 'npm') {
-
-                checkDeps({
-                    checkCustomPackageNames: true,
-                    packageDir: `${ __dirname }/bower-fixtures/custom-package-ok`,
-                    scopeList: ['dependencies', 'devDependencies'],
-                }, output => {
-                    assert.strictEqual(output.status, 0);
-                    assert.strictEqual(output.depsWereOk, true);
-                    assert.deepEqual(output.error, []);
+                } else {
                     done();
-                });
-
-            } else {
-                done();
-            }
-        });
+                }
+            });
 
         it('should accept `latest` as a version', done => {
             checkDeps({
@@ -511,8 +504,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it('should require optional dependencies to have a proper version if installed',
-                done => {
+        it('should require optional dependencies to have a proper version if installed', done => {
             checkDeps({
                 packageDir: `${ fixturePrefix }optional-present-incorrect`,
             }, output => {
