@@ -518,6 +518,18 @@ describe('checkDependencies', () => {
             });
         });
 
+        it('should ignore all files & hidden directories as dep dirs', done => {
+            checkDeps({
+                packageDir: `${ fixturePrefix }ok-ignored-dirs-files`,
+                onlySpecified: true,
+            }, output => {
+                assert.strictEqual(output.status, 0);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.deepEqual(output.error, []);
+                done();
+            });
+        });
+
         it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
@@ -646,10 +658,17 @@ describe('checkDependencies', () => {
                         fs.readdirAsync(`${ fixtureDirPath }/bower_components`) :
                         []
                 )
+
+                // Don't try to look into files.
+                .filter(depDirName => fs
+                    .lstatSync(`${ fixtureDirPath }/bower_components/${ depDirName }`)
+                    .isDirectory())
+
                 .then(depDirNames => depDirNames
                     .filter(depDirName => depDirName !== '.bin')
                     .map(depDirName => `${ fixtureDirPath }/bower_components/${ depDirName }`)
                 )
+
                 .then(depDirPaths => Promise.all(depDirPaths
                     .map(depDirPath => fs.moveAsync(
                             `${ depDirPath }/package.json`,
