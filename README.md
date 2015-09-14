@@ -34,13 +34,13 @@ Once the package has been installed, it may be used via:
 $ check-dependencies
 ```
 
-All options from the [API](README.md#api) except `log` and `error` can be passed to the CLI, example:
+All options from the [API](#api) except `log` and `error` can be passed to the CLI, example:
 
 ```bash
 $ check-dependencies --verbose --package-manager bower --scope-list dependencies
 ```
 
-Options accepting array values in the API (like [`scopeList`](README.md#scopelist)) should have each value passed individually, example:
+Options accepting array values in the API (like [`scopeList`](#scopelist)) should have each value passed individually, example:
 ```bash
 $ check-dependencies --scope-list dependencies --scope-list devDependencies
 ```
