@@ -96,9 +96,9 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefixSeparate }ok`,
                 scopeList: ['dependencies', 'devDependencies'],
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -109,9 +109,9 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }not-ok`,
                 scopeList: ['dependencies', 'devDependencies'],
             }, output => {
-                assert.strictEqual(output.status, 1);
-                assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, errorsForNotOk);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -122,10 +122,10 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }not-ok-interlaced`,
                 scopeList: ['dependencies', 'devDependencies'],
             }, output => {
-                assert.strictEqual(output.status, 1);
-                assert.strictEqual(output.depsWereOk, false);
-                assert.deepEqual(output.error, errorsForNotOkInterlaced);
                 assert.deepEqual(output.log, logsForOkInterlaced);
+                assert.deepEqual(output.error, errorsForNotOkInterlaced);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -135,18 +135,18 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }not-ok`,
                 scopeList: ['devDependencies'],
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
 
         it(`should find ${ packageJsonName } if \`packageDir\` not provided`, done => {
             checkDeps({}, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -155,10 +155,10 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }missing-json`,
             }, output => {
-                assert.strictEqual(output.status, 1);
                 assert.deepEqual(output.error, [
                     `Missing ${ packageJsonName }!`,
                 ]);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -167,9 +167,9 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }only-specified-not-ok`,
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -179,9 +179,9 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: false,
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -205,9 +205,9 @@ describe('checkDependencies', () => {
                 scopeList: ['dependencies'],
                 optionalScopeList: ['fakeDependencies'],
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -217,11 +217,11 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }only-specified-not-ok`,
                 onlySpecified: true,
             }, output => {
-                assert.strictEqual(output.status, 1);
                 assert.deepEqual(output.error, [
                     'Package c installed, though it shouldn\'t be',
                     pruneAndInstallMessage,
                 ]);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -274,9 +274,9 @@ describe('checkDependencies', () => {
         if (packageManager === 'npm') {
             it('should allow to provide callback as the first argument', done => {
                 checkDeps(output => {
-                    assert.strictEqual(output.status, 0);
-                    assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.strictEqual(output.status, 0);
                     done();
                 });
             });
@@ -357,9 +357,9 @@ describe('checkDependencies', () => {
                 checkDeps({
                     packageDir: `${ __dirname }/bower-fixtures/bowerrc/`,
                 }, output => {
-                    assert.strictEqual(output.status, 0);
-                    assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.strictEqual(output.status, 0);
                     done();
                 });
             });
@@ -457,9 +457,9 @@ describe('checkDependencies', () => {
                         packageDir: `${ __dirname }/bower-fixtures/custom-package-ok`,
                         scopeList: ['dependencies', 'devDependencies'],
                     }, output => {
-                        assert.strictEqual(output.status, 0);
-                        assert.strictEqual(output.depsWereOk, true);
                         assert.deepEqual(output.error, []);
+                        assert.strictEqual(output.depsWereOk, true);
+                        assert.strictEqual(output.status, 0);
                         done();
                     });
 
@@ -472,9 +472,9 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }latest-ok`,
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -483,12 +483,12 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }latest-not-ok`,
             }, output => {
-                assert.strictEqual(output.status, 1);
-                assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
                     'a: not installed!',
                     installMessage,
                 ]);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -497,9 +497,9 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }optional-not-present`,
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -508,12 +508,12 @@ describe('checkDependencies', () => {
             checkDeps({
                 packageDir: `${ fixturePrefix }optional-present-incorrect`,
             }, output => {
-                assert.strictEqual(output.status, 1);
-                assert.strictEqual(output.depsWereOk, false);
                 assert.deepEqual(output.error, [
                     'a: installed: 1.1.2, expected: ~1.2.0',
                     installMessage,
                 ]);
+                assert.strictEqual(output.depsWereOk, false);
+                assert.strictEqual(output.status, 1);
                 done();
             });
         });
@@ -523,9 +523,9 @@ describe('checkDependencies', () => {
                 packageDir: `${ fixturePrefix }ok-ignored-dirs-files`,
                 onlySpecified: true,
             }, output => {
-                assert.strictEqual(output.status, 0);
-                assert.strictEqual(output.depsWereOk, true);
                 assert.deepEqual(output.error, []);
+                assert.strictEqual(output.depsWereOk, true);
+                assert.strictEqual(output.status, 0);
                 done();
             });
         });
@@ -560,8 +560,6 @@ describe('checkDependencies', () => {
                     }, output => {
                         // The functions is supposed to not fail because it's instructed to do
                         // `npm install`/`bower install`.
-                        assert.strictEqual(output.status, 0);
-                        assert.strictEqual(output.depsWereOk, false);
                         assert.deepEqual(output.error,
                             []
                                 .concat([
@@ -572,12 +570,16 @@ describe('checkDependencies', () => {
                                     '@bcoe/awesomeify: not installed!',
                                 ] : [])
                         );
+
                         const newDepVersion = JSON.parse(
                             fs.readFileSync(`${ fixtureCopyDir }/${ depsDirName
                                 }/jquery/${ depsJsonName }`)
                         ).version;
                         assert(semver.satisfies(newDepVersion, versionRange),
                             `Expected version ${ newDepVersion } to match ${ versionRange }`);
+
+                        assert.strictEqual(output.depsWereOk, false);
+                        assert.strictEqual(output.status, 0);
                         done();
                     });
                 });
@@ -609,8 +611,6 @@ describe('checkDependencies', () => {
                     }, output => {
                         // The functions is supposed to not fail because it's instructed to do
                         // `npm install`/`bower install`.
-                        assert.strictEqual(output.status, 0);
-                        assert.strictEqual(output.depsWereOk, false);
                         assert.deepEqual(output.error, [
                             'Package json3 installed, though it shouldn\'t be',
                         ]);
@@ -621,6 +621,8 @@ describe('checkDependencies', () => {
                             `Expected package json3 to be removed; got: ${
                                 JSON.stringify(depList) }`);
 
+                        assert.strictEqual(output.depsWereOk, false);
+                        assert.strictEqual(output.status, 0);
                         done();
                     });
                 });
