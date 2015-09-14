@@ -34,10 +34,15 @@ Once the package has been installed, it may be used via:
 $ check-dependencies
 ```
 
-Options of type `boolean` or `string` (see the [API](README.md#API) section) can be passed to the CLI:
+All options from the [API](README.md#api) except `log` and `error` can be passed to the CLI, example:
 
 ```bash
-$ check-dependencies --install --verbose --package-manager bower
+$ check-dependencies --verbose --package-manager bower --scope-list dependencies
+```
+
+Options accepting array values in the API (like [`scopeList`](README.md#scopelist)) should have each value passed individually, example:
+```bash
+$ check-dependencies --scope-list dependencies --scope-list devDependencies
 ```
 
 ### API
