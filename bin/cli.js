@@ -15,6 +15,15 @@ for (const key in argv) {
     argv[_.camelCase(key)] = value;
 }
 
+// Options of type array should always have array values
+for (const option of ['scopeList', 'optionalScopeList']) {
+    if (option in argv) {
+        if (!Array.isArray(argv[option])) {
+            argv[option] = [argv[option]];
+        }
+    }
+}
+
 // We'll handle verbosity by the CLI here.
 const verbose = argv.verbose;
 delete argv.verbose;

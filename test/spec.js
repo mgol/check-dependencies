@@ -945,5 +945,97 @@ describe('checkDependencies', () => {
                 });
             });
         });
+
+        describe('the --scope-list and --optional-scope-list options', () => {
+            const errorMessage = [
+                'Package c installed, though it shouldn\'t be\n',
+                'Invoke npm prune and npm install to install missing packages ',
+                'and remove excessive ones\n',
+            ].join('');
+
+            it('should succeed on an ok package', done => {
+                const packageRoot = `${ npmFixturesRoot }/generated/only-specified-not-ok`;
+
+                const child = spawn(process.execPath,
+                    [cliPath, '--only-specified',
+                        '--scope-list', 'dependencies',
+                        '--optional-scope-list', 'fakeDependencies',
+                    ],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', code => {
+                    assert.strictEqual(child.stderr.read(), null);
+                    assert.strictEqual(code, 0);
+                    done();
+                });
+            });
+
+            it('should fail on a non-ok package', done => {
+                const packageRoot = `${ npmFixturesRoot }/generated/only-specified-not-ok`;
+
+                const child = spawn(process.execPath,
+                    [cliPath, '--only-specified',
+                        '--scope-list', 'dependencies',
+                        '--optional-scope-list', 'devDependencies',
+                    ],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', code => {
+                    assert.strictEqual(child.stderr.read().toString(), errorMessage);
+                    assert.strictEqual(code, 1);
+                    done();
+                });
+            });
+
+            it('should accept multiple values and succeed', done => {
+                const packageRoot = `${ npmFixturesRoot }/generated/only-specified-not-ok`;
+
+                const child = spawn(process.execPath,
+                    [cliPath, '--only-specified',
+                        '--scope-list', 'dependencies',
+                        '--scope-list', 'fakeDependencies',
+                        '--optional-scope-list', 'fake2Dependencies',
+                        '--optional-scope-list', 'fake3Dependencies',
+                    ],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', code => {
+                    assert.strictEqual(child.stderr.read(), null);
+                    assert.strictEqual(code, 0);
+                    done();
+                });
+            });
+
+            it('should accept multiple values and fail', done => {
+                const packageRoot = `${ npmFixturesRoot }/generated/only-specified-not-ok`;
+
+                const child = spawn(process.execPath,
+                    [cliPath, '--only-specified',
+                        '--scope-list', 'dependencies',
+                        '--scope-list', 'devDependencies',
+                        '--optional-scope-list', 'optionalDependencies',
+                        '--optional-scope-list', 'optionalDevDependencies',
+                    ],
+                    {
+                        cwd: packageRoot,
+                    }
+                );
+
+                child.on('exit', code => {
+                    assert.strictEqual(child.stderr.read().toString(), errorMessage);
+                    assert.strictEqual(code, 1);
+                    done();
+                });
+            });
+        });
     });
 });
