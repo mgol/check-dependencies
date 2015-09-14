@@ -6,7 +6,6 @@ const fs = Promise.promisifyAll(require('fs-extra'));
 const semver = require('semver');
 const assert = require('assert');
 const sinon = require('sinon');
-const path = require('path');
 const spawn = require('child_process').spawn;
 const checkDependencies = require('../lib/check-dependencies');
 
@@ -791,9 +790,9 @@ describe('checkDependencies', () => {
     });
 
     describe('CLI (via a spawned process)', () => {
-        const cliPath = path.resolve(__dirname, '../bin/cli.js');
-        const bowerFixturesRoot = path.resolve(__dirname, './bower-fixtures');
-        const npmFixturesRoot = path.resolve(__dirname, './npm-fixtures');
+        const cliPath = `${ __dirname }/../bin/cli.js`;
+        const bowerFixturesRoot = `${ __dirname }/bower-fixtures`;
+        const npmFixturesRoot = `${ __dirname }/npm-fixtures`;
 
         const npmNotOkStderrString = [
             'a: installed: 1.2.4, expected: 1.2.3',
@@ -805,10 +804,18 @@ describe('checkDependencies', () => {
         ].join('\n');
         const bowerNotOkStderrString = npmNotOkStderrString.replace(/npm/g, 'bower');
 
+        const read = fileDescriptor => {
+            const stream = fileDescriptor.read();
+            if (!stream) {
+                return stream;
+            }
+            return stream.toString();
+        };
+
         describe('ok package', () => {
             const runTest = verbose =>
                 done => {
-                    const packageRoot = path.join(npmFixturesRoot, 'ok');
+                    const packageRoot = `${ npmFixturesRoot }/ok`;
 
                     const child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
@@ -818,11 +825,8 @@ describe('checkDependencies', () => {
                     );
 
                     child.on('exit', code => {
-                        assert.strictEqual(code, 0);
-                        const stdout = child.stdout.read();
-                        const stderr = child.stderr.read();
                         if (verbose) {
-                            assert.strictEqual(stdout.toString(), [
+                            assert.strictEqual(read(child.stdout), [
                                 'a: installed: 1.2.3, expected: 1.2.3',
                                 'b: installed: 1.2.3, expected: >=1.0.0',
                                 'c: installed: 1.2.3, expected: <2.0',
@@ -830,9 +834,10 @@ describe('checkDependencies', () => {
                                 '',
                             ].join('\n'));
                         } else {
-                            assert.strictEqual(stdout, null);
+                            assert.strictEqual(read(child.stdout), null);
                         }
-                        assert.strictEqual(stderr, null);
+                        assert.strictEqual(read(child.stderr), null);
+                        assert.strictEqual(code, 0);
                         done();
                     });
                 };
@@ -844,7 +849,7 @@ describe('checkDependencies', () => {
         describe('non-ok package', () => {
             const runTest = verbose =>
                 done => {
-                    const packageRoot = path.join(npmFixturesRoot, 'generated/not-ok');
+                    const packageRoot = `${ npmFixturesRoot }/generated/not-ok`;
 
                     const child = spawn(process.execPath,
                         [cliPath].concat(verbose ? ['--verbose'] : []),
@@ -854,18 +859,16 @@ describe('checkDependencies', () => {
                     );
 
                     child.on('exit', code => {
-                        assert.strictEqual(code, 1);
-                        const stdout = child.stdout.read();
-                        const stderr = child.stderr.read();
                         if (verbose) {
-                            assert.strictEqual(stdout.toString(), [
+                            assert.strictEqual(read(child.stdout), [
                                 'e: installed: 1.0.0, expected: 1.0.0',
                                 '',
                             ].join('\n'));
                         } else {
-                            assert.strictEqual(stdout, null);
+                            assert.strictEqual(read(child.stdout), null);
                         }
-                        assert.strictEqual(stderr.toString(), npmNotOkStderrString);
+                        assert.strictEqual(read(child.stderr), npmNotOkStderrString);
+                        assert.strictEqual(code, 1);
                         done();
                     });
                 };
@@ -876,7 +879,7 @@ describe('checkDependencies', () => {
 
         describe('the --package-dir option', () => {
             it('should succeed on an ok package', done => {
-                const packageDir = path.join(npmFixturesRoot, 'ok');
+                const packageDir = `${ npmFixturesRoot }/ok`;
 
                 const child = spawn(process.execPath,
                     [cliPath, '--package-dir', packageDir],
@@ -886,14 +889,14 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
+                    assert.strictEqual(read(child.stderr), null);
                     assert.strictEqual(code, 0);
-                    assert.strictEqual(child.stderr.read(), null);
                     done();
                 });
             });
 
             it('should fail on a non-ok package', done => {
-                const packageDir = path.join(npmFixturesRoot, 'generated/not-ok');
+                const packageDir = `${ npmFixturesRoot }/generated/not-ok`;
 
                 const child = spawn(process.execPath,
                     [cliPath, '--package-dir', packageDir],
@@ -903,8 +906,8 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
+                    assert.strictEqual(read(child.stderr), npmNotOkStderrString);
                     assert.strictEqual(code, 1);
-                    assert.strictEqual(child.stderr.read().toString(), npmNotOkStderrString);
                     done();
                 });
             });
@@ -912,7 +915,7 @@ describe('checkDependencies', () => {
 
         describe('the --package-manager option', () => {
             it('should succeed on an ok package', done => {
-                const packageRoot = path.join(bowerFixturesRoot, 'ok');
+                const packageRoot = `${ bowerFixturesRoot }/ok`;
 
                 const child = spawn(process.execPath,
                     [cliPath, '--package-manager', 'bower'],
@@ -922,14 +925,14 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
+                    assert.strictEqual(read(child.stderr), null);
                     assert.strictEqual(code, 0);
-                    assert.strictEqual(child.stderr.read(), null);
                     done();
                 });
             });
 
             it('should fail on a non-ok package', done => {
-                const packageRoot = path.join(bowerFixturesRoot, 'generated/not-ok');
+                const packageRoot = `${ bowerFixturesRoot }/generated/not-ok`;
 
                 const child = spawn(process.execPath,
                     [cliPath, '--package-manager', 'bower'],
@@ -939,8 +942,8 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
+                    assert.strictEqual(read(child.stderr), bowerNotOkStderrString);
                     assert.strictEqual(code, 1);
-                    assert.strictEqual(child.stderr.read().toString(), bowerNotOkStderrString);
                     done();
                 });
             });
@@ -967,7 +970,7 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
-                    assert.strictEqual(child.stderr.read(), null);
+                    assert.strictEqual(read(child.stderr), null);
                     assert.strictEqual(code, 0);
                     done();
                 });
@@ -987,7 +990,7 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
-                    assert.strictEqual(child.stderr.read().toString(), errorMessage);
+                    assert.strictEqual(read(child.stderr), errorMessage);
                     assert.strictEqual(code, 1);
                     done();
                 });
@@ -1009,7 +1012,7 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
-                    assert.strictEqual(child.stderr.read(), null);
+                    assert.strictEqual(read(child.stderr), null);
                     assert.strictEqual(code, 0);
                     done();
                 });
@@ -1031,7 +1034,7 @@ describe('checkDependencies', () => {
                 );
 
                 child.on('exit', code => {
-                    assert.strictEqual(child.stderr.read().toString(), errorMessage);
+                    assert.strictEqual(read(child.stderr), errorMessage);
                     assert.strictEqual(code, 1);
                     done();
                 });
