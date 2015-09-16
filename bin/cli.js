@@ -31,14 +31,14 @@ delete argv.verbose;
 const Cli = {
     reporter(result) {
         if (verbose) {
-            result.log.forEach(function (msg) {
+            for (const msg of result.log) {
                 console.log(msg);
-            });
+            }
         }
 
-        result.error.forEach(function (msg) {
+        for (const msg of result.error) {
             console.error(msg);
-        });
+        }
 
         if (result.error.length > 0) {
             process.exit(1); // eslint-disable-line no-process-exit
