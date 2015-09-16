@@ -2,12 +2,13 @@
 
 // Disable options that don't work in Node.js 0.10.
 // Gruntfile.js & tasks/*.js are the only non-transpiled files.
-/* eslint-disable no-var */
+/* eslint-disable no-var, no-eval */
 
-var semver = require('semver');
+var assert = require('assert');
 
-if (semver.satisfies(process.version, '>=4.0.0')) {
+try {
+    assert.strictEqual(eval('(() => 2)()'), 2);
     module.exports = require('./lib/check-dependencies');
-} else {
+} catch (e) {
     module.exports = require('./dist/lib/check-dependencies');
 }
