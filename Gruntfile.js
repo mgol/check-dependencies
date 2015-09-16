@@ -5,9 +5,15 @@
 /* eslint-disable no-var, object-shorthand, prefer-arrow-callback, prefer-const,
  prefer-spread, prefer-reflect, prefer-template */
 
-var semver = require('semver');
+var assert = require('assert');
 
-var newNode = semver(process.version).major >= 4;
+var newNode;
+try {
+    assert.strictEqual(eval('(() => 2)()'), 2); // eslint-disable-line no-eval
+    newNode = true;
+} catch (e) {
+    newNode = false;
+}
 
 module.exports = function (grunt) {
     require('time-grunt')(grunt);
