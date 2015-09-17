@@ -67,15 +67,7 @@ module.exports = function (grunt) {
 //                    'es6.parameters',
                     'es6.properties.computed',
                     'es6.properties.shorthand',
-
-                    // Node 4.0 officially supports it but V8 4.4 has a critical bugs related to
-                    // nested computed properties so don't rely on it for now:
-                    // https://github.com/nodejs/node/issues/2507
-                    // https://code.google.com/p/v8/issues/detail?id=4387
-//                    'es6.properties.computed',
-//                    'es6.properties.shorthand',
-
-                    'es6.spread',
+//                    'es6.spread',
 //                    'es6.tailCall',
                     'es6.templateLiterals',
 //                    'es6.regex.unicode',
