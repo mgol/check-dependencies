@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 
 // Disable options that don't work in Node.js 0.10.
