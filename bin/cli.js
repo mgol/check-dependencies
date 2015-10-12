@@ -40,8 +40,8 @@ const Cli = {
             console.error(msg);
         }
 
-        if (result.error.length > 0) {
-            process.exit(1); // eslint-disable-line no-process-exit
+        if (result.status !== 0) {
+            process.exit(result.status);
         }
     },
 };

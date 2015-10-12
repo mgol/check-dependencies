@@ -579,7 +579,9 @@ describe('checkDependencies', () => {
 
                         assert.strictEqual(output.depsWereOk, false);
                         assert.strictEqual(output.status, 0);
-                        done();
+
+                        // Clean up
+                        fs.removeAsync(fixtureCopyDir).then(() => done());
                     });
                 });
         });
@@ -622,7 +624,10 @@ describe('checkDependencies', () => {
 
                         assert.strictEqual(output.depsWereOk, false);
                         assert.strictEqual(output.status, 0);
-                        done();
+
+
+                        // Clean up
+                        fs.removeAsync(fixtureCopyDir).then(() => done());
                     });
                 });
         });
@@ -766,20 +771,22 @@ describe('checkDependencies', () => {
             sinon.assert.notCalled(consoleErrorStub);
         });
 
-        it('should call process exit with one if errors exist', () => {
+        it('should call process exit with one if non-zero status returned', () => {
             const result = {
-                error: [
-                    'error1',
-                ],
+                status: 666,
+                log: [],
+                error: [],
             };
 
             cli.reporter(result);
 
-            sinon.assert.calledWith(processExitStub, 1);
+            sinon.assert.calledWith(processExitStub, 666);
         });
 
-        it('should not call process exit with if no errors', () => {
+        it('should not call process exit with if zero status returned', () => {
             const result = {
+                status: 0,
+                log: [],
                 error: [],
             };
 
@@ -875,6 +882,61 @@ describe('checkDependencies', () => {
 
             it('should fail', runTest());
             it('should fail (verbose mode)', runTest(true));
+        });
+
+        describe('the --install option', () => {
+            it('should succeed on a non-ok package if installation succeeded', function (done) {
+                this.timeout(30000);
+
+                const sourceForPackageDir = `${ npmFixturesRoot }/not-ok-install`;
+                const packageDir = `${ npmFixturesRoot }/not-ok-install-copy`;
+
+                Promise.resolve()
+                    .then(() => fs.copyAsync(sourceForPackageDir, packageDir))
+                    .then(() => {
+                        const child = spawn(process.execPath,
+                            [
+                                cliPath,
+                                '--package-dir', packageDir,
+                                '--check-git-urls',
+                                '--install',
+                            ],
+                            {
+                                cwd: __dirname,
+                            }
+                        );
+
+                        child.on('exit', code => {
+                            // The functions is supposed to not fail because it's instructed to do
+                            // `npm install`/`bower install`.
+                            assert.strictEqual(
+                                read(child.stderr),
+                                [
+                                    'jquery: installed: 1.11.1, expected: <=1.11.0',
+                                    'json3: installed: 0.8.0, expected: 3.3.2',
+                                    '@bcoe/awesomeify: not installed!',
+                                    '',
+                                ].join('\n')
+                            );
+                            assert.strictEqual(code, 0);
+
+                            const secondChild = spawn(process.execPath,
+                                [cliPath, '--package-dir', packageDir, '--install'],
+                                {
+                                    cwd: __dirname,
+                                }
+                            );
+
+                            secondChild.on('exit', code => {
+                                assert.strictEqual(read(secondChild.stderr), null);
+                                assert.strictEqual(code, 0);
+
+                                // Clean up
+                                fs.removeAsync(packageDir).then(() => done());
+                            });
+                        });
+                    });
+            });
         });
 
         describe('the --package-dir option', () => {
