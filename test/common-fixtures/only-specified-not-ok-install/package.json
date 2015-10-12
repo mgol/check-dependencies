@@ -1,5 +1,7 @@
 {
     "name": "only-specified-not-ok-install",
+    "private": "true",
+    "license": "UNLICENSED",
     "dependencies": {
         "jquery": "1.11.1"
     }

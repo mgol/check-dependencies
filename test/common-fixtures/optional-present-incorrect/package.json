@@ -1,4 +1,6 @@
 {
+    "private": "true",
+    "license": "UNLICENSED",
     "optionalDependencies": {
         "a": "~1.2.0"
     }
