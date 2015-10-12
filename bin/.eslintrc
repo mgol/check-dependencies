@@ -1,0 +1,8 @@
+{
+    "rules": {
+        // Rules are divided into sections from http://eslint.org/docs/rules/
+
+        // Node.js
+        "no-process-exit": 0
+    }
+}
