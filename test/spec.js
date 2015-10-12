@@ -910,7 +910,8 @@ describe('checkDependencies', () => {
                             // The functions is supposed to not fail because it's instructed to do
                             // `npm install`/`bower install`.
                             assert.strictEqual(
-                                read(child.stderr),
+                                // Strip npm http debug messages to make it CI-friendly.
+                                (read(child.stderr) || '').replace(/^npm http .+\n/gm, ''),
                                 [
                                     'jquery: installed: 1.11.1, expected: <=1.11.0',
                                     'json3: installed: 0.8.0, expected: 3.3.2',
