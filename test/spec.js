@@ -34,11 +34,11 @@ describe('checkDependencies', () => {
                 }
 
                 if (checkDependenciesMode === 'callbacks') {
-                    checkDependencies.apply(null, args);
+                    checkDependencies(...args);
                 }
                 if (checkDependenciesMode === 'promises') {
                     callback = args.pop();
-                    checkDependencies.apply(null, args)
+                    checkDependencies(...args)
                         .then(output => {
                             callback(output);
                         })
@@ -49,7 +49,7 @@ describe('checkDependencies', () => {
                 }
                 if (checkDependenciesMode === 'sync') {
                     callback = args.pop();
-                    callback(checkDependencies.sync.apply(null, args));
+                    callback(checkDependencies.sync(...args));
                 }
             };
         };
@@ -418,7 +418,9 @@ describe('checkDependencies', () => {
         it('should check custom package name dependencies only if `checkCustomPackageNames` ' +
             'is true and we are testing bower, not npm', done => {
 
-            if (packageManager !== 'npm') {
+            if (packageManager === 'npm') {
+                done();
+            } else {
 
                 checkDeps({
                     checkCustomPackageNames: true,
@@ -443,14 +445,14 @@ describe('checkDependencies', () => {
                     done();
                 });
 
-            } else {
-                done();
             }
         });
 
         it('should find no errors if checkCustomPackageNames=true and custom package names are ok',
             done => {
-                if (packageManager !== 'npm') {
+                if (packageManager === 'npm') {
+                    done();
+                } else {
                     checkDeps({
                         checkCustomPackageNames: true,
                         packageDir: `${ __dirname }/bower-fixtures/custom-package-ok`,
@@ -462,8 +464,6 @@ describe('checkDependencies', () => {
                         done();
                     });
 
-                } else {
-                    done();
                 }
             });
 

@@ -1,6 +1,6 @@
 'use strict';
 
-// Disable options that don't work in Node.js 0.10.
+// Disable options that don't work in Node.js 0.12.
 // Gruntfile.js & tasks/*.js are the only non-transpiled files.
 /* eslint-disable no-var, object-shorthand, prefer-arrow-callback, prefer-const,
  prefer-spread, prefer-reflect, prefer-template */
@@ -9,7 +9,7 @@ var assert = require('assert');
 
 var newNode;
 try {
-    assert.strictEqual(eval('(() => 2)()'), 2); // eslint-disable-line no-eval
+    assert.strictEqual(eval('(r => [...r])([2])[0]'), 2); // eslint-disable-line no-eval
     newNode = true;
 } catch (e) {
     newNode = false;
@@ -67,7 +67,7 @@ module.exports = function (grunt) {
 //                    'es6.parameters',
                     'es6.properties.computed',
                     'es6.properties.shorthand',
-//                    'es6.spread',
+                    'es6.spread',
 //                    'es6.tailCall',
                     'es6.templateLiterals',
 //                    'es6.regex.unicode',

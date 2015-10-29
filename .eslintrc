@@ -11,7 +11,6 @@
         // Rules are divided into sections from http://eslint.org/docs/rules/
 
         // ECMAScript 6
-        "prefer-spread": 0, // TODO enable in Node 5 or 6
         "prefer-reflect": 0 // TODO enable when Node supports it
     }
 }
