@@ -4,12 +4,13 @@
 
 // Disable options that don't work in Node.js 0.12.
 // Gruntfile.js & tasks/*.js are the only non-transpiled files.
-/* eslint-disable no-var */
+/* eslint-disable no-var, no-eval */
 
-var semver = require('semver');
+var assert = require('assert');
 
-if (semver.satisfies(process.version, '>=4.0.0')) {
+try {
+    assert.strictEqual(eval('(r => [...r])([2])[0]'), 2);
     module.exports = require('./bin/cli');
-} else {
+} catch (e) {
     module.exports = require('./dist/bin/cli');
 }
