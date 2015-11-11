@@ -907,7 +907,7 @@ describe('checkDependencies', () => {
                         );
 
                         child.on('exit', code => {
-                            // The functions is supposed to not fail because it's instructed to do
+                            // The process is supposed to not fail because it's instructed to do
                             // `npm install`/`bower install`.
                             assert.strictEqual(
                                 // Strip npm http debug messages to make it CI-friendly.
