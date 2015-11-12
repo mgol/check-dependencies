@@ -10,7 +10,7 @@ init:
 environment:
   matrix:
     - nodejs_version: "0.12"
-    - nodejs_version: "4"
+    - nodejs_version: "5"
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -37,7 +37,7 @@ build: off
 matrix:
   fast_finish: true
   allow_failures:
-    - nodejs_version: "4"
+    - nodejs_version: "5"
 
 # Set up cache, clear it on package.json changes.
 # NOTE: Cache disabled for now.
