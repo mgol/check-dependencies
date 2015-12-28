@@ -19,8 +19,8 @@ describe('checkDependencies', () => {
             errorsForNotOk, installMessage, pruneAndInstallMessage,
             fixturePrefix, fixturePrefixSeparate, logsForOkInterlaced, errorsForNotOkInterlaced;
 
-        const getCheckDependencies = () => {
-            return function checkDependenciesWrapped() {
+        const getCheckDependencies = () =>
+            function checkDependenciesWrapped() {
                 let config, callback;
                 const args = [].slice.call(arguments);
 
@@ -52,7 +52,6 @@ describe('checkDependencies', () => {
                     callback(checkDependencies.sync(...args));
                 }
             };
-        };
 
         if (packageManager === 'bower') {
             packageJsonName = 'bower.json';
@@ -240,12 +239,11 @@ describe('checkDependencies', () => {
                     }
                 };
 
-                const getFunctionWithReason = fakeCallback => {
-                    return [
+                const getFunctionWithReason = fakeCallback =>
+                    [
                         () => checkDeps(config, fakeCallback),
                         fakeCallback,
                     ];
-                };
 
                 expectToThrow([
                     getFunctionWithReason(undefined),
@@ -291,12 +289,11 @@ describe('checkDependencies', () => {
                         }
                     };
 
-                    const getFunctionWithReason = fakeCallback => {
-                        return [
+                    const getFunctionWithReason = fakeCallback =>
+                        [
                             () => checkDeps(fakeCallback),
                             fakeCallback,
                         ];
-                    };
 
                     expectToThrow([
                         getFunctionWithReason(undefined),
@@ -642,8 +639,8 @@ describe('checkDependencies', () => {
         const getGeneratedDir = packageManager =>
             `${ __dirname }/${ packageManager }-fixtures/generated`;
 
-        const convertToBowerFixture = fixtureDirPath => {
-            return Promise.all([])
+        const convertToBowerFixture = fixtureDirPath =>
+            Promise.all([])
 
                 // Change package.json to bower.json in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
@@ -681,7 +678,6 @@ describe('checkDependencies', () => {
                             `${ depDirPath }/.bower.json`)
                     ))
                 );
-        };
 
         return Promise.all([])
 
