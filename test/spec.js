@@ -15,9 +15,8 @@ describe('checkDependencies', () => {
     });
 
     const testSuite = (packageManager, checkDependenciesMode) => {
-        let checkDeps, depsJsonName, packageJsonName, depsDirName,
-            errorsForNotOk, installMessage, pruneAndInstallMessage,
-            fixturePrefix, fixturePrefixSeparate, logsForOkInterlaced, errorsForNotOkInterlaced;
+        let depsJsonName, packageJsonName, depsDirName,
+            fixturePrefix;
 
         const getCheckDependencies = () =>
             function checkDependenciesWrapped() {
@@ -64,26 +63,26 @@ describe('checkDependencies', () => {
             depsDirName = 'node_modules';
             fixturePrefix = `${ __dirname }/npm-fixtures/generated/`;
         }
-        fixturePrefixSeparate = fixturePrefix.replace(/generated\/$/, '');
-        checkDeps = getCheckDependencies();
+        const fixturePrefixSeparate = fixturePrefix.replace(/generated\/$/, '');
+        const checkDeps = getCheckDependencies();
 
-        installMessage = `Invoke ${ packageManager } install to install missing packages`;
-        pruneAndInstallMessage = `Invoke ${ packageManager } prune and ${
+        const installMessage = `Invoke ${ packageManager } install to install missing packages`;
+        const pruneAndInstallMessage = `Invoke ${ packageManager } prune and ${
             packageManager } install to install missing packages and remove excessive ones`;
 
-        errorsForNotOk = [
+        const errorsForNotOk = [
             'a: installed: 1.2.4, expected: 1.2.3',
             'b: installed: 0.9.9, expected: >=1.0.0',
             'c: not installed!',
             'd: not installed!',
             installMessage,
         ];
-        errorsForNotOkInterlaced = [
+        const errorsForNotOkInterlaced = [
             'b: installed: 0.9.0, expected: >=1.0.0',
             'd: installed: 0.7.0, expected: 0.5.9',
             installMessage,
         ];
-        logsForOkInterlaced = [
+        const logsForOkInterlaced = [
             'a: installed: 1.2.3, expected: 1.2.3',
             'c: installed: 1.2.3, expected: <2.0',
         ];
@@ -545,7 +544,8 @@ describe('checkDependencies', () => {
                 `Expected version ${ depVersion } not to match ${ versionRange }`
             );
 
-            return Promise.all([])
+            return Promise
+                .all([])
                 .then(() => fs.removeAsync(fixtureCopyDir))
                 .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
                 .then(() => {
@@ -592,7 +592,8 @@ describe('checkDependencies', () => {
             const packageDir = `${ fixturePrefix }${ fixtureName }-copy`;
 
 
-            return Promise.all([])
+            return Promise
+                .all([])
                 .then(() => fs.removeAsync(fixtureCopyDir))
                 .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
                 .then(() => {
@@ -640,7 +641,8 @@ describe('checkDependencies', () => {
             `${ __dirname }/${ packageManager }-fixtures/generated`;
 
         const convertToBowerFixture = fixtureDirPath =>
-            Promise.all([])
+            Promise
+                .all([])
 
                 // Change package.json to bower.json in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
@@ -679,7 +681,8 @@ describe('checkDependencies', () => {
                     ))
                 );
 
-        return Promise.all([])
+        return Promise
+            .all([])
 
             // npm
             .then(() => fs.removeAsync(getGeneratedDir('npm')))
@@ -703,11 +706,9 @@ describe('checkDependencies', () => {
         describe('promises', () => {
             testSuite('npm', 'promises');
         });
-        if (semver.satisfies(process.version, '>=0.12.0')) {
-            describe('sync', () => {
-                testSuite('npm', 'sync');
-            });
-        }
+        describe('sync', () => {
+            testSuite('npm', 'sync');
+        });
     });
 
 
@@ -718,11 +719,9 @@ describe('checkDependencies', () => {
         describe('promises', () => {
             testSuite('bower', 'promises');
         });
-        if (semver.satisfies(process.version, '>=0.12.0')) {
-            describe('sync', () => {
-                testSuite('bower', 'sync');
-            });
-        }
+        describe('sync', () => {
+            testSuite('bower', 'sync');
+        });
     });
 
     describe('CLI reporter', () => {

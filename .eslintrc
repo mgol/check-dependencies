@@ -10,7 +10,11 @@
     "rules": {
         // Rules are divided into sections from http://eslint.org/docs/rules/
 
+        // Stylistic issues
+        "id-blacklist": [2, "event"], // TODO enable when Node 6 comes out
+
         // ECMAScript 6
-        "prefer-reflect": 0 // TODO enable when Node supports it
+        "prefer-reflect": 0, // TODO enable when Node 6 comes out
+        "prefer-rest-params": 0 // TODO enable when Node 6 comes out
     }
 }

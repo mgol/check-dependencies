@@ -48,37 +48,8 @@ module.exports = function (grunt) {
 
         babel: {
             options: {
-                sourceMap: 'inline',
-                sourceRoot: __dirname,
+                sourceMap: true,
                 retainLines: true,
-
-                whitelist: [
-                    // If a comment doesn't indicate otherwise, all commented out transformers
-                    // would transpile features not available in latest stable Node.js yet
-                    // so we can't use them as we don't transpile in latest Node.
-
-                    'es6.arrowFunctions',
-                    'es6.blockScoping',
-                    'es6.classes',
-                    'es6.constants',
-//                    'es6.destructuring',
-                    'es6.forOf',
-//                    'es6.modules',
-//                    'es6.parameters',
-                    'es6.properties.computed',
-                    'es6.properties.shorthand',
-                    'es6.spread',
-//                    'es6.tailCall',
-                    'es6.templateLiterals',
-//                    'es6.regex.unicode',
-//                    'es6.regex.sticky',
-                    'strict',
-                ],
-
-                loose: [
-                    // Speed up for-of on arrays by not using the iterator directly.
-                    'es6.forOf',
-                ],
             },
             all: {
                 files: [
