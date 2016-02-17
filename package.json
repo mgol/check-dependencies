@@ -1,6 +1,6 @@
 {
   "name": "check-dependencies",
-  "version": "0.12.0-pre",
+  "version": "0.12.0",
   "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
   "homepage": "https://github.com/mgol/check-dependencies",
   "author": {
