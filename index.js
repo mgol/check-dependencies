@@ -6,9 +6,14 @@
 
 var assert = require('assert');
 
+var newNode;
 try {
     assert.strictEqual(eval('(r => [...r])([2])[0]'), 2);
-    module.exports = require('./lib/check-dependencies');
+    newNode = true;
 } catch (e) {
-    module.exports = require('./dist/lib/check-dependencies');
+    newNode = false;
 }
+
+module.exports = newNode ?
+    require('./lib/check-dependencies') :
+    require('./dist/lib/check-dependencies');

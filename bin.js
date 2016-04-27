@@ -8,9 +8,14 @@
 
 var assert = require('assert');
 
+var newNode;
 try {
     assert.strictEqual(eval('(r => [...r])([2])[0]'), 2);
-    module.exports = require('./bin/cli');
+    newNode = true;
 } catch (e) {
-    module.exports = require('./dist/bin/cli');
+    newNode = false;
 }
+
+module.exports = newNode ?
+    require('./bin/cli') :
+    require('./dist/bin/cli');
