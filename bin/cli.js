@@ -2,6 +2,7 @@
 
 'use strict';
 
+const exit = require('exit');
 const minimist = require('minimist');
 const _ = require('lodash');
 const checkDependencies = require('../lib/check-dependencies');
@@ -41,7 +42,7 @@ const Cli = {
         }
 
         if (result.status !== 0) {
-            process.exit(result.status);
+            exit(result.status);
         }
     },
 };
