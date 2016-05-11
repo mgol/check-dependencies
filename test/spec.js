@@ -19,12 +19,11 @@ describe('checkDependencies', () => {
             fixturePrefix;
 
         const getCheckDependencies = () =>
-            function checkDependenciesWrapped() {
+            function checkDependenciesWrapped(...args) {
                 let config, callback;
-                const args = [].slice.call(arguments);
 
                 if (packageManager === 'bower') {
-                    config = arguments[0];
+                    config = args[0];
                     if (typeof config === 'function') {
                         config = {};
                         args.unshift(config);

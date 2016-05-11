@@ -8,7 +8,7 @@ var assert = require('assert');
 
 var newNode;
 try {
-    assert.strictEqual(eval('(r => [...r])([2])[0]'), 2);
+    assert.strictEqual(eval('((...r) => [...r])(2)[0]'), 2);
     newNode = true;
 } catch (e) {
     newNode = false;
