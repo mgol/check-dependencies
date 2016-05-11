@@ -33,9 +33,9 @@ test_script:
 # Don't actually build.
 build: off
 
-# Finish immediately if one of the jobs fails.
+# Finish immediately if one of the jobs fails. (temporarily disabled)
 matrix:
-  fast_finish: true
+#  fast_finish: true
   allow_failures:
     - nodejs_version: "6"
 
