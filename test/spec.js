@@ -724,20 +724,31 @@ describe('checkDependencies', () => {
     });
 
     describe('CLI reporter', () => {
-        let cli, consoleLogStub, consoleErrorStub, processExitStub;
+        let cli, consoleLogStub, consoleErrorStub, exitCode;
 
         beforeEach(() => {
             cli = require('../bin/cli.js');
 
             consoleLogStub = sinon.stub(console, 'log');
             consoleErrorStub = sinon.stub(console, 'error');
-            processExitStub = sinon.stub(process, 'exit');
+
+            Reflect.defineProperty(process, 'exitCode', {
+                get() {
+                    return exitCode;
+                },
+                set(value) {
+                    exitCode = value;
+                },
+            });
+            exitCode = null;
         });
 
         afterEach(() => {
             consoleLogStub.restore();
             consoleErrorStub.restore();
-            processExitStub.restore();
+
+            Reflect.deleteProperty(process, 'exitCode');
+            exitCode = null;
         });
 
         it('should call console log for every error', () => {
@@ -765,7 +776,7 @@ describe('checkDependencies', () => {
             sinon.assert.notCalled(consoleErrorStub);
         });
 
-        it('should call process exit with one if non-zero status returned', () => {
+        it('should set process.exitCode to one if non-zero status returned', () => {
             const result = {
                 status: 666,
                 log: [],
@@ -774,10 +785,10 @@ describe('checkDependencies', () => {
 
             cli.reporter(result);
 
-            sinon.assert.calledWith(processExitStub, 666);
+            assert.strictEqual(exitCode, 666);
         });
 
-        it('should not call process exit with if zero status returned', () => {
+        it('should not set process.exitCode if zero status returned', () => {
             const result = {
                 status: 0,
                 log: [],
@@ -786,7 +797,7 @@ describe('checkDependencies', () => {
 
             cli.reporter(result);
 
-            sinon.assert.notCalled(processExitStub);
+            assert.strictEqual(exitCode, null);
         });
     });
 
