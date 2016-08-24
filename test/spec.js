@@ -11,6 +11,7 @@ const realFs = require('fs');
 const gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(realFs);
 const fs = Promise.promisifyAll(require('fs-extra'));
+const timeout = 60000;
 
 describe('checkDependencies', () => {
     beforeEach(() => {
@@ -531,7 +532,7 @@ describe('checkDependencies', () => {
         });
 
         it('should install missing packages when `install` is set to true', function (done) {
-            this.timeout(30000);
+            this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
             const versionRange = require(
@@ -589,7 +590,7 @@ describe('checkDependencies', () => {
         });
 
         it('should prune excessive packages when `install` is set to true', function (done) {
-            this.timeout(30000);
+            this.timeout(timeout);
 
             const fixtureName = 'only-specified-not-ok-install';
             const fixtureDir = `${ fixturePrefix }${ fixtureName }`;
@@ -638,7 +639,7 @@ describe('checkDependencies', () => {
 
 
     it('should prepare fixures for Bower and npm successfully', function () {
-        this.timeout(30000);
+        this.timeout(timeout);
 
         const npmFixturesDir = `${ __dirname }/common-fixtures`;
 
@@ -898,7 +899,7 @@ describe('checkDependencies', () => {
 
         describe('the --install option', () => {
             it('should succeed on a non-ok package if installation succeeded', function (done) {
-                this.timeout(30000);
+                this.timeout(timeout);
 
                 const sourceForPackageDir = `${ npmFixturesRoot }/not-ok-install`;
                 const packageDir = `${ npmFixturesRoot }/not-ok-install-copy`;
