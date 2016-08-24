@@ -46,6 +46,7 @@
     "bower": "1.7.9",
     "eslint-config-mgol": "0.0.27",
     "fs-extra": "0.30.0",
+    "graceful-fs": "4.1.6",
     "grunt": "1.0.1",
     "grunt-babel": "6.0.0",
     "grunt-cli": "1.2.0",

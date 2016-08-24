@@ -2,12 +2,16 @@
 
 const chalk = require('chalk');
 const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs-extra'));
 const semver = require('semver');
 const assert = require('assert');
 const sinon = require('sinon');
 const spawn = require('child_process').spawn;
 const checkDependencies = require('../lib/check-dependencies');
+
+const realFs = require('fs');
+const gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(realFs);
+const fs = Promise.promisifyAll(require('fs-extra'));
 
 describe('checkDependencies', () => {
     beforeEach(() => {
