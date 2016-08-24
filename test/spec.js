@@ -583,7 +583,7 @@ describe('checkDependencies', () => {
                         assert.strictEqual(output.status, 0);
 
                         // Clean up
-                        fs.removeAsync(fixtureCopyDir).then(() => done());
+                        fs.removeAsync(fixtureCopyDir).then(done);
                     });
                 });
         });
