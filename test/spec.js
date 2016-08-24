@@ -524,7 +524,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it('should install missing packages when `install` is set to true', function (done) {
+        it('should install missing packages when `install` is set to true', function () {
             this.timeout(30000);
 
             const fixtureName = 'not-ok-install';
@@ -577,12 +577,12 @@ describe('checkDependencies', () => {
                         assert.strictEqual(output.status, 0);
 
                         // Clean up
-                        fs.removeAsync(fixtureCopyDir).then(() => done());
+                        return fs.removeAsync(fixtureCopyDir);
                     });
                 });
         });
 
-        it('should prune excessive packages when `install` is set to true', function (done) {
+        it('should prune excessive packages when `install` is set to true', function () {
             this.timeout(30000);
 
             const fixtureName = 'only-specified-not-ok-install';
@@ -624,7 +624,7 @@ describe('checkDependencies', () => {
 
 
                         // Clean up
-                        fs.removeAsync(fixtureCopyDir).then(() => done());
+                        return fs.removeAsync(fixtureCopyDir);
                     });
                 });
         });
