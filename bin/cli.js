@@ -3,17 +3,17 @@
 'use strict';
 
 const minimist = require('minimist');
-const _ = require('lodash');
+const camelCase = require('lodash.camelcase');
 const checkDependencies = require('../lib/check-dependencies');
 
 const argv = minimist(process.argv.slice(2));
 
 // camelCase the options
-for (const key in argv) {
+Object.keys(argv).forEach(key => {
     const value = argv[key];
     delete argv[key];
-    argv[_.camelCase(key)] = value;
-}
+    argv[camelCase(key)] = value;
+});
 
 // Options of type array should always have array values
 for (const option of ['scopeList', 'optionalScopeList']) {

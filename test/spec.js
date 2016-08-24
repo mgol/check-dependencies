@@ -6,7 +6,6 @@ const semver = require('semver');
 const assert = require('assert');
 const sinon = require('sinon');
 const spawn = require('child_process').spawn;
-const checkDependencies = require('../lib/check-dependencies');
 
 const realFs = require('fs');
 const gracefulFs = require('graceful-fs');
@@ -18,12 +17,15 @@ describe('checkDependencies', () => {
         chalk.enabled = false;
     });
 
+    const checkDependencies = require('../lib/check-dependencies');
+
     const testSuite = (packageManager, checkDependenciesMode) => {
         let depsJsonName, packageJsonName, depsDirName,
             fixturePrefix;
 
         const getCheckDependencies = () =>
-            function checkDependenciesWrapped(...args) {
+            function checkDependenciesWrapped() {
+                const args = Array.from(arguments);
                 let config, callback;
 
                 if (packageManager === 'bower') {
@@ -36,11 +38,11 @@ describe('checkDependencies', () => {
                 }
 
                 if (checkDependenciesMode === 'callbacks') {
-                    checkDependencies(...args);
+                    checkDependencies.apply(null, args);
                 }
                 if (checkDependenciesMode === 'promises') {
                     callback = args.pop();
-                    checkDependencies(...args)
+                    checkDependencies.apply(null, args)
                         .then(output => {
                             callback(output);
                         })
@@ -51,7 +53,7 @@ describe('checkDependencies', () => {
                 }
                 if (checkDependenciesMode === 'sync') {
                     callback = args.pop();
-                    callback(checkDependencies.sync(...args));
+                    callback(checkDependencies.sync.apply(null, args));
                 }
             };
 
@@ -736,13 +738,14 @@ describe('checkDependencies', () => {
             consoleLogStub = sinon.stub(console, 'log');
             consoleErrorStub = sinon.stub(console, 'error');
 
-            Reflect.defineProperty(process, 'exitCode', {
+            Object.defineProperty(process, 'exitCode', {
                 get() {
                     return exitCode;
                 },
                 set(value) {
                     exitCode = value;
                 },
+                configurable: true,
             });
             exitCode = null;
         });
@@ -751,7 +754,7 @@ describe('checkDependencies', () => {
             consoleLogStub.restore();
             consoleErrorStub.restore();
 
-            Reflect.deleteProperty(process, 'exitCode');
+            delete process.exitCode;
             exitCode = null;
         });
 
