@@ -528,7 +528,7 @@ describe('checkDependencies', () => {
             });
         });
 
-        it('should install missing packages when `install` is set to true', function () {
+        it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
             const fixtureName = 'not-ok-install';
@@ -547,7 +547,7 @@ describe('checkDependencies', () => {
                 `Expected version ${ depVersion } not to match ${ versionRange }`
             );
 
-            return Promise
+            Promise
                 .all([])
                 .then(() => fs.removeAsync(fixtureCopyDir))
                 .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
@@ -581,12 +581,12 @@ describe('checkDependencies', () => {
                         assert.strictEqual(output.status, 0);
 
                         // Clean up
-                        return fs.removeAsync(fixtureCopyDir);
+                        fs.removeAsync(fixtureCopyDir).then(() => done());
                     });
                 });
         });
 
-        it('should prune excessive packages when `install` is set to true', function () {
+        it('should prune excessive packages when `install` is set to true', function (done) {
             this.timeout(30000);
 
             const fixtureName = 'only-specified-not-ok-install';
@@ -595,7 +595,7 @@ describe('checkDependencies', () => {
             const packageDir = `${ fixturePrefix }${ fixtureName }-copy`;
 
 
-            return Promise
+            Promise
                 .all([])
                 .then(() => fs.removeAsync(fixtureCopyDir))
                 .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
@@ -628,7 +628,7 @@ describe('checkDependencies', () => {
 
 
                         // Clean up
-                        return fs.removeAsync(fixtureCopyDir);
+                        return fs.removeAsync(fixtureCopyDir).then(() => done());
                     });
                 });
         });
