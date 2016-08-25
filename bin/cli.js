@@ -9,11 +9,11 @@ const checkDependencies = require('../lib/check-dependencies');
 const argv = minimist(process.argv.slice(2));
 
 // camelCase the options
-Object.keys(argv).forEach(key => {
+for (const key of Object.keys(argv)) {
     const value = argv[key];
     delete argv[key];
     argv[camelCase(key)] = value;
-});
+}
 
 // Options of type array should always have array values
 for (const option of ['scopeList', 'optionalScopeList']) {
