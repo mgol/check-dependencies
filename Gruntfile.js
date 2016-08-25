@@ -7,7 +7,6 @@ module.exports = function (grunt) {
         clean: {
             all: {
                 src: [
-                    'dist',
                     '*.log',
                     'test/*/*-copy',
                     'test/*-fixtures/generated',
@@ -15,26 +14,9 @@ module.exports = function (grunt) {
             },
         },
 
-        copy: {
-            all: {
-                files: [
-                    {
-                        expand: true,
-                        dot: true,
-                        src: [
-                            'test/**/*',
-                            '!test/**/*.js',
-                        ],
-                        dest: 'dist',
-                    },
-                ],
-            },
-        },
-
         eslint: {
             all: {
                 src: [
-                    '*.js',
                     'bin',
                     'lib',
                     'test',
@@ -58,13 +40,11 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('lint', ['eslint']);
-    grunt.registerTask('build', ['copy']);
     grunt.registerTask('test', ['mochaTest']);
 
     grunt.registerTask('default', [
         'clean',
         'lint',
-        'build',
         'test',
     ]);
 };

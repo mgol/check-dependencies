@@ -24,12 +24,8 @@
   "bugs": "https://github.com/mgol/check-dependencies/issues",
   "license": "MIT",
   "files": [
-    "bin.js",
-    "index.js",
     "bin",
-    "lib",
-    "dist/bin",
-    "dist/lib"
+    "lib"
   ],
   "dependencies": {
     "bower-config": "^1.4.0",
