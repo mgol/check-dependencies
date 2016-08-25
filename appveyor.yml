@@ -38,7 +38,6 @@ matrix:
 #  fast_finish: true
   allow_failures:
     - nodejs_version: "4"
-    - nodejs_version: "6"
 
 # Set up cache, clear it on package.json changes.
 # NOTE: Cache disabled for now.
