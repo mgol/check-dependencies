@@ -6,24 +6,27 @@ const semver = require('semver');
 const assert = require('assert');
 const sinon = require('sinon');
 const spawn = require('child_process').spawn;
-const checkDependencies = require('../lib/check-dependencies');
 
 const realFs = require('fs');
 const gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(realFs);
 const fs = Promise.promisifyAll(require('fs-extra'));
+const timeout = 60000;
 
 describe('checkDependencies', () => {
     beforeEach(() => {
         chalk.enabled = false;
     });
 
+    const checkDependencies = require('../lib/check-dependencies');
+
     const testSuite = (packageManager, checkDependenciesMode) => {
         let depsJsonName, packageJsonName, depsDirName,
             fixturePrefix;
 
         const getCheckDependencies = () =>
-            function checkDependenciesWrapped(...args) {
+            function checkDependenciesWrapped() {
+                const args = Array.from(arguments);
                 let config, callback;
 
                 if (packageManager === 'bower') {
@@ -36,11 +39,11 @@ describe('checkDependencies', () => {
                 }
 
                 if (checkDependenciesMode === 'callbacks') {
-                    checkDependencies(...args);
+                    checkDependencies.apply(null, args);
                 }
                 if (checkDependenciesMode === 'promises') {
                     callback = args.pop();
-                    checkDependencies(...args)
+                    checkDependencies.apply(null, args)
                         .then(output => {
                             callback(output);
                         })
@@ -51,7 +54,7 @@ describe('checkDependencies', () => {
                 }
                 if (checkDependenciesMode === 'sync') {
                     callback = args.pop();
-                    callback(checkDependencies.sync(...args));
+                    callback(checkDependencies.sync.apply(null, args));
                 }
             };
 
@@ -529,7 +532,7 @@ describe('checkDependencies', () => {
         });
 
         it('should install missing packages when `install` is set to true', function (done) {
-            this.timeout(30000);
+            this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
             const versionRange = require(
@@ -581,13 +584,13 @@ describe('checkDependencies', () => {
                         assert.strictEqual(output.status, 0);
 
                         // Clean up
-                        fs.removeAsync(fixtureCopyDir).then(() => done());
+                        fs.removeAsync(fixtureCopyDir).then(done);
                     });
                 });
         });
 
         it('should prune excessive packages when `install` is set to true', function (done) {
-            this.timeout(30000);
+            this.timeout(timeout);
 
             const fixtureName = 'only-specified-not-ok-install';
             const fixtureDir = `${ fixturePrefix }${ fixtureName }`;
@@ -636,7 +639,7 @@ describe('checkDependencies', () => {
 
 
     it('should prepare fixures for Bower and npm successfully', function () {
-        this.timeout(30000);
+        this.timeout(timeout);
 
         const npmFixturesDir = `${ __dirname }/common-fixtures`;
 
@@ -736,13 +739,14 @@ describe('checkDependencies', () => {
             consoleLogStub = sinon.stub(console, 'log');
             consoleErrorStub = sinon.stub(console, 'error');
 
-            Reflect.defineProperty(process, 'exitCode', {
+            Object.defineProperty(process, 'exitCode', {
                 get() {
                     return exitCode;
                 },
                 set(value) {
                     exitCode = value;
                 },
+                configurable: true,
             });
             exitCode = null;
         });
@@ -751,7 +755,7 @@ describe('checkDependencies', () => {
             consoleLogStub.restore();
             consoleErrorStub.restore();
 
-            Reflect.deleteProperty(process, 'exitCode');
+            delete process.exitCode;
             exitCode = null;
         });
 
@@ -895,7 +899,7 @@ describe('checkDependencies', () => {
 
         describe('the --install option', () => {
             it('should succeed on a non-ok package if installation succeeded', function (done) {
-                this.timeout(30000);
+                this.timeout(timeout);
 
                 const sourceForPackageDir = `${ npmFixturesRoot }/not-ok-install`;
                 const packageDir = `${ npmFixturesRoot }/not-ok-install-copy`;
