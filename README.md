@@ -8,8 +8,6 @@
 [![Downloads](https://img.shields.io/npm/dm/check-dependencies.svg?style=flat-square)](http://npm-stat.com/charts.html?package=check-dependencies)
 [![MIT License](https://img.shields.io/npm/l/check-dependencies.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
-(Note: the package previously published under this name is now called [dependency-status](https://www.npmjs.org/package/dependency-status))
-
 ## Installation
 
 To install the package and add it to your `package.json`, invoke:
