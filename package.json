@@ -44,7 +44,6 @@
     "grunt": "1.0.1",
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.0.0",
-    "grunt-contrib-copy": "1.0.0",
     "grunt-eslint": "19.0.0",
     "grunt-mocha-test": "0.13.2",
     "load-grunt-tasks": "3.5.2",
