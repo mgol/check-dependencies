@@ -13,7 +13,7 @@
     "modules",
     "dependencies"
   ],
-  "main": "./lib/check-dependencies.js",
+  "main": "lib/check-dependencies.js",
   "bin": {
     "check-dependencies": "./bin/cli.js"
   },
