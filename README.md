@@ -3,7 +3,7 @@
 > Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json
 
 [![Travis build](https://img.shields.io/travis/mgol/check-dependencies.svg?style=flat-square)](https://travis-ci.org/mgol/check-dependencies)
-[![AppVeyor build](https://img.shields.io/appveyor/mgol/check-dependencies.svg?style=flat-square)](https://ci.appveyor.com/project/mgol/check-dependencies)
+[![AppVeyor build](https://img.shields.io/appveyor/ci/mgol/check-dependencies.svg?style=flat-square)](https://ci.appveyor.com/project/mgol/check-dependencies)
 [![Version](https://img.shields.io/npm/v/check-dependencies.svg?style=flat-square)](http://npm.im/check-dependencies)
 [![Downloads](https://img.shields.io/npm/dm/check-dependencies.svg?style=flat-square)](http://npm-stat.com/charts.html?package=check-dependencies)
 [![MIT License](https://img.shields.io/npm/l/check-dependencies.svg?style=flat-square)](http://opensource.org/licenses/MIT)
