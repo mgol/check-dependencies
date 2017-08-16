@@ -9,7 +9,7 @@ init:
 # Test against these versions of Node.js.
 environment:
   matrix:
-    - nodejs_version: "4"
+    - nodejs_version: "6"
     - nodejs_version: "8"
 
 # Install scripts. (runs after repo cloning)
@@ -33,11 +33,9 @@ test_script:
 # Don't actually build.
 build: off
 
-# Finish immediately if one of the jobs fails. (temporarily disabled)
+# Finish immediately if one of the jobs fails.
 matrix:
-#  fast_finish: true
-  allow_failures:
-    - nodejs_version: "4"
+  fast_finish: true
 
 # Set up cache, clear it on package.json changes.
 # NOTE: Cache disabled for now.
