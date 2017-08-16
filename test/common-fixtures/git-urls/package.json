@@ -1,6 +1,5 @@
 {
-    "private": "true",
-    "license": "UNLICENSED",
+    "private": true,
     "dependencies": {
         "a": "git+ssh://git@git.example.com:a/a.git#0.5.9",
         "b": "git+ssh://git@git.example.com:b/b.git#v1.0.0"

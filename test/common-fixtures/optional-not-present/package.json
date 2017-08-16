@@ -1,6 +1,5 @@
 {
-    "private": "true",
-    "license": "UNLICENSED",
+    "private": true,
     "dependencies": {
         "a": "1.0.0"
     },

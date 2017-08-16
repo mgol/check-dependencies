@@ -10,7 +10,7 @@ const spawn = require('child_process').spawn;
 const realFs = require('fs');
 const gracefulFs = require('graceful-fs');
 gracefulFs.gracefulify(realFs);
-const fs = Promise.promisifyAll(require('fs-extra'));
+const fs = require('fs-extra');
 const timeout = 60000;
 
 describe('checkDependencies', () => {
@@ -552,8 +552,8 @@ describe('checkDependencies', () => {
 
             Promise
                 .all([])
-                .then(() => fs.removeAsync(fixtureCopyDir))
-                .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
+                .then(() => fs.remove(fixtureCopyDir))
+                .then(() => fs.copy(fixtureDir, fixtureCopyDir))
                 .then(() => {
                     checkDeps({
                         packageDir: `${ fixturePrefixSeparate }${ fixtureName }-copy`,
@@ -584,7 +584,7 @@ describe('checkDependencies', () => {
                         assert.strictEqual(output.status, 0);
 
                         // Clean up
-                        fs.removeAsync(fixtureCopyDir).then(done);
+                        fs.remove(fixtureCopyDir).then(done);
                     });
                 });
         });
@@ -600,8 +600,8 @@ describe('checkDependencies', () => {
 
             Promise
                 .all([])
-                .then(() => fs.removeAsync(fixtureCopyDir))
-                .then(() => fs.copyAsync(fixtureDir, fixtureCopyDir))
+                .then(() => fs.remove(fixtureCopyDir))
+                .then(() => fs.copy(fixtureDir, fixtureCopyDir))
                 .then(() => {
                     const depList = fs.readdirSync(`${ packageDir }/${ depsDirName }`);
                     assert.deepEqual(depList,
@@ -631,7 +631,7 @@ describe('checkDependencies', () => {
 
 
                         // Clean up
-                        return fs.removeAsync(fixtureCopyDir).then(() => done());
+                        return fs.remove(fixtureCopyDir).then(() => done());
                     });
                 });
         });
@@ -652,21 +652,21 @@ describe('checkDependencies', () => {
 
                 // Change package.json to bower.json in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
-                    fs.moveAsync(`${ fixtureDirPath }/package.json`,
+                    fs.move(`${ fixtureDirPath }/package.json`,
                         `${ fixtureDirPath }/bower.json`) :
                     undefined
                 )
 
                 // Change node_modules to bower_components in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/node_modules`) ?
-                    fs.moveAsync(`${ fixtureDirPath }/node_modules`,
+                    fs.move(`${ fixtureDirPath }/node_modules`,
                         `${ fixtureDirPath }/bower_components`) :
                     undefined
                 )
 
                 // Change package.json to .bower.json in dependencies' folders
                 .then(() => fs.existsSync(`${ fixtureDirPath }/bower_components`) ?
-                    fs.readdirAsync(`${ fixtureDirPath }/bower_components`) :
+                    fs.readdir(`${ fixtureDirPath }/bower_components`) :
                     []
                 )
 
@@ -681,7 +681,7 @@ describe('checkDependencies', () => {
                 )
 
                 .then(depDirPaths => Promise.all(depDirPaths
-                    .map(depDirPath => fs.moveAsync(
+                    .map(depDirPath => fs.move(
                         `${ depDirPath }/package.json`,
                         `${ depDirPath }/.bower.json`)
                     ))
@@ -691,13 +691,13 @@ describe('checkDependencies', () => {
             .all([])
 
             // npm
-            .then(() => fs.removeAsync(getGeneratedDir('npm')))
-            .then(() => fs.copyAsync(npmFixturesDir, getGeneratedDir('npm')))
+            .then(() => fs.remove(getGeneratedDir('npm')))
+            .then(() => fs.copy(npmFixturesDir, getGeneratedDir('npm')))
 
             // Bower
-            .then(() => fs.removeAsync(getGeneratedDir('bower')))
-            .then(() => fs.copyAsync(npmFixturesDir, getGeneratedDir('bower')))
-            .then(() => fs.readdirAsync(getGeneratedDir('bower')))
+            .then(() => fs.remove(getGeneratedDir('bower')))
+            .then(() => fs.copy(npmFixturesDir, getGeneratedDir('bower')))
+            .then(() => fs.readdir(getGeneratedDir('bower')))
             .then(fixtureDirNames => Promise.all(fixtureDirNames
                 .map(fixtureDirName =>
                     convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`)
@@ -905,7 +905,7 @@ describe('checkDependencies', () => {
                 const packageDir = `${ npmFixturesRoot }/not-ok-install-copy`;
 
                 Promise.resolve()
-                    .then(() => fs.copyAsync(sourceForPackageDir, packageDir))
+                    .then(() => fs.copy(sourceForPackageDir, packageDir))
                     .then(() => {
                         const child = spawn(process.execPath,
                             [
@@ -924,7 +924,9 @@ describe('checkDependencies', () => {
                             // `npm install`/`bower install`.
                             assert.strictEqual(
                                 // Strip npm http debug messages to make it CI-friendly.
-                                (read(child.stderr) || '').replace(/^npm http .+\n/gm, ''),
+                                (read(child.stderr) || '')
+                                    .replace(/^npm http .+\n/gm, '')
+                                    .replace(/^npm notice created a lockfile .+\n/gm, ''),
                                 [
                                     'jquery: installed: 1.11.1, expected: <=1.11.0',
                                     'json3: installed: 0.8.0, expected: 3.3.2',
@@ -946,7 +948,7 @@ describe('checkDependencies', () => {
                                 assert.strictEqual(code, 0);
 
                                 // Clean up
-                                fs.removeAsync(packageDir).then(() => done());
+                                fs.remove(packageDir).then(() => done());
                             });
                         });
                     });
