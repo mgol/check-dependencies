@@ -542,7 +542,7 @@ describe('checkDependencies', () => {
             const fixtureCopyDir = `${ fixtureDir }-copy`;
             const depVersion = JSON.parse(fs.readFileSync(
                 `${ fixturePrefixSeparate }${ fixtureName }/${ depsDirName
-                    }/jquery/${ depsJsonName }`
+                }/jquery/${ depsJsonName }`
             )).version;
 
             assert.equal(
@@ -575,7 +575,7 @@ describe('checkDependencies', () => {
 
                         const newDepVersion = JSON.parse(
                             fs.readFileSync(`${ fixtureCopyDir }/${ depsDirName
-                                }/jquery/${ depsJsonName }`)
+                            }/jquery/${ depsJsonName }`)
                         ).version;
                         assert(semver.satisfies(newDepVersion, versionRange),
                             `Expected version ${ newDepVersion } to match ${ versionRange }`);
@@ -652,22 +652,22 @@ describe('checkDependencies', () => {
 
                 // Change package.json to bower.json in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
-                        fs.moveAsync(`${ fixtureDirPath }/package.json`,
-                            `${ fixtureDirPath }/bower.json`) :
-                        undefined
+                    fs.moveAsync(`${ fixtureDirPath }/package.json`,
+                        `${ fixtureDirPath }/bower.json`) :
+                    undefined
                 )
 
                 // Change node_modules to bower_components in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/node_modules`) ?
-                        fs.moveAsync(`${ fixtureDirPath }/node_modules`,
-                            `${ fixtureDirPath }/bower_components`) :
-                        undefined
+                    fs.moveAsync(`${ fixtureDirPath }/node_modules`,
+                        `${ fixtureDirPath }/bower_components`) :
+                    undefined
                 )
 
                 // Change package.json to .bower.json in dependencies' folders
                 .then(() => fs.existsSync(`${ fixtureDirPath }/bower_components`) ?
-                        fs.readdirAsync(`${ fixtureDirPath }/bower_components`) :
-                        []
+                    fs.readdirAsync(`${ fixtureDirPath }/bower_components`) :
+                    []
                 )
 
                 // Don't try to look into files.
@@ -682,8 +682,8 @@ describe('checkDependencies', () => {
 
                 .then(depDirPaths => Promise.all(depDirPaths
                     .map(depDirPath => fs.moveAsync(
-                            `${ depDirPath }/package.json`,
-                            `${ depDirPath }/.bower.json`)
+                        `${ depDirPath }/package.json`,
+                        `${ depDirPath }/.bower.json`)
                     ))
                 );
 
@@ -700,7 +700,7 @@ describe('checkDependencies', () => {
             .then(() => fs.readdirAsync(getGeneratedDir('bower')))
             .then(fixtureDirNames => Promise.all(fixtureDirNames
                 .map(fixtureDirName =>
-                        convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`)
+                    convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`)
                 ))
             );
     });

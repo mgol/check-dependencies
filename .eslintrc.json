@@ -10,7 +10,7 @@
     "rules": {
         // Rules are divided into sections from http://eslint.org/docs/rules/
 
-        // TODO stop overwriting the following rules once support for Node.js 8 is dropped
+        // TODO stop overwriting the following rules once support for Node.js 6 is dropped
         "comma-dangle": ["error", {
             "arrays": "always-multiline",
             "objects": "always-multiline",
