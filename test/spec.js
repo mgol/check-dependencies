@@ -550,6 +550,14 @@ describe('checkDependencies', () => {
                 `Expected version ${ depVersion } not to match ${ versionRange }`
             );
 
+            // Our fake jQuery copy contains only package.json but the true one has the /dist/
+            // sub-directory. We'll use it to check if the `install` command was invoked
+            // when technically not needed as we require it now always when pruning.
+            assert.strictEqual(
+                fs.existsSync(`${ fixtureCopyDir }/${ depsDirName }/jquery/dist`),
+                false
+            );
+
             Promise
                 .all([])
                 .then(() => fs.remove(fixtureCopyDir))
@@ -560,6 +568,12 @@ describe('checkDependencies', () => {
                         checkGitUrls: true,
                         install: true,
                     }, output => {
+                        // See the comment at the analogous assertion above.
+                        assert.strictEqual(
+                            fs.existsSync(`${ fixtureCopyDir }/${ depsDirName }/jquery/dist`),
+                            true
+                        );
+
                         // The functions is supposed to not fail because it's instructed to do
                         // `npm install`/`bower install`.
                         assert.deepEqual(output.error,
