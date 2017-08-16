@@ -4,7 +4,7 @@
   "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
   "homepage": "https://github.com/mgol/check-dependencies",
   "author": {
-    "name": "Michał Gołębiowski",
+    "name": "Michał Gołębiowski-Owczarek",
     "email": "m.goleb@gmail.com"
   },
   "keywords": [
