@@ -58,16 +58,16 @@ describe('checkDependencies', () => {
                 }
             };
 
-        if (packageManager === 'bower') {
-            packageJsonName = 'bower.json';
-            depsJsonName = '.bower.json';
-            depsDirName = 'bower_components';
-            fixturePrefix = `${ __dirname }/bower-fixtures/generated/`;
-        } else {
+        if (packageManager === 'npm') {
             packageJsonName = 'package.json';
             depsJsonName = 'package.json';
             depsDirName = 'node_modules';
             fixturePrefix = `${ __dirname }/npm-fixtures/generated/`;
+        } else {
+            packageJsonName = 'bower.json';
+            depsJsonName = '.bower.json';
+            depsDirName = 'bower_components';
+            fixturePrefix = `${ __dirname }/bower-fixtures/generated/`;
         }
         const fixturePrefixSeparate = fixturePrefix.replace(/generated\/$/, '');
         const checkDeps = getCheckDependencies();
