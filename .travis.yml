@@ -6,6 +6,7 @@ node_js:
   - '4'
   - '6'
   - '8'
+  - '10'
 before_install:
   # Prevent Bower from asking questions.
   - export CI=true
