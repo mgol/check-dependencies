@@ -29,26 +29,26 @@
   ],
   "dependencies": {
     "bower-config": "^1.4.0",
-    "chalk": "^2.1.0",
+    "chalk": "^2.4.1",
     "findup-sync": "^2.0.0",
     "lodash.camelcase": "^4.3.0",
     "minimist": "^1.2.0",
-    "semver": "^5.4.1"
+    "semver": "^5.5.0"
   },
   "devDependencies": {
-    "bluebird": "3.5.0",
-    "bower": "1.8.0",
-    "eslint-config-mgol": "0.0.40",
-    "fs-extra": "4.0.1",
+    "bluebird": "3.5.1",
+    "bower": "1.8.4",
+    "eslint-config-mgol": "0.0.41",
+    "fs-extra": "5.0.0",
     "graceful-fs": "4.1.11",
-    "grunt": "1.0.1",
+    "grunt": "1.0.2",
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.1.0",
-    "grunt-eslint": "20.0.0",
-    "grunt-mocha-test": "0.13.2",
+    "grunt-eslint": "20.1.0",
+    "grunt-mocha-test": "0.13.3",
     "load-grunt-tasks": "3.5.2",
-    "mocha": "3.5.0",
-    "sinon": "3.2.0",
+    "mocha": "5.1.1",
+    "sinon": "4.5.0",
     "time-grunt": "1.4.0"
   },
   "scripts": {
