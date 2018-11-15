@@ -283,6 +283,18 @@ describe('checkDependencies', () => {
                 });
             });
 
+            it('should not print errors for valid package setup in nested package', done => {
+                checkDeps({
+                    packageDir: `${ fixturePrefixSeparate }ok/nested-package`,
+                    scopeList: ['dependencies', 'devDependencies'],
+                }, output => {
+                    assert.deepEqual(output.error, []);
+                    assert.strictEqual(output.depsWereOk, true);
+                    assert.strictEqual(output.status, 0);
+                    done();
+                });
+            });
+
             if (checkDependenciesMode === 'callback') {
                 it('should throw if config not present and callback is not a function', () => {
                     const expectToThrow = fnsWithReasons => {
