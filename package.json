@@ -1,6 +1,6 @@
 {
   "name": "check-dependencies",
-  "version": "1.1.1-pre",
+  "version": "1.1.2",
   "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
   "homepage": "https://github.com/mgol/check-dependencies",
   "author": {
@@ -30,7 +30,7 @@
   "dependencies": {
     "bower-config": "^1.4.0",
     "chalk": "^2.4.1",
-    "findup-sync": "^2.0.0",
+    "findup-sync": "^3.0.0",
     "lodash.camelcase": "^4.3.0",
     "minimist": "^1.2.0",
     "semver": "^5.5.0"
