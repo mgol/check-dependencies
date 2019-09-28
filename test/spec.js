@@ -19,14 +19,14 @@ describe('checkDependencies', () => {
     });
 
     const checkDependencies = require('../lib/check-dependencies');
+    const checkDependenciesSync = checkDependencies.sync;
 
     const testSuite = (packageManager, checkDependenciesMode) => {
         let depsJsonName, packageJsonName, depsDirName,
             fixturePrefix;
 
         const getCheckDependencies = () =>
-            function checkDependenciesWrapped() {
-                const args = Array.from(arguments);
+            function checkDependenciesWrapped(...args) {
                 let config, callback;
 
                 if (packageManager === 'bower') {
@@ -39,11 +39,11 @@ describe('checkDependencies', () => {
                 }
 
                 if (checkDependenciesMode === 'callbacks') {
-                    checkDependencies.apply(null, args);
+                    checkDependencies(...args);
                 }
                 if (checkDependenciesMode === 'promises') {
                     callback = args.pop();
-                    checkDependencies.apply(null, args)
+                    checkDependencies(...args)
                         .then(output => {
                             callback(output);
                         })
@@ -54,7 +54,7 @@ describe('checkDependencies', () => {
                 }
                 if (checkDependenciesMode === 'sync') {
                     callback = args.pop();
-                    callback(checkDependencies.sync.apply(null, args));
+                    callback(checkDependenciesSync(...args));
                 }
             };
 
@@ -239,7 +239,7 @@ describe('checkDependencies', () => {
                     for (const fnWithReason of fnsWithReasons) {
                         assert.throws(fnWithReason[0], Error,
                             `Expected the function to throw when passed a callback: ${
-                                fnWithReason[1] }`
+                                fnWithReason[1] }`,
                         );
                     }
                 };
@@ -289,7 +289,7 @@ describe('checkDependencies', () => {
                         for (const fnWithReason of fnsWithReasons) {
                             assert.throws(fnWithReason[0], Error,
                                 `Expected the function to throw when passed a callback: ${
-                                    fnWithReason[1] }`
+                                    fnWithReason[1] }`,
                             );
                         }
                     };
@@ -536,18 +536,18 @@ describe('checkDependencies', () => {
 
             const fixtureName = 'not-ok-install';
             const versionRange = require(
-                `${ fixturePrefixSeparate }${ fixtureName }/${ packageJsonName }`
+                `${ fixturePrefixSeparate }${ fixtureName }/${ packageJsonName }`,
             ).dependencies.jquery;
             const fixtureDir = `${ fixturePrefixSeparate }${ fixtureName }`;
             const fixtureCopyDir = `${ fixtureDir }-copy`;
             const depVersion = JSON.parse(fs.readFileSync(
                 `${ fixturePrefixSeparate }${ fixtureName }/${ depsDirName
-                }/jquery/${ depsJsonName }`
+                }/jquery/${ depsJsonName }`,
             )).version;
 
             assert.equal(
                 semver.satisfies(depVersion, versionRange), false,
-                `Expected version ${ depVersion } not to match ${ versionRange }`
+                `Expected version ${ depVersion } not to match ${ versionRange }`,
             );
 
             // Our fake jQuery copy contains only package.json but the true one has the /dist/
@@ -555,7 +555,7 @@ describe('checkDependencies', () => {
             // when technically not needed as we require it now always when pruning.
             assert.strictEqual(
                 fs.existsSync(`${ fixtureCopyDir }/${ depsDirName }/jquery/dist`),
-                false
+                false,
             );
 
             Promise
@@ -571,7 +571,7 @@ describe('checkDependencies', () => {
                         // See the comment at the analogous assertion above.
                         assert.strictEqual(
                             fs.existsSync(`${ fixtureCopyDir }/${ depsDirName }/jquery/dist`),
-                            true
+                            true,
                         );
 
                         // The functions is supposed to not fail because it's instructed to do
@@ -584,12 +584,12 @@ describe('checkDependencies', () => {
                                 ])
                                 .concat(packageManager === 'npm' ? [
                                     '@bcoe/awesomeify: not installed!',
-                                ] : [])
+                                ] : []),
                         );
 
                         const newDepVersion = JSON.parse(
                             fs.readFileSync(`${ fixtureCopyDir }/${ depsDirName
-                            }/jquery/${ depsJsonName }`)
+                            }/jquery/${ depsJsonName }`),
                         ).version;
                         assert(semver.satisfies(newDepVersion, versionRange),
                             `Expected version ${ newDepVersion } to match ${ versionRange }`);
@@ -668,20 +668,20 @@ describe('checkDependencies', () => {
                 .then(() => fs.existsSync(`${ fixtureDirPath }/package.json`) ?
                     fs.move(`${ fixtureDirPath }/package.json`,
                         `${ fixtureDirPath }/bower.json`) :
-                    undefined
+                    undefined,
                 )
 
                 // Change node_modules to bower_components in top level scope
                 .then(() => fs.existsSync(`${ fixtureDirPath }/node_modules`) ?
                     fs.move(`${ fixtureDirPath }/node_modules`,
                         `${ fixtureDirPath }/bower_components`) :
-                    undefined
+                    undefined,
                 )
 
                 // Change package.json to .bower.json in dependencies' folders
                 .then(() => fs.existsSync(`${ fixtureDirPath }/bower_components`) ?
                     fs.readdir(`${ fixtureDirPath }/bower_components`) :
-                    []
+                    [],
                 )
 
                 // Don't try to look into files.
@@ -691,14 +691,14 @@ describe('checkDependencies', () => {
 
                 .then(depDirNames => depDirNames
                     .filter(depDirName => depDirName !== '.bin')
-                    .map(depDirName => `${ fixtureDirPath }/bower_components/${ depDirName }`)
+                    .map(depDirName => `${ fixtureDirPath }/bower_components/${ depDirName }`),
                 )
 
                 .then(depDirPaths => Promise.all(depDirPaths
                     .map(depDirPath => fs.move(
                         `${ depDirPath }/package.json`,
-                        `${ depDirPath }/.bower.json`)
-                    ))
+                        `${ depDirPath }/.bower.json`),
+                    )),
                 );
 
         return Promise
@@ -714,8 +714,8 @@ describe('checkDependencies', () => {
             .then(() => fs.readdir(getGeneratedDir('bower')))
             .then(fixtureDirNames => Promise.all(fixtureDirNames
                 .map(fixtureDirName =>
-                    convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`)
-                ))
+                    convertToBowerFixture(`${ getGeneratedDir('bower') }/${ fixtureDirName }`),
+                )),
             );
     });
 
@@ -855,7 +855,7 @@ describe('checkDependencies', () => {
                         [cliPath].concat(verbose ? ['--verbose'] : []),
                         {
                             cwd: packageRoot,
-                        }
+                        },
                     );
 
                     child.on('exit', code => {
@@ -889,7 +889,7 @@ describe('checkDependencies', () => {
                         [cliPath].concat(verbose ? ['--verbose'] : []),
                         {
                             cwd: packageRoot,
-                        }
+                        },
                     );
 
                     child.on('exit', code => {
@@ -930,7 +930,7 @@ describe('checkDependencies', () => {
                             ],
                             {
                                 cwd: __dirname,
-                            }
+                            },
                         );
 
                         child.on('exit', code => {
@@ -946,7 +946,7 @@ describe('checkDependencies', () => {
                                     'json3: installed: 0.8.0, expected: 3.3.2',
                                     '@bcoe/awesomeify: not installed!',
                                     '',
-                                ].join('\n')
+                                ].join('\n'),
                             );
                             assert.strictEqual(code, 0);
 
@@ -954,7 +954,7 @@ describe('checkDependencies', () => {
                                 [cliPath, '--package-dir', packageDir, '--install'],
                                 {
                                     cwd: __dirname,
-                                }
+                                },
                             );
 
                             secondChild.on('exit', code => {
@@ -977,7 +977,7 @@ describe('checkDependencies', () => {
                     [cliPath, '--package-dir', packageDir],
                     {
                         cwd: __dirname,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -994,7 +994,7 @@ describe('checkDependencies', () => {
                     [cliPath, '--package-dir', packageDir],
                     {
                         cwd: __dirname,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1013,7 +1013,7 @@ describe('checkDependencies', () => {
                     [cliPath, '--package-manager', 'bower'],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1030,7 +1030,7 @@ describe('checkDependencies', () => {
                     [cliPath, '--package-manager', 'bower'],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1058,7 +1058,7 @@ describe('checkDependencies', () => {
                     ],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1078,7 +1078,7 @@ describe('checkDependencies', () => {
                     ],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1100,7 +1100,7 @@ describe('checkDependencies', () => {
                     ],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
@@ -1122,7 +1122,7 @@ describe('checkDependencies', () => {
                     ],
                     {
                         cwd: packageRoot,
-                    }
+                    },
                 );
 
                 child.on('exit', code => {
