@@ -39,6 +39,7 @@ $ check-dependencies --verbose --package-manager bower --scope-list dependencies
 ```
 
 Options accepting array values in the API (like [`scopeList`](#scopelist)) should have each value passed individually, example:
+
 ```bash
 $ check-dependencies --scope-list dependencies --scope-list devDependencies
 ```
@@ -48,9 +49,11 @@ $ check-dependencies --scope-list dependencies --scope-list devDependencies
 ```js
 require('check-dependencies')(config, callback);
 ```
+
 where `callback` is invoked upon completion and `config` is a configuration object.
 
 `callback` is invoked with the object containing fields:
+
 ```js
 {
     status: number,      // 0 if successful, 1 otherwise
@@ -61,18 +64,21 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 ```
 
 The function returns a promise so passing a callback is not necessary; instead you can do:
+
 ```js
-require('check-dependencies')(config)
-    .then(function (output) {
-        /* handle output */
-    });
+require('check-dependencies')(config).then(function(output) {
+    /* handle output */
+});
 ```
+
 The promise should never fail.
 
 There is a synchronous alternative -- the following code:
+
 ```js
 var output = require('check-dependencies').sync(config);
 ```
+
 will assign to `output` the same object that would otherwise be passed to the `callback` in the asynchronous scenario.
 
 The `config` object may have the following fields:
@@ -121,7 +127,7 @@ Default: `['dependencies', 'devDependencies']`
 
 #### optionalScopeList
 
-The list of keys in `package.json` or `bower.json` where to look for *optional* package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
+The list of keys in `package.json` or `bower.json` where to look for _optional_ package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
 
 This list is also consulted when using `onlySpecified: true`.
 
@@ -131,7 +137,7 @@ Default: `['optionalDependencies']`
 
 #### checkCustomPackageNames
 
-By default, check-dependencies will skip version check for custom package names, but will still check to see if they are installed.  For example:
+By default, check-dependencies will skip version check for custom package names, but will still check to see if they are installed. For example:
 
 ```js
     "dependencies": {
@@ -147,7 +153,7 @@ Default: `false`
 
 #### checkGitUrls
 
-By default, check-dependencies will skip version check for packages whose version contains the full repository path.  For example:
+By default, check-dependencies will skip version check for packages whose version contains the full repository path. For example:
 
 ```js
     "dependencies": {
@@ -188,32 +194,44 @@ Default: `console.error.bind(console)`
 ## Usage Examples
 
 The most basic usage:
+
 ```js
 require('check-dependencies')(callback);
 ```
+
 This will check packages' versions and report an error to `callback` if packages' versions are mismatched.
 
 The following:
+
 ```js
-require('check-dependencies')({
-    install: true,
-    verbose: true,
-}, callback);
+require('check-dependencies')(
+    {
+        install: true,
+        verbose: true,
+    },
+    callback,
+);
 ```
+
 will install mismatched ones and call `callback`.
 
 The following two examples:
+
 ```js
 require('check-dependencies')(callback);
 require('check-dependencies')({}, callback);
 ```
+
 behave in the same way - `callback` is invoked upon completion; if there was an error, it's passed as a parameter to `callback`.
 
 ## Supported Node.js versions
+
 This project aims to support all Node.js versions supported upstream (see [Release README](https://github.com/nodejs/Release/blob/master/README.md) for more details).
 
 ## Contributing
+
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using `npm test`.
 
 ## License
+
 Copyright (c) Michał Gołębiowski-Owczarek. Licensed under the MIT license.

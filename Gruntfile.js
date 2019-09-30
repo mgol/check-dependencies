@@ -1,26 +1,18 @@
 'use strict';
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     require('time-grunt')(grunt);
 
     grunt.initConfig({
         clean: {
             all: {
-                src: [
-                    '*.log',
-                    'test/*/*-copy',
-                    'test/*-fixtures/generated',
-                ],
+                src: ['*.log', 'test/*/*-copy', 'test/*-fixtures/generated'],
             },
         },
 
         eslint: {
             all: {
-                src: [
-                    'bin',
-                    'lib',
-                    'test',
-                ],
+                src: ['bin', 'lib', 'test'],
             },
         },
 
@@ -40,9 +32,5 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['eslint']);
     grunt.registerTask('test', ['mochaTest']);
 
-    grunt.registerTask('default', [
-        'clean',
-        'lint',
-        'test',
-    ]);
+    grunt.registerTask('default', ['clean', 'lint', 'test']);
 };

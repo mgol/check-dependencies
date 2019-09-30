@@ -38,7 +38,7 @@
   "devDependencies": {
     "bluebird": "3.5.5",
     "bower": "1.8.8",
-    "eslint-config-mgol": "0.0.42",
+    "eslint-config-mgol": "0.0.46",
     "fs-extra": "8.1.0",
     "graceful-fs": "4.2.2",
     "grunt": "1.0.4",
@@ -46,15 +46,36 @@
     "grunt-contrib-clean": "2.0.0",
     "grunt-eslint": "22.0.0",
     "grunt-mocha-test": "0.13.3",
+    "husky": "3.0.7",
+    "lint-staged": "9.4.0",
     "load-grunt-tasks": "5.1.0",
-    "mocha": "6.2.0",
+    "mocha": "6.2.1",
+    "prettier": "1.18.2",
     "sinon": "7.5.0",
     "time-grunt": "2.0.0"
   },
   "scripts": {
+    "prettier-check": "prettier --check '**/*.{json,js,yml,yaml,md}'",
+    "prettier-format": "prettier --write '**/*.{json,js,yml,yaml,md}'",
     "test": "grunt"
   },
   "engines": {
     "node": ">=10.13"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{json,yml,yaml,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   }
 }
