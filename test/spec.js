@@ -15,7 +15,7 @@ const timeout = 60000;
 
 describe('checkDependencies', () => {
     beforeEach(() => {
-        chalk.enabled = false;
+        chalk.level = 0;
     });
 
     const checkDependencies = require('../lib/check-dependencies');
@@ -270,9 +270,7 @@ describe('checkDependencies', () => {
                         assert.throws(
                             fnWithReason[0],
                             Error,
-                            `Expected the function to throw when passed a callback: ${
-                                fnWithReason[1]
-                            }`,
+                            `Expected the function to throw when passed a callback: ${fnWithReason[1]}`,
                         );
                     }
                 };
@@ -322,9 +320,7 @@ describe('checkDependencies', () => {
                             assert.throws(
                                 fnWithReason[0],
                                 Error,
-                                `Expected the function to throw when passed a callback: ${
-                                    fnWithReason[1]
-                                }`,
+                                `Expected the function to throw when passed a callback: ${fnWithReason[1]}`,
                             );
                         }
                     };
@@ -611,7 +607,7 @@ describe('checkDependencies', () => {
             );
         });
 
-        it('should install missing packages when `install` is set to true', function(done) {
+        it('should install missing packages when `install` is set to true', function (done) {
             this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
@@ -696,7 +692,7 @@ describe('checkDependencies', () => {
                 });
         });
 
-        it('should prune excessive packages when `install` is set to true', function(done) {
+        it('should prune excessive packages when `install` is set to true', function (done) {
             this.timeout(timeout);
 
             const fixtureName = 'only-specified-not-ok-install';
@@ -755,7 +751,7 @@ describe('checkDependencies', () => {
         });
     };
 
-    it('should prepare fixures for Bower and npm successfully', function() {
+    it('should prepare fixures for Bower and npm successfully', function () {
         this.timeout(timeout);
 
         const npmFixturesDir = `${__dirname}/common-fixtures`;
@@ -1045,7 +1041,7 @@ describe('checkDependencies', () => {
         });
 
         describe('the --install option', () => {
-            it('should succeed on a non-ok package if installation succeeded', function(done) {
+            it('should succeed on a non-ok package if installation succeeded', function (done) {
                 this.timeout(timeout);
 
                 const sourceForPackageDir = `${npmFixturesRoot}/not-ok-install`;

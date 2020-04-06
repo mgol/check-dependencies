@@ -66,7 +66,7 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 The function returns a promise so passing a callback is not necessary; instead you can do:
 
 ```js
-require('check-dependencies')(config).then(function(output) {
+require('check-dependencies')(config).then(function (output) {
     /* handle output */
 });
 ```
