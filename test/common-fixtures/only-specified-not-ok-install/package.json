@@ -2,6 +2,6 @@
     "name": "only-specified-not-ok-install",
     "private": true,
     "dependencies": {
-        "jquery": "1.11.1"
+        "jquery": "3.5.0"
     }
 }
