@@ -1,6 +1,7 @@
 'use strict';
 
-const chalk = require('chalk');
+process.env.NO_COLOR = '1';
+
 const Promise = require('bluebird');
 const semver = require('semver');
 const assert = require('assert');
@@ -14,10 +15,6 @@ const fs = require('fs-extra');
 const timeout = 60000;
 
 describe('checkDependencies', () => {
-    beforeEach(() => {
-        chalk.level = 0;
-    });
-
     const checkDependencies = require('../lib/check-dependencies');
     const checkDependenciesSync = checkDependencies.sync;
 
@@ -611,8 +608,9 @@ describe('checkDependencies', () => {
             this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
-            const versionRange = require(`${fixturePrefixSeparate}${fixtureName}/${packageJsonName}`)
-                .dependencies.jquery;
+            const versionRange =
+                require(`${fixturePrefixSeparate}${fixtureName}/${packageJsonName}`)
+                    .dependencies.jquery;
             const fixtureDir = `${fixturePrefixSeparate}${fixtureName}`;
             const fixtureCopyDir = `${fixtureDir}-copy`;
             const depVersion = JSON.parse(
@@ -729,9 +727,9 @@ describe('checkDependencies', () => {
                                 "Package json3 installed, though it shouldn't be",
                             ]);
 
-                            const depList = fs.readdirSync(
-                                `${packageDir}/${depsDirName}`,
-                            );
+                            const depList = fs
+                                .readdirSync(`${packageDir}/${depsDirName}`)
+                                .filter(name => name[0] !== '.');
                             assert.deepEqual(
                                 depList,
                                 ['jquery'],
@@ -751,7 +749,7 @@ describe('checkDependencies', () => {
         });
     };
 
-    it('should prepare fixures for Bower and npm successfully', function () {
+    before('prepare fixures for Bower and npm', function () {
         this.timeout(timeout);
 
         const npmFixturesDir = `${__dirname}/common-fixtures`;
