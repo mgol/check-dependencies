@@ -1,9 +1,0 @@
-language: node_js
-node_js:
-    - '12'
-    - '14'
-    - '16'
-    - '17'
-before_install:
-    # Prevent Bower from asking questions.
-    - export CI=true
