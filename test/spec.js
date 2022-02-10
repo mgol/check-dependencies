@@ -987,6 +987,7 @@ describe('checkDependencies', () => {
                                 'a: installed: 1.2.3, expected: 1.2.3',
                                 'b: installed: 1.2.3, expected: >=1.0.0',
                                 'c: installed: 1.2.3, expected: <2.0',
+                                'c-alias: installed: 1.2.3, expected: <2.0',
                                 '@e-f/g-h: installed: 2.5.9, expected: ~2.5.7',
                                 '',
                             ].join('\n'),
