@@ -1,1 +1,3 @@
-* text=auto
+# Auto detect text files and perform LF normalization
+# Use LF so that tools like Prettier work correctly
+* text=auto eol=lf
