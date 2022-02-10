@@ -7,7 +7,7 @@ jobs:
         strategy:
             matrix:
                 platform: [ubuntu-latest, windows-latest]
-                NODE_VERSION: [12.x, 14.x, 16.x, 17.x]
+                node-version: [12.x, 14.x, 16.x, 17.x]
         runs-on: ${{ matrix.platform }}
         steps:
             - name: Checkout
@@ -17,14 +17,14 @@ jobs:
               uses: actions/cache@v2
               with:
                   path: ~/.npm
-                  key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-npm-lock-${{ hashFiles('**/package-lock.json') }}
+                  key: ${{ runner.os }}-node-${{ env.node-version }}-npm-lock-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
-                      ${{ runner.os }}-node-${{ env.NODE_VERSION }}-npm-lock-
+                      ${{ runner.os }}-node-${{ env.node-version }}-npm-lock-
 
-            - name: Use Node.js ${{ env.NODE_VERSION }}
+            - name: Use Node.js ${{ env.node-version }}
               uses: actions/setup-node@v2.1.2
               with:
-                  node-version: ${{ env.NODE_VERSION }}
+                  node-version: ${{ env.node-version }}
 
             - name: Install dependencies
               run: |
