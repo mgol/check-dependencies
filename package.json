@@ -52,7 +52,7 @@
     "scripts": {
         "prettier-check": "prettier --check \"**/*.{json,js,yml,yaml,md}\"",
         "prettier-format": "prettier --write \"**/*.{json,js,yml,yaml,md}\"",
-        "test": "rimraf *.log test/*/*-copy test/*-fixtures/generated && eslint . && npm run prettier-check && mocha"
+        "test": "rimraf -g \"*.log\" \"test/*/*-copy\" \"test/*-fixtures/generated\" && eslint . && npm run prettier-check && mocha"
     },
     "engines": {
         "node": ">=12"
