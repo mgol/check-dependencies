@@ -2,19 +2,22 @@ name: CI
 
 on: [push, pull_request]
 
+permissions:
+    contents: read # to fetch code (actions/checkout)
+
 jobs:
     build:
         strategy:
             matrix:
                 platform: [ubuntu-latest, windows-latest]
-                node-version: [12.x, 14.x, 16.x, 17.x]
+                node-version: [14.x, 16.x, 18.x, 19.x]
         runs-on: ${{ matrix.platform }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Cache
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ~/.npm
                   key: ${{ runner.os }}-node-${{ env.node-version }}-npm-lock-${{ hashFiles('**/package-lock.json') }}
@@ -22,7 +25,7 @@ jobs:
                       ${{ runner.os }}-node-${{ env.node-version }}-npm-lock-
 
             - name: Use Node.js ${{ env.node-version }}
-              uses: actions/setup-node@v2.1.2
+              uses: actions/setup-node@v3.6.0
               with:
                   node-version: ${{ env.node-version }}
 
