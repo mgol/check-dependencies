@@ -655,7 +655,9 @@ describe('checkDependencies', () => {
                             'Package json3 installed, though it shouldn\'t be',
                         ]);
 
-                        const depList = fs.readdirSync(`${ packageDir }/${ depsDirName }`);
+                        const depList = fs
+                            .readdirSync(`${ packageDir }/${ depsDirName }`)
+                            .filter(name => name[0] !== '.');
                         assert.deepEqual(depList,
                             ['jquery'],
                             `Expected package json3 to be removed; got: ${
