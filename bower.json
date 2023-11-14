@@ -1,6 +1,0 @@
-{
-    "name": "fake-package-name-for-tests-only",
-    "dependencies": {
-        "test-package": "0.4.2"
-    }
-}

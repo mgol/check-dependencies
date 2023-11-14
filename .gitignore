@@ -1,4 +1,3 @@
 /node_modules/
 *.log
 /test/*/*-copy
-/test/*-fixtures/generated/

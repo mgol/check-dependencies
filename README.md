@@ -1,6 +1,6 @@
 # check-dependencies
 
-> Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json
+> Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json
 
 [![GitHub build](https://img.shields.io/github/workflow/status/mgol/check-dependencies/CI?style=flat-square)](https://github.com/mgol/check-dependencies/actions)
 [![Version](https://img.shields.io/npm/v/check-dependencies.svg?style=flat-square)](http://npm.im/check-dependencies)
@@ -17,9 +17,9 @@ npm install check-dependencies --save-dev
 
 ## Rationale
 
-When dependencies are changed in `package.json` (or `bower.json`), whether it's a version bump or a new package, one can forget to invoke `npm install` (or `bower install`) and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
+When dependencies are changed in `package.json`, whether it's a version bump or a new package, one can forget to invoke `npm install` and continue using the application, possibly encountering errors caused by obsolete package versions. To avoid it, use the `check-dependencies` module at the top of the entry point of your application; it will inform about not up-to-date setup and optionally install the dependencies.
 
-Another option would be to always invoke `npm install` (or `bower install`) at the top of the main file but it can be slow and `check-dependencies` is fast.
+Another option would be to always invoke `npm install` at the top of the main file, but it can be slow and `check-dependencies` is fast.
 
 ## Usage
 
@@ -34,7 +34,7 @@ $ check-dependencies
 All options from the [API](#api) except `log` and `error` can be passed to the CLI, example:
 
 ```bash
-$ check-dependencies --verbose --package-manager bower --scope-list dependencies
+$ check-dependencies --verbose --package-manager pnpm --scope-list dependencies
 ```
 
 Options accepting array values in the API (like [`scopeList`](#scopelist)) should have each value passed individually, example:
@@ -84,7 +84,7 @@ The `config` object may have the following fields:
 
 #### packageManager
 
-Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
+Package manager to check against. Example values: `'npm'`, `yarn`, `pnpm`.
 
 **NOTE: The value passed to this parameter will be invoked if the `install` option is set to `true`. Do not pass untrusted input here. In the worst case, it may lead to arbitrary code execution! Also, versions below `1.1.1` did no validation of this parameter; versions `1.1.1` and newer ensure it matches the regex `/^[a-z][a-z0-9-]*$/i`. It is still not safe to provide untrusted input in versions `1.1.1` or newer, though.**
 
@@ -94,15 +94,15 @@ Default: `'npm'`
 
 #### packageDir
 
-Path to the directory containing `package.json` or `bower.json`.
+Path to the directory containing `package.json`.
 
 Type: `string`
 
-Default: the closest directory containing `package.json` or `bower.json` (depending on `packageManager` specified) when going up the tree, starting from the current one
+Default: the closest directory containing `package.json` when going up the tree, starting from the current one
 
 #### onlySpecified
 
-Ensures all installed dependencies are specified in `package.json` or `bower.json`.
+Ensures all installed dependencies are specified in `package.json`.
 
 NOTE: Don't use this option with npm 3.0.0 or newer as it deduplicates the file dependency tree by default so `check-dependencies` will think many modules are excessive whereas in fact they will not.
 
@@ -120,7 +120,7 @@ Default: `false`
 
 #### scopeList
 
-The list of keys in `package.json` or `bower.json` where to look for package names & versions.
+The list of keys in `package.json` where to look for package names & versions.
 
 Type: `array`
 
@@ -128,29 +128,13 @@ Default: `['dependencies', 'devDependencies']`
 
 #### optionalScopeList
 
-The list of keys in `package.json` or `bower.json` where to look for _optional_ package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
+The list of keys in `package.json` where to look for _optional_ package names & versions. An optional package is not required to be installed but if it's installed, it's supposed to match the specified version range.
 
 This list is also consulted when using `onlySpecified: true`.
 
 Type: `array`
 
 Default: `['optionalDependencies']`
-
-#### checkCustomPackageNames
-
-By default, check-dependencies will skip version check for custom package names, but will still check to see if they are installed. For example:
-
-```js
-    "dependencies": {
-      "specialSemver059": "semver#0.5.9"
-    }
-```
-
-If checkCustomPackageNames is enabled, check-dependencies will parse the version number (after the hash) for custom package names and check it against the version of the installed package of the same name.
-
-Type: `boolean`
-
-Default: `false`
 
 #### checkGitUrls
 

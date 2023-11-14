@@ -1,7 +1,7 @@
 {
     "name": "check-dependencies",
     "version": "2.0.0-pre",
-    "description": "Checks if currently installed npm/bower dependencies are installed in the exact same versions that are specified in package.json/bower.json",
+    "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json",
     "homepage": "https://github.com/mgol/check-dependencies",
     "author": {
         "name": "Michał Gołębiowski-Owczarek",
@@ -28,7 +28,6 @@
         "lib"
     ],
     "dependencies": {
-        "bower-config": "^1.4.3",
         "findup-sync": "^5.0.0",
         "lodash.camelcase": "^4.3.0",
         "minimist": "^1.2.8",
@@ -37,7 +36,6 @@
     },
     "devDependencies": {
         "bluebird": "3.7.2",
-        "bower": "1.8.14",
         "eslint": "8.36.0",
         "eslint-config-mgol": "0.0.48",
         "fs-extra": "11.1.0",
@@ -45,6 +43,7 @@
         "husky": "8.0.3",
         "lint-staged": "13.2.0",
         "mocha": "10.2.0",
+        "pnpm": "8.10.5",
         "prettier": "2.8.4",
         "rimraf": "4.4.0",
         "sinon": "15.0.2"
@@ -52,7 +51,7 @@
     "scripts": {
         "prettier-check": "prettier --check \"**/*.{json,js,yml,yaml,md}\"",
         "prettier-format": "prettier --write \"**/*.{json,js,yml,yaml,md}\"",
-        "test": "rimraf -g \"*.log\" \"test/*/*-copy\" \"test/*-fixtures/generated\" && eslint . && npm run prettier-check && mocha"
+        "test": "rimraf -g \"*.log\" \"test/*/*-copy\" && eslint . && npm run prettier-check && mocha"
     },
     "engines": {
         "node": ">=12"
