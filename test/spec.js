@@ -53,7 +53,7 @@ describe('checkDependencies', () => {
         const checkDeps = getCheckDependencies();
 
         const installMessage = `Invoke ${packageManager} install to install missing packages`;
-        const pruneAndInstallMessage = `Invoke ${packageManager} prune and ${packageManager} install to install missing packages and remove excessive ones`;
+        const installMessageWithOnlySpecified = `Invoke ${packageManager} install to install missing packages and remove excessive ones`;
 
         const errorsForNotOk = [
             'a: installed: 1.2.4, expected: 1.2.3',
@@ -247,7 +247,7 @@ describe('checkDependencies', () => {
                 output => {
                     assert.deepEqual(output.error, [
                         "Package c installed, though it shouldn't be",
-                        pruneAndInstallMessage,
+                        installMessageWithOnlySpecified,
                     ]);
                     assert.strictEqual(output.status, 1);
                     done();
@@ -1017,7 +1017,7 @@ describe('checkDependencies', () => {
         describe('the --scope-list and --optional-scope-list options', () => {
             const errorMessage = [
                 "Package c installed, though it shouldn't be\n",
-                'Invoke npm prune and npm install to install missing packages ',
+                'Invoke npm install to install missing packages ',
                 'and remove excessive ones\n',
             ].join('');
 

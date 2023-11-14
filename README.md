@@ -112,7 +112,7 @@ Default: `false`
 
 #### install
 
-Installs packages if they don't match. With the `onlySpecified` option enabled prune excessive packages as well.
+Installs packages if they don't match. With the `onlySpecified` option enabled it installs if excessive packages are present as well.
 
 Type: `boolean`
 
