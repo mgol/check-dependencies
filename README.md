@@ -86,6 +86,8 @@ The `config` object may have the following fields:
 
 Package manager to check against. Possible values: `'npm'`, `'bower'`. (Note: for `bower` you need to have the `bower` package installed either globally or locally in the same project in which you use `check-dependencies`).
 
+**NOTE: The value passed to this parameter will be invoked if the `install` option is set to `true`. Do not pass untrusted input here. In the worst case, it may lead to arbitrary code execution! Also, versions below `1.1.1` did no validation of this parameter; versions `1.1.1` and newer ensure it matches the regex `/^[a-z][a-z0-9-]*$/i`. It is still not safe to provide untrusted input in versions `1.1.1` or newer, though.**
+
 Type: `string`
 
 Default: `'npm'`
