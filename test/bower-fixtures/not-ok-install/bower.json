@@ -2,6 +2,6 @@
     "name": "not-ok-install",
     "dependencies": {
         "jquery": "<=1.11.0",
-        "json3": "git://github.com/bestiejs/json3.git#v3.3.2"
+        "json3": "https://github.com/bestiejs/json3.git#v3.3.2"
     }
 }
