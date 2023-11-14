@@ -2,11 +2,42 @@
 
 'use strict';
 
-const minimist = require('minimist');
-const camelCase = require('lodash.camelcase');
+const util = require('node:util');
 const checkDependencies = require('../lib/check-dependencies');
 
-const argv = minimist(process.argv.slice(2));
+const camelCase = x =>
+    x.replace(/-([a-z])/g, (__match, letter) => letter.toUpperCase());
+
+const argv = util.parseArgs({
+    options: {
+        'package-manager': {
+            type: 'string',
+        },
+        'package-dir': {
+            type: 'string',
+        },
+        'only-specified': {
+            type: 'boolean',
+        },
+        install: {
+            type: 'boolean',
+        },
+        'scope-list': {
+            type: 'string',
+            multiple: true,
+        },
+        'optional-scope-list': {
+            type: 'string',
+            multiple: true,
+        },
+        'check-git-urls': {
+            type: 'boolean',
+        },
+        verbose: {
+            type: 'boolean',
+        },
+    },
+}).values;
 
 // camelCase the options
 for (const key of Object.keys(argv)) {
