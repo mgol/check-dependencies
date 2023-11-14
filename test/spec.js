@@ -532,9 +532,9 @@ describe('checkDependencies', () => {
             this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
-            const versionRange =
-                require(`${fixturePrefix}${fixtureName}/${packageJsonName}`)
-                    .dependencies.jquery;
+            const versionRange = require(
+                `${fixturePrefix}${fixtureName}/${packageJsonName}`,
+            ).dependencies.jquery;
             const fixtureDir = `${fixturePrefix}${fixtureName}`;
             const fixtureCopyDir = `${fixtureDir}-copy`;
             const depVersion = JSON.parse(
