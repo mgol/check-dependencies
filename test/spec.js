@@ -35,7 +35,11 @@ describe('checkDependencies', () => {
                         config = {};
                         args.unshift(config);
                     }
-                    config.packageManager = 'bower';
+
+                    // Allow specs to specify custom `packageManager` in tests.
+                    if (!config.packageManager) {
+                        config.packageManager = 'bower';
+                    }
                 }
 
                 if (checkDependenciesMode === 'callbacks') {
@@ -93,6 +97,23 @@ describe('checkDependencies', () => {
             'c: installed: 1.2.3, expected: <2.0',
         ];
 
+        it('should exit with an error for invalid `packageManager`', done => {
+            checkDeps(
+                {
+                    packageManager: 'foo bar',
+                    packageDir: `${ fixturePrefixSeparate }ok`,
+                    scopeList: ['dependencies', 'devDependencies'],
+                },
+                output => {
+                    assert.deepEqual(output.error, [
+                        'The packageManager field value must match the regex ' +
+                            '`/^[a-z][a-z0-9-]*$/i`; got: "foo bar"',
+                    ]);
+                    assert.strictEqual(output.status, 1);
+                    done();
+                },
+            );
+        });
 
         it('should not print errors for valid package setup', done => {
             checkDeps({
