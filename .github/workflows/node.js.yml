@@ -10,7 +10,7 @@ jobs:
         strategy:
             matrix:
                 platform: [ubuntu-latest, windows-latest]
-                node-version: [14.x, 16.x, 18.x, 19.x]
+                node-version: [18.x, 20.x, 21.x]
         runs-on: ${{ matrix.platform }}
         steps:
             - name: Checkout
