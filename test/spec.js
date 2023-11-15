@@ -7,7 +7,6 @@ const { existsSync, readFileSync, readdirSync } = require('node:fs');
 const fs = require('node:fs/promises');
 const spawn = require('node:child_process').spawn;
 
-const Promise = require('bluebird');
 const semver = require('semver');
 const sinon = require('sinon');
 
