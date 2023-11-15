@@ -1,5 +1,11 @@
 {
+    "root": true,
+
+    "extends": "mgol",
+
     "env": {
-        "mocha": true
+        "mocha": true,
+        "node": true,
+        "es2022": true
     }
 }
