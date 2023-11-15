@@ -35,8 +35,6 @@
         "bluebird": "3.7.2",
         "eslint": "8.53.0",
         "eslint-config-mgol": "0.0.48",
-        "fs-extra": "11.1.1",
-        "graceful-fs": "4.2.11",
         "husky": "8.0.3",
         "lint-staged": "15.1.0",
         "mocha": "10.2.0",

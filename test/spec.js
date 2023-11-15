@@ -2,16 +2,15 @@
 
 process.env.NO_COLOR = '1';
 
+const assert = require('node:assert');
+const { existsSync, readFileSync, readdirSync } = require('node:fs');
+const fs = require('node:fs/promises');
+const spawn = require('node:child_process').spawn;
+
 const Promise = require('bluebird');
 const semver = require('semver');
-const assert = require('assert');
 const sinon = require('sinon');
-const spawn = require('child_process').spawn;
 
-const realFs = require('fs');
-const gracefulFs = require('graceful-fs');
-gracefulFs.gracefulify(realFs);
-const fs = require('fs-extra');
 const timeout = 60000;
 
 describe('checkDependencies', () => {
@@ -538,7 +537,7 @@ describe('checkDependencies', () => {
             const fixtureDir = `${fixturePrefix}${fixtureName}`;
             const fixtureCopyDir = `${fixtureDir}-copy`;
             const depVersion = JSON.parse(
-                fs.readFileSync(
+                readFileSync(
                     `${fixturePrefix}${fixtureName}/${depsDirName}/jquery/${depsJsonName}`,
                 ),
             ).version;
@@ -553,13 +552,17 @@ describe('checkDependencies', () => {
             // sub-directory. We'll use it to check if the `install` command was invoked
             // when technically not needed as we require it now always when pruning.
             assert.strictEqual(
-                fs.existsSync(`${fixtureCopyDir}/${depsDirName}/jquery/dist`),
+                existsSync(`${fixtureCopyDir}/${depsDirName}/jquery/dist`),
                 false,
             );
 
-            Promise.all([])
-                .then(() => fs.remove(fixtureCopyDir))
-                .then(() => fs.copy(fixtureDir, fixtureCopyDir))
+            Promise.resolve()
+                .then(() =>
+                    fs.rm(fixtureCopyDir, { recursive: true, force: true }),
+                )
+                .then(() =>
+                    fs.cp(fixtureDir, fixtureCopyDir, { recursive: true }),
+                )
                 .then(() => {
                     checkDeps(
                         {
@@ -570,7 +573,7 @@ describe('checkDependencies', () => {
                         output => {
                             // See the comment at the analogous assertion above.
                             assert.strictEqual(
-                                fs.existsSync(
+                                existsSync(
                                     `${fixtureCopyDir}/${depsDirName}/jquery/dist`,
                                 ),
                                 true,
@@ -595,7 +598,7 @@ describe('checkDependencies', () => {
                             );
 
                             const newDepVersion = JSON.parse(
-                                fs.readFileSync(
+                                readFileSync(
                                     `${fixtureCopyDir}/${depsDirName}/jquery/${depsJsonName}`,
                                 ),
                             ).version;
@@ -608,7 +611,10 @@ describe('checkDependencies', () => {
                             assert.strictEqual(output.status, 0);
 
                             // Clean up
-                            fs.remove(fixtureCopyDir).then(done);
+                            fs.rm(fixtureCopyDir, {
+                                recursive: true,
+                                force: true,
+                            }).then(done);
                         },
                     );
                 });
@@ -622,13 +628,15 @@ describe('checkDependencies', () => {
             const fixtureCopyDir = `${fixtureDir}-copy`;
             const packageDir = `${fixturePrefix}${fixtureName}-copy`;
 
-            Promise.all([])
-                .then(() => fs.remove(fixtureCopyDir))
-                .then(() => fs.copy(fixtureDir, fixtureCopyDir))
+            Promise.resolve()
+                .then(() =>
+                    fs.rm(fixtureCopyDir, { recursive: true, force: true }),
+                )
+                .then(() =>
+                    fs.cp(fixtureDir, fixtureCopyDir, { recursive: true }),
+                )
                 .then(() => {
-                    const depList = fs.readdirSync(
-                        `${packageDir}/${depsDirName}`,
-                    );
+                    const depList = readdirSync(`${packageDir}/${depsDirName}`);
                     assert.deepEqual(
                         depList,
                         ['jquery', 'json3'],
@@ -651,9 +659,9 @@ describe('checkDependencies', () => {
                                 "Package json3 installed, though it shouldn't be",
                             ]);
 
-                            const depList = fs
-                                .readdirSync(`${packageDir}/${depsDirName}`)
-                                .filter(name => name[0] !== '.');
+                            const depList = readdirSync(
+                                `${packageDir}/${depsDirName}`,
+                            ).filter(name => name[0] !== '.');
                             assert.deepEqual(
                                 depList,
                                 ['jquery'],
@@ -666,7 +674,12 @@ describe('checkDependencies', () => {
                             assert.strictEqual(output.status, 0);
 
                             // Clean up
-                            return fs.remove(fixtureCopyDir).then(() => done());
+                            return fs
+                                .rm(fixtureCopyDir, {
+                                    recursive: true,
+                                    force: true,
+                                })
+                                .then(() => done());
                         },
                     );
                 });
@@ -868,7 +881,11 @@ describe('checkDependencies', () => {
                 const packageDir = `${fixturesRoot}/not-ok-install-copy`;
 
                 Promise.resolve()
-                    .then(() => fs.copy(sourceForPackageDir, packageDir))
+                    .then(() =>
+                        fs.cp(sourceForPackageDir, packageDir, {
+                            recursive: true,
+                        }),
+                    )
                     .then(() => {
                         const child = spawn(
                             process.execPath,
@@ -925,7 +942,10 @@ describe('checkDependencies', () => {
                                 assert.strictEqual(code, 0);
 
                                 // Clean up
-                                fs.remove(packageDir).then(() => done());
+                                fs.rm(packageDir, {
+                                    recursive: true,
+                                    force: true,
+                                }).then(() => done());
                             });
                         });
                     });
