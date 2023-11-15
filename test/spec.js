@@ -19,13 +19,9 @@ describe('checkDependencies', () => {
     const testSuite = (packageManager, checkDependenciesMode) => {
         const getCheckDependencies = () =>
             function checkDependenciesWrapped(...args) {
-                let callback;
+                const callback = args.pop();
 
-                if (checkDependenciesMode === 'callbacks') {
-                    checkDependencies(...args);
-                }
                 if (checkDependenciesMode === 'promises') {
-                    callback = args.pop();
                     checkDependencies(...args)
                         .then(output => {
                             callback(output);
@@ -39,7 +35,6 @@ describe('checkDependencies', () => {
                         });
                 }
                 if (checkDependenciesMode === 'sync') {
-                    callback = args.pop();
                     callback(checkDependenciesSync(...args));
                 }
             };
@@ -252,87 +247,6 @@ describe('checkDependencies', () => {
                 },
             );
         });
-
-        if (checkDependenciesMode === 'callback') {
-            it('should throw if callback is not a function', () => {
-                const config = {
-                    packageDir: `${fixturePrefix}ok`,
-                };
-
-                const expectToThrow = fnsWithReasons => {
-                    for (const fnWithReason of fnsWithReasons) {
-                        assert.throws(
-                            fnWithReason[0],
-                            Error,
-                            `Expected the function to throw when passed a callback: ${fnWithReason[1]}`,
-                        );
-                    }
-                };
-
-                const getFunctionWithReason = fakeCallback => [
-                    () => checkDeps(config, fakeCallback),
-                    fakeCallback,
-                ];
-
-                expectToThrow([
-                    getFunctionWithReason(undefined),
-                    getFunctionWithReason(null),
-                    getFunctionWithReason(42),
-                    getFunctionWithReason('foobar'),
-                    getFunctionWithReason({ a: 2 }),
-                ]);
-            });
-        }
-
-        // In other than async cases we fake the callback in tests so this wouldn't work.
-        // But we test correctness of those modes in many other tests so that one
-        // is not needed.
-        if (checkDependenciesMode === 'callback') {
-            it('should not throw if only one parameter provided', () => {
-                assert.doesNotThrow(() => {
-                    checkDeps({
-                        packageDir: `${fixturePrefix}ok`,
-                    });
-                }, 'Expected the function with one parameter not to throw');
-            });
-        }
-
-        if (packageManager === 'npm') {
-            it('should allow to provide callback as the first argument', done => {
-                checkDeps(output => {
-                    assert.deepEqual(output.error, []);
-                    assert.strictEqual(output.depsWereOk, true);
-                    assert.strictEqual(output.status, 0);
-                    done();
-                });
-            });
-
-            if (checkDependenciesMode === 'callback') {
-                it('should throw if config not present and callback is not a function', () => {
-                    const expectToThrow = fnsWithReasons => {
-                        for (const fnWithReason of fnsWithReasons) {
-                            assert.throws(
-                                fnWithReason[0],
-                                Error,
-                                `Expected the function to throw when passed a callback: ${fnWithReason[1]}`,
-                            );
-                        }
-                    };
-
-                    const getFunctionWithReason = fakeCallback => [
-                        () => checkDeps(fakeCallback),
-                        fakeCallback,
-                    ];
-
-                    expectToThrow([
-                        getFunctionWithReason(undefined),
-                        getFunctionWithReason(null),
-                        getFunctionWithReason(42),
-                        getFunctionWithReason('foobar'),
-                    ]);
-                });
-            }
-        }
 
         it('should support `log` and `error` options', done => {
             const logArray = [];
@@ -686,9 +600,6 @@ describe('checkDependencies', () => {
     };
 
     describe('API', () => {
-        describe('callbacks', () => {
-            testSuite('npm', 'callbacks');
-        });
         describe('promises', () => {
             testSuite('npm', 'promises');
         });

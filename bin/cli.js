@@ -77,6 +77,6 @@ const Cli = {
     },
 };
 
-checkDependencies(argv, Cli.reporter);
+checkDependencies(argv).then(result => Cli.reporter(result));
 
 module.exports = Cli;

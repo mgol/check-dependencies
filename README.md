@@ -45,13 +45,15 @@ $ check-dependencies --scope-list dependencies --scope-list devDependencies
 
 ### API
 
+The exported function returns a promise which should eventually be fulfilled (never rejected).
+
 ```js
-require('check-dependencies')(config, callback);
+const output = await require('check-dependencies')(config);
 ```
 
-where `callback` is invoked upon completion and `config` is a configuration object.
+where `config` is a configuration object.
 
-`callback` is invoked with the object containing fields:
+`output` is an object containing fields:
 
 ```js
 {
@@ -62,23 +64,13 @@ where `callback` is invoked upon completion and `config` is a configuration obje
 }
 ```
 
-The function returns a promise so passing a callback is not necessary; instead you can do:
-
-```js
-require('check-dependencies')(config).then(function (output) {
-    /* handle output */
-});
-```
-
-The promise should never fail.
-
 There is a synchronous alternative -- the following code:
 
 ```js
-var output = require('check-dependencies').sync(config);
+const output = require('check-dependencies').sync(config);
 ```
 
-will assign to `output` the same object that would otherwise be passed to the `callback` in the asynchronous scenario.
+will assign to `output` the same object to which the returned promise would otherwise resolve to.
 
 The `config` object may have the following fields:
 
@@ -181,33 +173,21 @@ Default: `console.error.bind(console)`
 The most basic usage:
 
 ```js
-require('check-dependencies')(callback);
+const output = await require('check-dependencies')();
 ```
 
-This will check packages' versions and report an error to `callback` if packages' versions are mismatched.
+This will check packages' versions and report an error to `output` if packages' versions are mismatched.
 
 The following:
 
 ```js
-require('check-dependencies')(
-    {
-        install: true,
-        verbose: true,
-    },
-    callback,
-);
+await require('check-dependencies')({
+    install: true,
+    verbose: true,
+});
 ```
 
-will install mismatched ones and call `callback`.
-
-The following two examples:
-
-```js
-require('check-dependencies')(callback);
-require('check-dependencies')({}, callback);
-```
-
-behave in the same way - `callback` is invoked upon completion; if there was an error, it's passed as a parameter to `callback`.
+will install mismatched ones.
 
 ## Supported Node.js versions
 
