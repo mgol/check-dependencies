@@ -48,7 +48,7 @@
         "test": "rimraf -g \"*.log\" \"test/*/*-copy\" && eslint . && npm run prettier-check && mocha"
     },
     "engines": {
-        "node": ">=12"
+        "node": ">=18.3"
     },
     "husky": {
         "hooks": {
