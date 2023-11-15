@@ -31,7 +31,7 @@ Once the package has been installed, it may be used via:
 $ check-dependencies
 ```
 
-All options from the [API](#api) except `log` and `error` can be passed to the CLI, example:
+All options from the [API](#api) except `log` and `error` can be passed to the CLI in their `kebab-case` versions, not `camelCase` ones. Example:
 
 ```bash
 $ check-dependencies --verbose --package-manager pnpm --scope-list dependencies
