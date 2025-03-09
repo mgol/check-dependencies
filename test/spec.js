@@ -609,32 +609,20 @@ describe('checkDependencies', () => {
     });
 
     describe('CLI reporter', () => {
-        let cli, consoleLogStub, consoleErrorStub, exitCode;
+        let cli, consoleLogStub, consoleErrorStub;
 
         beforeEach(() => {
             cli = require('../bin/cli.js');
 
             consoleLogStub = sinon.stub(console, 'log');
             consoleErrorStub = sinon.stub(console, 'error');
-
-            Object.defineProperty(process, 'exitCode', {
-                get() {
-                    return exitCode;
-                },
-                set(value) {
-                    exitCode = value;
-                },
-                configurable: true,
-            });
-            exitCode = null;
         });
 
         afterEach(() => {
             consoleLogStub.restore();
             consoleErrorStub.restore();
 
-            delete process.exitCode;
-            exitCode = null;
+            process.exitCode = undefined;
         });
 
         it('should call console log for every error', () => {
@@ -668,7 +656,7 @@ describe('checkDependencies', () => {
 
             cli.reporter(result);
 
-            assert.strictEqual(exitCode, 666);
+            assert.strictEqual(process.exitCode, 666);
         });
 
         it('should not set process.exitCode if zero status returned', () => {
@@ -680,7 +668,7 @@ describe('checkDependencies', () => {
 
             cli.reporter(result);
 
-            assert.strictEqual(exitCode, null);
+            assert.strictEqual(process.exitCode, undefined);
         });
     });
 
@@ -706,7 +694,11 @@ describe('checkDependencies', () => {
             if (!stream) {
                 return stream;
             }
-            return stream.toString();
+
+            // Ignore npm warnings about deprecated packages.
+            return stream
+                .toString()
+                .replace(/^npm warn deprecated [^\n]+\n/g, '');
         };
 
         describe('ok package', () => {
