@@ -1,6 +1,7 @@
 {
     "name": "check-dependencies",
     "version": "2.0.1-pre",
+    "type": "commonjs",
     "description": "Checks if currently installed npm dependencies are installed in the exact same versions that are specified in package.json",
     "homepage": "https://github.com/mgol/check-dependencies",
     "author": {
@@ -28,19 +29,20 @@
         "lib"
     ],
     "dependencies": {
-        "picocolors": "^1.0.0",
-        "semver": "^7.5.4"
+        "picocolors": "^1.1.1",
+        "semver": "^7.7.1"
     },
     "devDependencies": {
-        "eslint": "8.53.0",
-        "eslint-config-mgol": "0.0.48",
-        "husky": "8.0.3",
-        "lint-staged": "15.1.0",
-        "mocha": "10.2.0",
-        "pnpm": "9.15.0",
-        "prettier": "3.1.0",
-        "rimraf": "5.0.5",
-        "sinon": "17.0.1"
+        "eslint": "9.20.1",
+        "eslint-config-mgol": "0.0.50",
+        "globals": "^16.0.0",
+        "husky": "9.1.7",
+        "lint-staged": "15.4.3",
+        "mocha": "11.1.0",
+        "pnpm": "10.4.1",
+        "prettier": "3.5.1",
+        "rimraf": "6.0.1",
+        "sinon": "19.0.2"
     },
     "scripts": {
         "prettier-check": "prettier --check \"**/*.{json,js,yml,yaml,md}\"",
