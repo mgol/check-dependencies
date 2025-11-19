@@ -10,7 +10,7 @@ jobs:
         strategy:
             matrix:
                 platform: [ubuntu-latest, windows-latest]
-                node-version: [18.x, 20.x, 22.x, 23.x]
+                node-version: [18.x, 20.x, 22.x, 24.x]
         runs-on: ${{ matrix.platform }}
         steps:
             - name: Checkout
@@ -30,9 +30,11 @@ jobs:
                   node-version: ${{ env.node-version }}
 
             - name: Install dependencies
-              run: |
-                  npm install
+              run: npm ci
+
+            - name: Run lint
+              run: npm run lint
+              if: matrix.node-version == '24.x' && matrix.platform == 'ubuntu-latest'
 
             - name: Run tests
-              run: |
-                  npm test
+              run: npm run test-no-lint

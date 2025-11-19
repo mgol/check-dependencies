@@ -47,7 +47,9 @@
     "scripts": {
         "prettier-check": "prettier --check \"**/*.{json,js,yml,yaml,md}\"",
         "prettier-format": "prettier --write \"**/*.{json,js,yml,yaml,md}\"",
-        "test": "rimraf -g \"*.log\" \"test/*/*-copy\" && eslint . && npm run prettier-check && mocha"
+        "lint": "eslint .",
+        "test-no-lint": "rimraf -g \"*.log\" \"test/*/*-copy\" && npm run prettier-check && mocha",
+        "test": "npm run test-no-lint && npm run lint"
     },
     "engines": {
         "node": ">=18.3"
