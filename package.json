@@ -30,25 +30,26 @@
     ],
     "dependencies": {
         "picocolors": "^1.1.1",
-        "semver": "^7.7.1"
+        "semver": "^7.7.4"
     },
     "devDependencies": {
-        "eslint": "9.20.1",
+        "eslint": "10.0.2",
         "eslint-config-mgol": "0.0.50",
-        "globals": "^16.0.0",
+        "globals": "17.3.0",
         "husky": "9.1.7",
-        "lint-staged": "15.4.3",
-        "mocha": "11.1.0",
-        "pnpm": "10.28.2",
-        "prettier": "3.5.1",
-        "rimraf": "6.0.1",
-        "sinon": "19.0.2"
+        "lint-staged": "16.3.0",
+        "mocha": "11.7.5",
+        "pnpm": "10.30.3",
+        "prettier": "3.8.1",
+        "rimraf": "6.1.3",
+        "sinon": "21.0.1"
     },
     "scripts": {
         "prettier-check": "prettier --check \"**/*.{json,js,yml,yaml,md}\"",
         "prettier-format": "prettier --write \"**/*.{json,js,yml,yaml,md}\"",
         "lint": "eslint .",
-        "test-no-lint": "rimraf -g \"*.log\" \"test/*/*-copy\" && npm run prettier-check && mocha",
+        "mocha": "NO_COLOR=1 mocha",
+        "test-no-lint": "rimraf -g \"*.log\" \"test/*/*-copy\" && npm run prettier-check && npm run mocha",
         "test": "npm run test-no-lint && npm run lint"
     },
     "engines": {

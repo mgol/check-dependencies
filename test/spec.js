@@ -22,21 +22,21 @@ describe('checkDependencies', () => {
                 const callback = args.pop();
 
                 if (checkDependenciesMode === 'promises') {
-                    checkDependencies(...args)
-                        .then(output => {
-                            callback(output);
-                        })
-                        .catch(error => {
-                            assert.equal(
-                                error,
-                                null,
-                                'The promise mode of checkDependencies should never reject',
-                            );
-                        });
+                    return checkDependencies(...args).then(output =>
+                        callback(output),
+                    );
                 }
                 if (checkDependenciesMode === 'sync') {
-                    callback(checkDependenciesSync(...args));
+                    // Wrap in a promise to be able to use Mocha's async
+                    // test support while still checking for sync mode output.
+                    return Promise.resolve().then(() =>
+                        callback(checkDependenciesSync(...args)),
+                    );
                 }
+
+                throw new Error(
+                    `Unknown checkDependenciesMode: ${checkDependenciesMode}`,
+                );
             };
 
         const packageJsonName = 'package.json';
@@ -65,7 +65,7 @@ describe('checkDependencies', () => {
             'c: installed: 1.2.3, expected: <2.0',
         ];
 
-        it('should exit with an error for invalid `packageManager`', done => {
+        it('should exit with an error for invalid `packageManager`', () =>
             checkDeps(
                 {
                     packageManager: 'foo bar',
@@ -78,12 +78,10 @@ describe('checkDependencies', () => {
                             '`/^[a-z][a-z0-9-]*$/i`; got: "foo bar"',
                     ]);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should not print errors for valid package setup', done => {
+        it('should not print errors for valid package setup', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}ok`,
@@ -93,12 +91,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should error on invalid package setup', done => {
+        it('should error on invalid package setup', () =>
             checkDeps(
                 {
                     checkGitUrls: true,
@@ -109,12 +105,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, errorsForNotOk);
                     assert.strictEqual(output.depsWereOk, false);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should show log/error messages for all packages', done => {
+        it('should show log/error messages for all packages', () =>
             checkDeps(
                 {
                     checkGitUrls: true,
@@ -126,12 +120,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, errorsForNotOkInterlaced);
                     assert.strictEqual(output.depsWereOk, false);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should accept `scopeList` parameter', done => {
+        it('should accept `scopeList` parameter', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}not-ok`,
@@ -141,21 +133,17 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it(`should find ${packageJsonName} if \`packageDir\` not provided`, done => {
+        it(`should find ${packageJsonName} if \`packageDir\` not provided`, () =>
             checkDeps({}, output => {
                 assert.deepEqual(output.error, []);
                 assert.strictEqual(output.depsWereOk, true);
                 assert.strictEqual(output.status, 0);
-                done();
-            });
-        });
+            }));
 
-        it(`should error if ${packageJsonName} wasn't found in \`packageDir\``, done => {
+        it(`should error if ${packageJsonName} wasn't found in \`packageDir\``, () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}missing-json`,
@@ -165,12 +153,10 @@ describe('checkDependencies', () => {
                         `Missing ${packageJsonName}!`,
                     ]);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should ignore excessive deps if `onlySpecified` not provided', done => {
+        it('should ignore excessive deps if `onlySpecified` not provided', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}only-specified-not-ok`,
@@ -179,12 +165,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should ignore excessive deps if `onlySpecified` is `false`', done => {
+        it('should ignore excessive deps if `onlySpecified` is `false`', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}only-specified-not-ok`,
@@ -194,12 +178,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should not error if no excessive deps and `onlySpecified` is `true`', done => {
+        it('should not error if no excessive deps and `onlySpecified` is `true`', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}ok`,
@@ -209,12 +191,10 @@ describe('checkDependencies', () => {
                     assert.strictEqual(output.status, 0);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.deepEqual(output.error, []);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`', done => {
+        it('should accept packages in `optionalScopeList` when `onlySpecified` is `true`', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}only-specified-not-ok`,
@@ -226,12 +206,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should error if there are excessive deps and `onlySpecified` is `true`', done => {
+        it('should error if there are excessive deps and `onlySpecified` is `true`', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}only-specified-not-ok`,
@@ -243,16 +221,14 @@ describe('checkDependencies', () => {
                         installMessageWithOnlySpecified,
                     ]);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should support `log` and `error` options', done => {
+        it('should support `log` and `error` options', () => {
             const logArray = [];
             const errorArray = [];
 
-            checkDeps(
+            return checkDeps(
                 {
                     checkGitUrls: true,
                     packageDir: `${fixturePrefix}not-ok`,
@@ -270,16 +246,15 @@ describe('checkDependencies', () => {
 
                     assert.deepEqual(logArray, output.log);
                     assert.deepEqual(errorArray, output.error);
-                    done();
                 },
             );
         });
 
-        it('should not print logs when `verbose` is not set to true', done => {
+        it('should not print logs when `verbose` is not set to true', () => {
             const logArray = [];
             const errorArray = [];
 
-            checkDeps(
+            return checkDeps(
                 {
                     packageDir: `${fixturePrefix}not-ok`,
                     log(msg) {
@@ -292,13 +267,12 @@ describe('checkDependencies', () => {
                 () => {
                     assert.deepEqual(logArray, []);
                     assert.deepEqual(errorArray, []);
-                    done();
                 },
             );
         });
 
-        it('should check Git URL based dependencies only if `checkGitUrls` is true', done => {
-            checkDeps(
+        it('should check Git URL based dependencies only if `checkGitUrls` is true', async () => {
+            await checkDeps(
                 {
                     packageDir: `${fixturePrefix}git-urls`,
                     scopeList: ['dependencies', 'devDependencies'],
@@ -310,7 +284,7 @@ describe('checkDependencies', () => {
                     ]);
                 },
             );
-            checkDeps(
+            await checkDeps(
                 {
                     checkGitUrls: true,
                     packageDir: `${fixturePrefix}git-urls`,
@@ -322,12 +296,11 @@ describe('checkDependencies', () => {
                         'b: not installed!',
                         installMessage,
                     ]);
-                    done();
                 },
             );
         });
 
-        it('should check the version for Git URLs with valid semver tags only', done => {
+        it('should check the version for Git URLs with valid semver tags only', () =>
             checkDeps(
                 {
                     checkGitUrls: true,
@@ -336,15 +309,13 @@ describe('checkDependencies', () => {
                 },
                 output => {
                     assert.strictEqual(output.depsWereOk, true);
-                    done();
                 },
-            );
-        });
+            ));
 
         it(
             "should check a Git dependency is installed even if it's hash " +
                 'is not a valid semver tag',
-            done => {
+            () =>
                 checkDeps(
                     {
                         checkGitUrls: true,
@@ -357,13 +328,11 @@ describe('checkDependencies', () => {
                             'a: not installed!',
                             installMessage,
                         ]);
-                        done();
                     },
-                );
-            },
+                ),
         );
 
-        it('should accept `latest` as a version', done => {
+        it('should accept `latest` as a version', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}latest-ok`,
@@ -372,12 +341,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should report missing package even if version is `latest`', done => {
+        it('should report missing package even if version is `latest`', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}latest-not-ok`,
@@ -389,12 +356,10 @@ describe('checkDependencies', () => {
                     ]);
                     assert.strictEqual(output.depsWereOk, false);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should not require to have optional dependencies installed', done => {
+        it('should not require to have optional dependencies installed', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}optional-not-present`,
@@ -403,12 +368,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should require optional dependencies to have a proper version if installed', done => {
+        it('should require optional dependencies to have a proper version if installed', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}optional-present-incorrect`,
@@ -420,12 +383,10 @@ describe('checkDependencies', () => {
                     ]);
                     assert.strictEqual(output.depsWereOk, false);
                     assert.strictEqual(output.status, 1);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should ignore all files & hidden directories as dep dirs', done => {
+        it('should ignore all files & hidden directories as dep dirs', () =>
             checkDeps(
                 {
                     packageDir: `${fixturePrefix}ok-ignored-dirs-files`,
@@ -435,12 +396,10 @@ describe('checkDependencies', () => {
                     assert.deepEqual(output.error, []);
                     assert.strictEqual(output.depsWereOk, true);
                     assert.strictEqual(output.status, 0);
-                    done();
                 },
-            );
-        });
+            ));
 
-        it('should install missing packages when `install` is set to true', function (done) {
+        it('should install missing packages when `install` is set to true', function () {
             this.timeout(timeout);
 
             const fixtureName = 'not-ok-install';
@@ -469,14 +428,12 @@ describe('checkDependencies', () => {
                 false,
             );
 
-            Promise.resolve()
-                .then(() =>
-                    fs.rm(fixtureCopyDir, { recursive: true, force: true }),
-                )
+            return fs
+                .rm(fixtureCopyDir, { recursive: true, force: true })
                 .then(() =>
                     fs.cp(fixtureDir, fixtureCopyDir, { recursive: true }),
                 )
-                .then(() => {
+                .then(() =>
                     checkDeps(
                         {
                             packageDir: `${fixturePrefix}${fixtureName}-copy`,
@@ -524,16 +481,16 @@ describe('checkDependencies', () => {
                             assert.strictEqual(output.status, 0);
 
                             // Clean up
-                            fs.rm(fixtureCopyDir, {
+                            return fs.rm(fixtureCopyDir, {
                                 recursive: true,
                                 force: true,
-                            }).then(done);
+                            });
                         },
-                    );
-                });
+                    ),
+                );
         });
 
-        it('should prune excessive packages when `install` is set to true', function (done) {
+        it('should prune excessive packages when `install` is set to true', function () {
             this.timeout(timeout);
 
             const fixtureName = 'only-specified-not-ok-install';
@@ -541,10 +498,8 @@ describe('checkDependencies', () => {
             const fixtureCopyDir = `${fixtureDir}-copy`;
             const packageDir = `${fixturePrefix}${fixtureName}-copy`;
 
-            Promise.resolve()
-                .then(() =>
-                    fs.rm(fixtureCopyDir, { recursive: true, force: true }),
-                )
+            return fs
+                .rm(fixtureCopyDir, { recursive: true, force: true })
                 .then(() =>
                     fs.cp(fixtureDir, fixtureCopyDir, { recursive: true }),
                 )
@@ -558,7 +513,7 @@ describe('checkDependencies', () => {
                         )}`,
                     );
 
-                    checkDeps(
+                    return checkDeps(
                         {
                             packageDir,
                             onlySpecified: true,
@@ -587,12 +542,10 @@ describe('checkDependencies', () => {
                             assert.strictEqual(output.status, 0);
 
                             // Clean up
-                            return fs
-                                .rm(fixtureCopyDir, {
-                                    recursive: true,
-                                    force: true,
-                                })
-                                .then(() => done());
+                            return fs.rm(fixtureCopyDir, {
+                                recursive: true,
+                                force: true,
+                            });
                         },
                     );
                 });
