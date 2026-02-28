@@ -1,6 +1,6 @@
 'use strict';
 
-process.env.NO_COLOR = '1';
+require('./set-no-color');
 
 const assert = require('node:assert');
 const { existsSync, readFileSync, readdirSync } = require('node:fs');
